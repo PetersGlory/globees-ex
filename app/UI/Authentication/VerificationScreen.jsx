@@ -6,7 +6,7 @@ import PrimaryBtn from '../../Components/common/PrimaryBtn'
 import LoadingModal from '../../Components/common/Modals/LoadingModal'
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL, GENERAL_URL, sendpush, updatedevicetoken } from '../../config/api/Index'
+import { BASE_URL, GENERAL_URL, updatedevicetoken } from '../../config/api/Index'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { setAccessToken, setRates, setUserProfile } from '../../config/redux/slice'
@@ -46,7 +46,7 @@ const VerificationScreen = ({navigation, route}) => {
                         navigator.dispatch(StackActions.replace("HomeScreen"))
                         // navigation.replace("HomeScreen");
                         setModal(false);
-                        sendpush('Sign In', `Howdy ${route.params.email} 👋, you just signed in to Globees Ex now.`,datas.accessToken);
+                        // sendpush('Sign In', `Howdy ${route.params.email} 👋, you just signed in to Globees Ex now.`,datas.accessToken);
                     }, 3000);
                 }else{
                     setTimeout(()=>{
@@ -118,7 +118,7 @@ const VerificationScreen = ({navigation, route}) => {
                 color:'#133A64'
             }}>Verify it’s you</Text>
             <Text style={tw`text-gray-400 text-[14px] mt-[8px]`}>
-                We send a code to ( {route.params.email} ). Enter it here to verify your identity
+                We have sent a code to ( {route.params.email} ). Enter it here to verify your identity.
             </Text>
         </View>
 

@@ -35,7 +35,7 @@
         "backgroundColor": "#133A64"
       },
       "package": "com.peter2200.GlobeesEx",
-      "versionCode": 3,
+      "versionCode": 7,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.USE_BIOMETRIC",

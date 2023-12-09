@@ -75,7 +75,7 @@ const ReceiverScreen = ({navigation, route}) => {
             <CustomHeader title={"Receivers Details"} />
 
             <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>
-            Enter the reciever's account details to ensure your transaction takes place with ease and in a jifi..
+                Kindly enter the correct receiver’s account details required to continue..
             </Text>
 
             <View style={tw`mt-10 w-full`}>

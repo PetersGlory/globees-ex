@@ -49,14 +49,14 @@ const ExchangeScreen = ({navigation}) => {
     let amounted = faced_amount.substring(1);
     if(val == "🇳🇬 NGN" ){
       if(val == "🇳🇬 NGN" && exchange.from[0] == "₦"){
-        setRate("£1 - ₦1")        
+        setRate("₦1 - ₦1")        
         setExchange({
           ...exchange,
           to: "₦"+amounted
         });
       }else{
         let rated = rates.find(rate => rate.name === "Naira")
-        setRate(`£1 - ₦${rated.amount}`)
+        setRate(`₦1 - ₦${rated.amount}`)
         let newAmount = eval(Number(amounted) * rated.amount);
         // alert(newAmount);
         setExchange({
@@ -66,7 +66,7 @@ const ExchangeScreen = ({navigation}) => {
         setSelectedC("NGN")
       }
     }else if(val == "🇬🇧 UK" ){
-      if(val == "🇬🇧 UK" && exchange.from == "£"){
+      if(val == "🇬🇧 UK" && exchange.from[0] == "£"){
         setRate("£1 - £1")
         setExchange({
           ...exchange,

@@ -21,31 +21,39 @@ const WelcomeScreen = () => {
     const newScreen = () =>{
         setTimeout(()=>{
             navigator.dispatch(StackActions.replace("IntroScreen"));
-        }, 3500);
+        }, 4500);
     }
   return (
     <SafeAreaView style={tw`flex-grow w-full h-full`}>
-        <ImageBackground source={require("../../assets/img/8.png")} style={{
-            ...tw`w-full h-full`,
+        <StatusBar style='light' />
+        <Image source={require("../../assets/img/onbs.png")} style={{
+            ...tw`flex-1`,
+            width: "100%",
+            height: "100%",
+            resizeMode: "cover"
+        }} />
+        {/* <ImageBackground source={require("../../assets/img/8.png")} style={{
+            ...tw`w-full h-full flex flex-col items-center justify-between`,
         }}>
-            <StatusBar style='inverted' />
             <Animated.View style={{
-                ...tw`w-full h-full items-center justify-center`,
+                ...tw`w-full items-center justify-center flex-1 pt-5`,
                 opacity: fadeAnim,
             }}>
-
-                <Image source={require("../../assets/img/payments.png")} style={{
-                    width: 200,
-                    height: 200
-                }} alt='logo' />
-                <Text style={[tw`text-white text-2xl font-bold mt-5`]}>Welcome to GLOBEES EX</Text>
-                <Text style={[tw`text-yellow-400 text-center text-3xl font-bold mt-5 uppercase`]}>Exchange & Payment GateWay</Text>
-
-
-                {/* <Text style={tw`absolute bottom-5 left-5 right-5 text-gray-100 text-center`}>Crafted and maintained by TECHTACLOUD.</Text> */}
-
+                <Text style={[tw`text-white text-center text-[32px] font-medium mt-5 uppercase`]}>Globees Ex</Text>
+                <Text style={[tw`text-white text-center text-[28px] font-medium mt-5 uppercase`]}>Exchange & Payment GateWay</Text>
             </Animated.View>
-        </ImageBackground>
+
+                <View style={tw`flex-1 w-full items-center justify-center pt-3`}>
+                    <Image source={require("../../assets/img/logos.png")} style={{
+                        width: 300,
+                        height: 300
+                    }} alt='logo' />
+                </View>
+                <View style={tw`flex-1 justify-end pb-2`}>
+
+                    <Text style={tw`text-white text-center text-[15px]`}>@globees.ex</Text>
+                </View>
+        </ImageBackground> */}
     </SafeAreaView>
   )
 }

@@ -100,7 +100,7 @@ const ProfileScreen = () => {
         </TouchableOpacity>
             {/* fullname Input */}
             <View>
-                <Text style={tw`text-gray-700`}>Fullname</Text>
+                <Text style={tw`text-gray-700`}>Full Name</Text>
                 <TextInput style={tw`border border-gray-300 mt-2 rounded-lg p-3 text-gray-600`} keyboardType='default' onChangeText={(val) =>{
                     setRegs({
                         ...regs,

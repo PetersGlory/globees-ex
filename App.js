@@ -26,7 +26,8 @@ import registerNNPushToken from 'native-notify';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
-  registerNNPushToken(14312, 'NRKYt9PycbIzkLWoNHDK1o');
+  // registerNNPushToken(14312, 'NRKYt9PycbIzkLWoNHDK1o');
+  
   return (
     <Provider store={store}>
       <StatusBar style="auto" />

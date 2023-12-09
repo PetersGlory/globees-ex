@@ -10,9 +10,16 @@
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "peterglo2200@gmail.com",
+        "ascAppId": "Petergod1st",
+        "appleTeamId": "RCWQ782BN9"
+      }
+    }
   }
 }

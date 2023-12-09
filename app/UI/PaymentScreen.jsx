@@ -86,12 +86,12 @@ const PaymentScreen = ({navigation}) => {
         setRate("$1 - $1")
         setExchange({
           ...exchange,
-          to: "£"+amounted
+          to: "$"+amounted
         });
         setSelectedC("USA")
       }else{
         let rated = rates.find(rate => rate.name === "CAD")
-        setRate(`£1 - ₦${rated.amount}`);
+        setRate(`$1 - ₦${rated.amount}`);
         let newAmount = eval(Number(amounted) / rated.amount);
         // alert();
         setExchange({
@@ -102,7 +102,7 @@ const PaymentScreen = ({navigation}) => {
       }
     }else{
       let rated = rates.find(rate => rate.name === "Usd")
-        setRate(`£1 - ₦${rated.amount}`);
+        setRate(`$1 - ₦${rated.amount}`);
         let newAmount = eval(Number(amounted) / rated.amount);
         // alert();
         setExchange({

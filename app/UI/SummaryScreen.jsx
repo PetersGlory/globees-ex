@@ -12,9 +12,11 @@ import LoadingModal from '../Components/common/Modals/LoadingModal'
 import { useState } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
 const SummaryScreen = ({navigation,route}) => {
     const [modal, setModal] = useState(false);
+    const navigator = useNavigation();
     const exchangeed = useSelector(selectExchange);
     const typeR = route.params.category;
     const currency_from = route.params.currency_from;
@@ -53,22 +55,13 @@ const SummaryScreen = ({navigation,route}) => {
             }
         });
 
-        // let results = responsed.json();
-        console.log(responsed.status);
         if(responsed.status === 200 || responsed.status === 201){
             setTimeout(()=>{
                 setModal(false);
-                // Alert.alert(
-                //     'Processing your payment.',
-                //     'Your exchange will arrive in minutes after confirmation. Thank you for using Globees Ex.',[
-                //         {
-                //           text: 'Yes',
-                //           onPress: ()=>navigation.replace("HomeScreen"),
-                //         },
-                //       ]
-                // );
-                navigation.push("SuccesScreen");
-                sendpush(typeR, `Howdy ${usersP?.fullname}, Your ${typeR} will arrive in minutes. Thank you for your business with Globees Ex.`,key);
+                navigator.navigate("SuccesScreen",{
+                    category: typeR
+                });
+                // sendpush(typeR, `Howdy ${usersP?.fullname}, Your ${typeR} will arrive in minutes. Thank you for your business with Globees Ex.`,key);
             },500)
         }else{
             setTimeout(()=>{
@@ -84,7 +77,9 @@ const SummaryScreen = ({navigation,route}) => {
         <ScrollView style={tw`w-full h-full ${Platform.OS == "ios" && "p-5 w-full h-full"}`}>
             <CustomHeader title={"Summary Details"} />
 
-            <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>Kindly go through all the information and proceed to click the bottom below if all the details are correct.</Text>
+            <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>
+                Kindly go through the {typeR} information and proceed to click the button below to continue, if all the details are correct.
+            </Text>
 
             <View style={tw`bg-white rounded-lg p-5 mt-5`}>
                 <View style={tw`flex flex-row items-center mt-4 justify-between`}>
@@ -155,8 +150,8 @@ const SummaryScreen = ({navigation,route}) => {
             </View>
 
             <View style={tw`mt-5 w-full`}>
-                <PrimaryBtn onpressed={handleContinue} title={"PAID"} />
-                <Text style={tw`mt-3 text-[12px] text-gray-600`}>Note: Do not click paid if the payment has not been sent from your bank. Ensure to send the exact amount required to process your payment instantly.</Text>
+                <PrimaryBtn onpressed={handleContinue} title={"Continue"} />
+                {/* <Text style={tw`mt-3 text-[12px] text-gray-600`}>Note: Do not click paid if the payment has not been sent from your bank. Ensure to send the exact amount required to process your payment instantly.</Text> */}
             </View>
         </ScrollView>
       <LoadingModal message={"Loading..."} isloading={true} visibility={modal} setVisibility={setModal} />

@@ -79,7 +79,7 @@ const TransactionModal = ({onpressed, visibility, data}) => {
                       <Text style={tw`text-gray-800 capitalize`}>{data?.service_charge}</Text>
                   </View> */}
                   <View style={tw`flex flex-row items-center mt-4 justify-between`}>
-                      <Text style={tw`text-gray-400`}>Trasaction Type</Text>
+                      <Text style={tw`text-gray-400`}>Transaction Type</Text>
                       <Text style={tw`text-gray-800 capitalize`}>{data?.category}</Text>
                   </View>
                   <View style={tw`flex flex-row items-center mt-4 justify-between`}>

@@ -5,8 +5,9 @@ import PrimaryBtn from '../Components/common/PrimaryBtn'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {useDispatch} from "react-redux"
 import { setAccessToken, setRates, setUserProfile } from '../config/redux/slice'
-import { BASE_URL, GENERAL_URL, updatedevicetoken } from '../config/api/Index'
+import { BASE_URL, GENERAL_URL } from '../config/api/Index'
 import axios from 'axios'
+import { usePushNotification } from '../../usePushNotification'
 
 const IntroScreen = ({navigation}) => {
     const dispatch = useDispatch();
@@ -42,7 +43,7 @@ const IntroScreen = ({navigation}) => {
       }).then((response)=>{
           let dataUser = response.data.data;
           dispatch(setUserProfile(dataUser));
-          updatedevicetoken(dataUser.email, key);
+          updateToken(dataUser.email);
       }).catch((err)=>{
           console.error(err)
       })
@@ -56,6 +57,31 @@ const IntroScreen = ({navigation}) => {
       }).then((response)=>{
           let dataRate = response.data.message;
           dispatch(setRates(dataRate));
+      }).catch((err)=>{
+          console.error(err)
+      })
+    }
+
+    const updateToken =(email)=>{
+      const {expoPushToken} = usePushNotification();
+      console.log(expoPushToken)
+      let datas = {
+        user_type: "user",
+        token: expoPushToken,
+        email: email
+      }
+      axios.request({
+          method: 'POST',
+          url: `${GENERAL_URL}/device_token`,
+          data: datas,
+          headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+          }
+      }).then((response)=>{
+          console.log(response.data);
+          // registerIndieID(value, 14312, 'NRKYt9PycbIzkLWoNHDK1o');
+          // return dataRate;
       }).catch((err)=>{
           console.error(err)
       })

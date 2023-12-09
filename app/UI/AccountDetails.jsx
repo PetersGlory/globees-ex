@@ -36,7 +36,7 @@ const AccountDetails = ({navigation, route}) => {
         <View style={tw`w-full h-full ${Platform.OS == "ios" && "p-5 w-full h-full"}`}>
             <CustomHeader title={"Account Details"} />
             
-            <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>Please kindly make the payment to our bank account and send a confirmation here when done.</Text>
+            <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>Kindly transfer the exact amount toour bank account details below to continue.</Text>
 
             <View style={tw`w-full mt-5`}>
                 {/* Tabs */}

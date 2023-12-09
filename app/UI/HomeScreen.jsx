@@ -36,7 +36,7 @@ const HomeScreen = ({navigation}) => {
         <TouchableOpacity style={tw`shadow w-[48%] rounded-2xl pt-6 pl-5 pr-5 pb-6 shadow bg-white flex flex-col`} onPress={()=> navigation.push("ExchangeScreen")}>
           <Icon name='md-contract-outline' size={30} style={tw`text-blue-900`} />
           <Text style={tw`mt-5 text-gray-700 text-left font-bold`}>Exchange</Text>
-          <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click here to exchange the fiat currency of your choice.</Text>
+          <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click here to exchange the currency of your choice.</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={tw`shadow w-[48%] rounded-2xl pt-8 pl-5 pr-5 pb-8 shadow bg-white flex flex-col`} onPress={()=> navigation.push("PaymentScreen")}>
@@ -46,7 +46,7 @@ const HomeScreen = ({navigation}) => {
             height: 26,
           }} />
           <Text style={tw`mt-5 text-gray-700 text-left font-bold`}>Payment Gateway</Text>
-          <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click to tranfer money abroad.</Text>
+          <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click to tranfer money for payments abroad.</Text>
         </TouchableOpacity>
       </View>
 
