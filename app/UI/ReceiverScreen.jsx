@@ -44,28 +44,15 @@ const ReceiverScreen = ({navigation, route}) => {
 
     const handleContinue = (val) =>{
         setEnabled(false);
-        if (typeR !== "exchange") {
-            if(accounts.account_name !== "" && accounts.bank_name !== "" && accounts.account_number !== "" && accounts.sort_code !== "" && accounts.payment_reason !== ""){
-                dispatch(setReceiver(accounts));
-                navigation.push("AccountDetails",{
-                    category: "payment",
-                    currency_from: currency_from,
-                    currency_to:currency_to
-                });
-            }else{
-                alert('All fields are required.')
-            }
-        } else {
-            if(accounts.account_name !== "" && accounts.bank_name !== "" && accounts.account_number !== ""){
-                dispatch(setReceiver(accounts));
-                navigation.push("AccountDetails",{
-                    category: "exchange",
-                    currency_from: currency_from,
-                    currency_to:currency_to
-                });
-            }else{
-                alert('All fields are required.')
-            } 
+        if(accounts.account_name !== "" && accounts.bank_name !== "" && accounts.account_number !== ""){
+            dispatch(setReceiver(accounts));
+            navigation.push("SummaryScreen",{
+                category: typeR,
+                currency_from: currency_from,
+                currency_to:currency_to
+            });        
+        }else{
+            alert('All fields are required.')
         }
     }
   return (
@@ -97,7 +84,7 @@ const ReceiverScreen = ({navigation, route}) => {
                         account_number: val
                     })
                 }} keyboardType="number-pad" style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
-                {currency_to == "UK" && (
+                {currency_to == "UK" && typeR == "payment" && (
                     <TextInput placeholder='Sort Code' value={accounts.sort_code} onChangeText={(val)=>{
                         setAccounts({
                             ...accounts,

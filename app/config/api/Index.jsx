@@ -1,6 +1,7 @@
 import axios from "axios";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
 import { usePushNotification } from "../../../usePushNotification";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const BASE_URL = "https://globeesex.com/api/users";
 export const GENERAL_URL = "https://globeesex.com/api/general";
@@ -37,12 +38,11 @@ export const getProfile = (key) =>{
 }
 
 // Getting Rates
-export const updatedevicetoken = (email, value) =>{
-    const {expoPushToken} = usePushNotification();
-    console.log(expoPushToken)
+export const updatedevicetoken = async (email, value) =>{
+    const expoPushToken = await AsyncStorage.getItem('pushToken');
     let datas = {
         user_type: "user",
-        token: expoPushToken,
+        token: expoPushToken?.data,
         email: email
     }
     axios.request({

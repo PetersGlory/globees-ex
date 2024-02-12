@@ -62,7 +62,7 @@ const ProfileScreen = () => {
                 setTimeout(()=>{
                     setEnabled(false);
                 }, 3000);
-                sendpush('Profile Updated',`${regs.fullname} you just updated your profile information`,key);
+                // sendpush('Profile Updated',`${regs.fullname} you just updated your profile information`,key);
             }else{
                 setTimeout(()=>{
                     setEnabled(false);

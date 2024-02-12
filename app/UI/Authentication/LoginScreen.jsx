@@ -11,8 +11,8 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { useDispatch } from 'react-redux'
 import { setAccessToken, setRates, setUserProfile } from '../../config/redux/slice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation } from '@react-navigation/native'
-import { registerIndieID } from 'native-notify';
+import { StackActions, useNavigation } from '@react-navigation/native'
+// import { registerIndieID } from 'native-notify';
 
 const LoginScreen = ({navigation}) => {
     const [isBiometricSupported, setIsBiometricSupported] = useState(false);
@@ -108,12 +108,12 @@ const LoginScreen = ({navigation}) => {
           dispatch(setAccessToken(accessToken))
           await AsyncStorage.setItem('accessToken',accessToken);
           getProfile(accessToken)
-          registerIndieID(accessToken, 14312, 'NRKYt9PycbIzkLWoNHDK1o');
+        //   registerIndieID(accessToken, 14312, 'NRKYt9PycbIzkLWoNHDK1o');
           getRates();
           setTimeout(()=>{
-            navigator.replace("HomeScreen");
+            navigator.dispatch(StackActions.replace("HomeScreen"));
             setModal(false);
-            sendpush('Sign In', `Howdy 👋, you just signed in to Globees Ex now.`,accessToken);
+            // sendpush('Sign In', `Howdy 👋, you just signed in to Globees Ex now.`,accessToken);
           })
         }else{
             alert("Session timeout, kindly login using your credentials.")

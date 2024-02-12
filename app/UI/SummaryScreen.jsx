@@ -45,32 +45,14 @@ const SummaryScreen = ({navigation,route}) => {
         address: accountD?.address
     }
 
-    const handleContinue = async () =>{
-        setModal(true);
-        const responsed = await axios.post(`${BASE_URL}/transactions`, transactionsData, {
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                Authorization: 'Bearer '+key
-            }
-        });
-
-        if(responsed.status === 200 || responsed.status === 201){
-            setTimeout(()=>{
-                setModal(false);
-                navigator.navigate("SuccesScreen",{
-                    category: typeR
-                });
-                // sendpush(typeR, `Howdy ${usersP?.fullname}, Your ${typeR} will arrive in minutes. Thank you for your business with Globees Ex.`,key);
-            },500)
-        }else{
-            setTimeout(()=>{
-                setModal(false);
-                Alert.alert('Error','There was an error processing the transaction');
-            },500)
-        }
-        
+    const handleContinue = () =>{
+        navigation.navigate("AccountDetails", {
+            category: typeR,
+            currency_from:currency_from,
+            currency_to:currency_to
+        })
     }
+    
   return (
     <SafeAreaView style={tw`flex-grow w-full h-full p-5`}>
         <StatusBar style='dark' />
@@ -78,7 +60,7 @@ const SummaryScreen = ({navigation,route}) => {
             <CustomHeader title={"Summary Details"} />
 
             <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>
-                Kindly go through the {typeR} information and proceed to click the button below to continue, if all the details are correct.
+               kindly go through the {typeR} information and proceed to click.
             </Text>
 
             <View style={tw`bg-white rounded-lg p-5 mt-5`}>

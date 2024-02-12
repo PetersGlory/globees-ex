@@ -26,7 +26,7 @@ const WelcomeScreen = () => {
   return (
     <SafeAreaView style={tw`flex-grow w-full h-full`}>
         <StatusBar style='light' />
-        <Image source={require("../../assets/img/onbs.png")} style={{
+        <Image source={require("../../assets/img/welcome.png")} style={{
             ...tw`flex-1`,
             width: "100%",
             height: "100%",

@@ -1,3 +1,4 @@
+import React, {useEffect} from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { Provider } from 'react-redux';
@@ -22,11 +23,22 @@ import ReceiverScreen from './app/UI/ReceiverScreen';
 import SummaryScreen from './app/UI/SummaryScreen';
 import SuccessTransaction from './app/Components/common/Modals/SuccessTransaction';
 import WelcomeScreen from './app/UI/WelcomeScreen';
-import registerNNPushToken from 'native-notify';
+import { usePushNotification } from './usePushNotification';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import registerNNPushToken from 'native-notify';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
   // registerNNPushToken(14312, 'NRKYt9PycbIzkLWoNHDK1o');
+  const {expoPushToken} = usePushNotification();
+  useEffect(() => {
+    setPush()
+  });
+
+  const setPush = async () =>{
+    console.log(expoPushToken?.data)
+    await AsyncStorage.setItem("pushToken", expoPushToken?.data);
+  }
   
   return (
     <Provider store={store}>

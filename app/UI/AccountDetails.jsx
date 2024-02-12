@@ -8,12 +8,44 @@ import PrimaryBtn from '../Components/common/PrimaryBtn'
 import Icon from "@expo/vector-icons/Ionicons"
 import { Alert } from 'react-native'
 import { useEffect } from 'react'
+import { useNavigation } from '@react-navigation/native'
+import { selectAccessToken, selectExchange, selectReceiver, selectUserProfile } from '../config/redux/slice'
+import { BASE_URL, primePercent } from '../config/api/Index'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+import LoadingModal from '../Components/common/Modals/LoadingModal'
 
 const AccountDetails = ({navigation, route}) => {
     const [country, setCountry] = useState("NG");
+    const [modal, setModal] = useState(false);
+    const navigator = useNavigation();
+    const exchangeed = useSelector(selectExchange);
     const typeR = route.params.category;
     const currency_from = route.params.currency_from;
     const currency_to = route.params.currency_to;
+    const accountD = useSelector(selectReceiver);
+    const key = useSelector(selectAccessToken);
+    const usersP = useSelector(selectUserProfile)
+
+    let amounted = exchangeed.from.substring(1);
+
+    const amountfrom = typeR == "exchange" ? exchangeed?.from : exchangeed?.from[0] + eval(Number(exchangeed?.from.substring(1)) + Number(primePercent(amounted).toFixed(2)))
+
+    let transactionsData = {
+        amountsend: amountfrom, 
+        amountreceive: exchangeed?.to, 
+        service_charge: exchangeed?.from[0] + primePercent(Number(amounted)).toFixed(2), 
+        category: typeR, 
+        receiver_name: accountD?.account_name, 
+        bank_name: accountD?.bank_name, 
+        account_number: accountD?.account_number, 
+        sort_code: accountD?.sort_code, 
+        payment_reason : accountD?.payment_reason, 
+        studentId: accountD?.student_id, 
+        iban: accountD?.iban, 
+        swift_bic: accountD?.swift_bic,
+        address: accountD?.address
+    }
 
     useEffect(()=>{
         if(currency_from == "NGN"){
@@ -22,6 +54,8 @@ const AccountDetails = ({navigation, route}) => {
             setCountry("UK")
         }
     }, [])
+
+    // Copying to clip board function
     const copyToClipboard = async (text) => {
         try {
           await Clipboard.setString(text);
@@ -29,14 +63,42 @@ const AccountDetails = ({navigation, route}) => {
         } catch (error) {
           console.error('Copy to clipboard failed: ', error);
         }
-      };
+    };
+
+    // Submit button
+    const handleContinue = async () =>{
+        setModal(true);
+        const responsed = await axios.post(`${BASE_URL}/transactions`, transactionsData, {
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: 'Bearer '+key
+            }
+        });
+
+        if(responsed.status === 200 || responsed.status === 201){
+            setTimeout(()=>{
+                setModal(false);
+                navigator.navigate("SuccesScreen",{
+                    category: typeR
+                });
+                // sendpush(typeR, `Howdy ${usersP?.fullname}, Your ${typeR} will arrive in minutes. Thank you for your business with Globees Ex.`,key);
+            },500)
+        }else{
+            setTimeout(()=>{
+                setModal(false);
+                Alert.alert('Error','There was an error processing the transaction');
+            },500)
+        }
+        
+    }
   return (
     <SafeAreaView style={tw`flex-grow p-5 pt-10`}>
         <StatusBar style='dark' />
         <View style={tw`w-full h-full ${Platform.OS == "ios" && "p-5 w-full h-full"}`}>
             <CustomHeader title={"Account Details"} />
             
-            <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>Kindly transfer the exact amount toour bank account details below to continue.</Text>
+            <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>Kindly transfer the exact amount to our bank account details below to continue.</Text>
 
             <View style={tw`w-full mt-5`}>
                 {/* Tabs */}
@@ -79,17 +141,12 @@ const AccountDetails = ({navigation, route}) => {
                 )}
 
                 <View style={tw`mt-5 w-full`}>
-                    <PrimaryBtn onpressed={()=>{
-                        navigation.navigate("SummaryScreen", {
-                            category: typeR,
-                            currency_from:currency_from,
-                            currency_to:currency_to
-                        })
-                    }} title={"Continue"} />
-                    {/* <Text style={tw`mt-3 text-[12px] text-gray-600`}>Note: Do not click paid if the payment has not been sent from your bank. Ensure to send the exact amount required to process your payment instantly.</Text> */}
+                    <PrimaryBtn onpressed={handleContinue} title={"PAID"} />
+                    <Text style={tw`mt-3 text-[12px] text-gray-600`}>Note: Do not click paid if the payment has not been sent from your bank. Ensure to send the exact amount required to process your payment instantly.</Text>
                 </View>
             </View>
         </View>
+      <LoadingModal message={"Loading..."} isloading={true} visibility={modal} setVisibility={setModal} />
     </SafeAreaView>
   )
 }

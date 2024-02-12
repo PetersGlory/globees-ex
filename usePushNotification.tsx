@@ -16,8 +16,8 @@ export const usePushNotification = ():PushNotifcationState =>{
     Notifications.setNotificationHandler({
         handleNotification: async () =>({
             shouldPlaySound: false,
+            shouldShowAlert: true,
             shouldSetBadge: false,
-            shouldShowAlert: true
         }),
     });
 

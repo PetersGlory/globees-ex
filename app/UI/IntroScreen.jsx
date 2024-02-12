@@ -7,7 +7,6 @@ import {useDispatch} from "react-redux"
 import { setAccessToken, setRates, setUserProfile } from '../config/redux/slice'
 import { BASE_URL, GENERAL_URL } from '../config/api/Index'
 import axios from 'axios'
-import { usePushNotification } from '../../usePushNotification'
 
 const IntroScreen = ({navigation}) => {
     const dispatch = useDispatch();
@@ -62,9 +61,8 @@ const IntroScreen = ({navigation}) => {
       })
     }
 
-    const updateToken =(email)=>{
-      const {expoPushToken} = usePushNotification();
-      console.log(expoPushToken)
+    const updateToken =async (email)=>{
+      const expoPushToken = await AsyncStorage.getItem('pushToken');
       let datas = {
         user_type: "user",
         token: expoPushToken,
