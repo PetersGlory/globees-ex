@@ -26,9 +26,9 @@ const CustomLegal = ({visibility, setVisibility}) => {
                 <WebView
                     // style={tw`p-1 w-full h-full`}
                     source={{ uri: 'https://www.globees.co.uk/terms-and-conditions' }}
-                    onMessage={(event) => {
-                        alert("Taxig Legal Loading...");
-                    }}
+                    // onMessage={(event) => {
+                    //     alert("Taxig Legal Loading...");
+                    // }}
                 />
             </View>
         </View>

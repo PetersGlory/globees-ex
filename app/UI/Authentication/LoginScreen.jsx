@@ -177,12 +177,12 @@ const LoginScreen = ({navigation}) => {
                     email: val
                 })
             }} keyboardType="email-address" style={tw`p-[16px] rounded-2xl border border-gray-200`} />
-            <TextInput placeholder='Password' value={logins.password} onChangeText={(val)=>{
+            <TextInput placeholder='Password' value={logins.password} secureTextEntry={true} onChangeText={(val)=>{
                 setLogins({
                     ...logins,
                     password: val
                 })
-            }} keyboardType="visible-password" style={tw`p-[16px] rounded-2xl border border-gray-200 mt-5`} />
+            }} keyboardType="default" style={tw`p-[16px] rounded-2xl border border-gray-200 mt-5`} />
 
             <TouchableOpacity onPress={()=>navigation.push("ForgotPassword")} style={tw`mt-[15px]`}>
                 <Text style={{

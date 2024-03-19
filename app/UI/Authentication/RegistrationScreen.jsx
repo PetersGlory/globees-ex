@@ -102,7 +102,7 @@ const LoginScreen = ({navigation}) => {
                     ...logins,
                     password: val
                 })
-            }} keyboardType="visible-password" style={tw`p-[16px] rounded-2xl border border-gray-200 mt-5`} />
+            }} keyboardType="default" secureTextEntry={true} style={tw`p-[16px] rounded-2xl border border-gray-200 mt-5`} />
         </View>
 
         {/* Buttons */}
