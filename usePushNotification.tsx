@@ -44,7 +44,7 @@ export const usePushNotification = ():PushNotifcationState =>{
             }
 
             if(existingStatus !== "granted"){
-                alert("Failed to get the push token for push notification");
+                // alert("Failed to get the push token for push notification");
                 return;
             }
 

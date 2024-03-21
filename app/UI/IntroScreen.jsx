@@ -12,6 +12,8 @@ import {
 import { BASE_URL, GENERAL_URL } from "../config/api/Index";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import SecondaryBtn from "../Components/common/SecondaryBtn";
+import { StatusBar } from "expo-status-bar";
 
 const IntroScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -104,38 +106,46 @@ const IntroScreen = ({ navigation }) => {
       });
   };
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full bg-white`}>
-      {/* <View style={tw`flex-1`} /> */}
+    <SafeAreaView style={tw`flex-grow w-full h-full bg-[#133A64]`}>
+      <StatusBar style="auto" />
       <View style={tw`flex-1`} />
-      <View style={tw`flex-1 w-full h-full`}>
-        <Image source={require("../../assets/img/intro.png")} alt="intro" />
+      <View style={tw`flex-1 w-full h-full items-center`}>
+        <Text style={[tw`text-white text-center text-5xl font-bold mb-5 mt-5 uppercase`]}>Globees Ex</Text>
+        <Image source={require("../../assets/img/logos.png")} style={{
+          width: 200,
+          height: 200,
+        }} alt="intro" />
       </View>
       <View style={tw`flex-1`} />
       <View style={tw`flex-1`} />
       <View style={tw`flex-1`} />
       <View
         style={{
-          ...tw`bg-white h-[45%] p-8 pt-10`,
+          ...tw`bg-white h-[45%] p-8 pt-10 rounded-t-8`,
           flexShrink: 0,
           boxShadow: "0px -35px 25px 0px #FFF",
         }}
       >
         <Text
           style={{
-            ...tw`text-2xl text-center`,
-            // fontFamily: "Roboto",
-            fontWeight: 700,
+            ...tw`text-3xl font-bold text-center`,
             color: "#133A64",
           }}
         >
-          SIMPLE & SECURED TRANSACTION!
+          Welcome...
         </Text>
-        <Text style={tw`text-[13px] text-gray-500 p-4 text-center`}>
-          A secured financial company that renders swift exchange and online
-          payment solution. Instantly transfer money abroad for family, friends,
-          tuition, bills or expenses.
+        <Text style={tw`text-[15px] text-gray-500 p-4 text-center`}>
+          Exchange your currency and send international payments online.
+          Instantly transfer money to your family or friends, and swiftly pay towards your tuition fees, bills, and expenses.
         </Text>
-        <PrimaryBtn title={"Get Started"} onpressed={btnGetstarted} />
+        <View style={tw`flex flex-row items-center mt-5 justify-between`}>
+          <View style={tw`w-[49%]`}>
+            <SecondaryBtn title={"Login"} onpressed={btnGetstarted} />
+          </View>
+          <View style={tw`w-[49%]`}>
+            <SecondaryBtn title={"Register"} onpressed={()=> navigation.push("RegistrationScreen")} />
+          </View>
+        </View>
       </View>
       {/* <View style={styles.root}>
             

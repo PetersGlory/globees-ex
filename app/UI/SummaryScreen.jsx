@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, SafeAreaView, Alert } from 'react-native'
 import tw from "twrnc"
 import CustomHeader from '../Components/common/CustomHeader'
@@ -13,6 +13,8 @@ import { useState } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { usePushNotification } from '../../usePushNotification'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const SummaryScreen = ({navigation,route}) => {
     const [modal, setModal] = useState(false);
@@ -25,9 +27,19 @@ const SummaryScreen = ({navigation,route}) => {
     const key = useSelector(selectAccessToken);
     const usersP = useSelector(selectUserProfile)
 
+    const {expoPushToken} = usePushNotification();
     let amounted = exchangeed.from.substring(1);
 
+    useEffect(()=>{
+        setPush();
+    },[])
+    
     const amountfrom = typeR == "exchange" ? exchangeed?.from : exchangeed?.from[0] + eval(Number(exchangeed?.from.substring(1)) + Number(primePercent(amounted).toFixed(2)))
+    
+    const setPush = async () =>{
+      console.log(expoPushToken?.data)
+      await AsyncStorage.setItem("pushToken", expoPushToken?.data);
+    }
 
     let transactionsData = {
         amountsend: amountfrom, 
@@ -60,7 +72,7 @@ const SummaryScreen = ({navigation,route}) => {
             <CustomHeader title={"Summary Details"} />
 
             <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>
-               kindly go through the {typeR} information and proceed to click.
+               kindly go through the {typeR} information and proceed to click.
             </Text>
 
             <View style={tw`bg-white rounded-lg p-5 mt-5`}>

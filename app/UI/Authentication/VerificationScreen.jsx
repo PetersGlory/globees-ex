@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux'
 import { setAccessToken, setRates, setUserProfile } from '../../config/redux/slice'
 import { StackActions, useNavigation } from '@react-navigation/native'
 import { registerIndieID } from 'native-notify';
+import SecondaryBtn from '../../Components/common/SecondaryBtn'
 
 const VerificationScreen = ({navigation, route}) => {
     const [loading, setLoading] = useState(true);
@@ -105,20 +106,22 @@ const VerificationScreen = ({navigation, route}) => {
         })
       }
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full bg-white p-5 pt-15`}>
+    <SafeAreaView style={tw`flex-grow w-full h-full bg-[#133A64] p-5 pt-15`}>
       <ScrollView style={tw`h-full w-full ${Platform.OS == "ios"? " p-5 pt-15" : ""}`}>
         <TouchableOpacity style={tw`w-12 p-2 border border-gray-400 rounded-lg`} onPress={()=>navigation.goBack()}>
-            <Icon name='md-chevron-back' color={"#133A64"} size={26} />
+            <Icon name='md-chevron-back' color={"#ffffff"} size={26} />
         </TouchableOpacity>
 
             {/* Greetings */}
-        <View style={tw`mt-[30px]`}>
+        <View style={tw`mt-[30px] items-center`}>
             <Text style={{
                 ...tw`text-[24px] font-medium`,
                 color:'#133A64'
-            }}>Verify it’s you</Text>
-            <Text style={tw`text-gray-400 text-[14px] mt-[8px]`}>
-                We have sent a code to ( {route.params.email} ). Enter it here to verify your identity.
+            }}>
+                <Icon name="mail" color={"#ffffff"} size={50} />                
+            </Text>
+            <Text style={tw`text-gray-100 text-[15px] mt-[8px]`}>
+                We have sent a code to ( {route?.params?.email} ). Enter it here to verify your identity.
             </Text>
         </View>
 
@@ -138,21 +141,26 @@ const VerificationScreen = ({navigation, route}) => {
                     borderWidth: 1,
                     borderColor:"#C1B8D1",
                     borderRadius: 12,
+                    backgroundColor:"#C1B8D1"
                 }}
                 cellStyleFocused={{
                     backgroundColor: "#ffffff"
                 }}
             />
-            <TouchableOpacity style={tw`justify-center items-center mt-[8px] font-bold`} onPress={()=>{
-                alert("Code Resent.")
-            }}>
-                <Text style={tw`text-red-700 font-bold text-[15px]`}>Resend code</Text>
-            </TouchableOpacity>
+            <View style={tw`items-center justify-between flex flex-row mt-4 w-full`}>
+                
+                <Text style={tw`text-gray-100 font-medium text-[15px]`}>Haven't received email? </Text>
+                <TouchableOpacity style={tw`justify-center items-center font-bold`} onPress={()=>{
+                    alert("Code Resent.")
+                }}>
+                    <Text style={tw`text-white font-bold text-[15px]`}>Send Email Again</Text>
+                </TouchableOpacity>
+            </View>
         </View>
 
         {/* Buttons */}
         <View style={tw`mt-10 w-full flex flex-col items-center`}>
-            <PrimaryBtn title={"Confirm"} onpressed={handleLogin} />
+            <SecondaryBtn title={"Confirm >"} onpressed={handleLogin} />
         </View>
       </ScrollView>
       

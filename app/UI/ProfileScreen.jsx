@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,9 @@ import { selectAccessToken, selectUserProfile } from "../config/redux/slice";
 import LoadingModal from "../Components/common/Modals/LoadingModal";
 import { BASE_URL, sendpush } from "../config/api/Index";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
+import { usePushNotification } from "../../usePushNotification";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileScreen = () => {
   const [selected, setSelected] = React.useState("");
@@ -37,6 +40,8 @@ const ProfileScreen = () => {
     gender: "",
   });
 
+  
+  const {expoPushToken} = usePushNotification();
   useFocusEffect(
     useCallback(() => {
       setRegs({
@@ -45,6 +50,7 @@ const ProfileScreen = () => {
         address: profileUser?.address,
         gender: profileUser?.gender
       })
+      setPush();
     }, [])
   );
 
@@ -56,8 +62,13 @@ const ProfileScreen = () => {
       gender: profileUser?.gender,
     });
     // allsubs();
+    setPush();
   }, []);
-
+  const setPush = async () =>{
+    console.log(expoPushToken?.data)
+    await AsyncStorage.setItem("pushToken", expoPushToken?.data);
+  }
+  
   const handleUpdate = () => {
     setMessage("Loading...");
     setEnabled(true);
