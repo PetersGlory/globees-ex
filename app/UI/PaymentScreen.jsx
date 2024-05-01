@@ -153,6 +153,7 @@ const PaymentScreen = ({navigation}) => {
                 setSelected={(val) => {
                   handleSelectCountry(val)
                 }}
+                placeholder='select'
                 boxStyles={{
                   width:100,
                   marginTop:8,
@@ -198,6 +199,7 @@ const PaymentScreen = ({navigation}) => {
                 setSelected={(val) => {
                   handleSelectTo(val)
                 }}
+                placeholder='select'
                 boxStyles={{
                   width:100,
                   marginTop:8,

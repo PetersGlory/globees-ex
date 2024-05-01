@@ -56,7 +56,7 @@ const ExchangeScreen = ({navigation}) => {
         });
       }else{
         let rated = rates.find(rate => rate.name === "Naira")
-        setRate(`₦1 - ₦${rated.amount}`)
+        setRate(`${selectedD == "UK" ? "£" : "₦"}1 - ₦${rated.amount}`)
         let newAmount = eval(Number(amounted) * rated.amount);
         // alert(newAmount);
         setExchange({
@@ -126,6 +126,7 @@ const ExchangeScreen = ({navigation}) => {
                 setSelected={(val) => {
                   handleSelectCountry(val)
                 }}
+                placeholder='select'
                 boxStyles={{
                   width:100,
                   marginTop:8,
@@ -161,6 +162,7 @@ const ExchangeScreen = ({navigation}) => {
                 setSelected={(val) => {
                   handleSelectTo(val)
                 }}
+                placeholder='select'
                 boxStyles={{
                   width:100,
                   marginTop:8,

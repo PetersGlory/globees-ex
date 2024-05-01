@@ -44,7 +44,7 @@ const Transactions = () => {
         <View style={tw`flex flex-row items-center justify-between`}>
             <Text style={tw`text-xs text-gray-400`}>Today, Mar 23</Text>
             <TouchableOpacity style={tw`text-xs items-end`} onPress={()=> navigator.push("TransactionScreen")}>
-                <Text style={tw` text-blue-800`}>All Transactions <Icon name='md-chevron-forward' size={12} /></Text>
+                <Text style={tw` text-blue-800`}>All Transactions <Icon name='chevron-forward' size={12} /></Text>
             </TouchableOpacity>
         </View>
         {transactions.length > 0 ? (
@@ -55,7 +55,7 @@ const Transactions = () => {
                     setModal(true)
                 }}>
                     <View style={tw`flex-1 flex flex-row items-center`}>
-                        <Icon name='md-send-outline' style={tw`rounded-full w- p-3 text-${transact?.status == "successful" || transact?.status == "completed" ? "blue" : "red"}-800 bg-gray-100 items-center text-center`} />
+                        <Icon name='send-outline' style={tw`rounded-full w- p-3 text-${transact?.status == "successful" || transact?.status == "completed" ? "blue" : "red"}-800 bg-gray-100 items-center text-center`} />
                         <View style={tw`pl-3`}>
                             <Text style={tw`text-gray-800 text-[13px]`}>To Globees Ex</Text>
                             <Text style={tw`text-${transact?.status == "successful" || transact?.status == "completed" ? "blue" : "red"}-400 text-[10px] p-1`}>{transact?.status}</Text>
@@ -74,7 +74,7 @@ const Transactions = () => {
         ) : (
             <ScrollView style={tw`w-full mt-4 bg-gray-100`}>
                 <View style={tw`items-center justify-center mt-5`}>
-                    <Icon name='md-alert-circle-outline' size={50} color={"#6B6B6C"} />
+                    <Icon name='alert-circle-outline' size={50} color={"#6B6B6C"} />
                     <Text style={tw`text-center mt-2 text-gray-600`}>Transaction History is empty</Text>
                 </View>
             </ScrollView>

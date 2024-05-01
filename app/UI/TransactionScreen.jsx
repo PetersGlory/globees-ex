@@ -29,7 +29,7 @@ const TransactionScreen = () => {
   useFocusEffect(
     useCallback(() => {
       handleRefresh();
-    })
+    }, [])
   );
   useEffect(() => {
     // Getting Profile
@@ -120,7 +120,7 @@ const TransactionScreen = () => {
                 >
                   <View style={tw`flex-1 flex flex-row items-center`}>
                     <Icon
-                      name="md-send-outline"
+                      name="send-outline"
                       style={tw`rounded-full w- p-3 text-${
                         transact?.status == "successful" ||
                         transact?.status == "completed"
@@ -171,7 +171,7 @@ const TransactionScreen = () => {
             {/* <CustomHeader title={"History"} /> */}
             <View style={tw`items-center justify-center mt-5`}>
               <Icon
-                name="md-alert-circle-outline"
+                name="alert-circle-outline"
                 size={50}
                 color={"#6B6B6C"}
               />

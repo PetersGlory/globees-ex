@@ -119,23 +119,23 @@ const AccountDetails = ({navigation, route}) => {
 
                 {country == "NG" ? (
                     <View style={tw`bg-white rounded-lg p-5 mt-5`}>
-                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Number: <Text style={tw`text-blue-800 font-medium`}>0499324419</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
-                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Bank Name: <Text style={tw`text-blue-800 font-medium`}>GT bank</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
-                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Name: <Text style={tw`text-blue-800 font-medium`}>Bamire Tolulope Stephen</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Number: <Text style={tw`text-blue-800 font-medium`}>0499324419</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Bank Name: <Text style={tw`text-blue-800 font-medium`}>GT bank</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Name: <Text style={tw`text-blue-800 font-medium`}>Bamire Tolulope Stephen</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
 
                         <View style={tw`mt-4`}>
-                            <Text style={tw`text-[13px] text-gray-800 mt-2`}>NOTE: Reference as  <Text style={tw`text-blue-800 font-medium`}>Globees.ex</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                            <Text style={tw`text-[13px] text-gray-800 mt-2`}>NOTE: Reference as  <Text style={tw`text-blue-800 font-medium`}>Globees.ex</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
                         </View>
                     </View>
                 ) : (
                     <View style={tw`bg-white rounded-lg p-5 mt-5`}>
-                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Number: <Text style={tw`text-blue-800 font-medium`}>62412362</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
-                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Sort Code: <Text style={tw`text-blue-800 font-medium`}>30-92-33</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
-                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Bank Name: <Text style={tw`text-blue-800 font-medium`}>Lloyds Bank</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
-                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Name: <Text style={tw`text-blue-800 font-medium`}>Bamire Tolulope</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Number: <Text style={tw`text-blue-800 font-medium`}>62412362</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Sort Code: <Text style={tw`text-blue-800 font-medium`}>30-92-33</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Bank Name: <Text style={tw`text-blue-800 font-medium`}>Lloyds Bank</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                        <Text style={tw`text-[13px] text-gray-800 mt-2`}>Account Name: <Text style={tw`text-blue-800 font-medium`}>Bamire Tolulope</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
 
                         <View style={tw`mt-4`}>
-                            <Text style={tw`text-[13px] text-gray-800 mt-2`}>NOTE: Reference as  <Text style={tw`text-blue-800 font-medium`}>Globees.ex</Text>  <Icon name="md-copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
+                            <Text style={tw`text-[13px] text-gray-800 mt-2`}>NOTE: Reference as  <Text style={tw`text-blue-800 font-medium`}>Globees.ex</Text>  <Icon name="copy-outline" onPress={()=> copyToClipboard("")} size={20} color={"#133A64"} /> </Text>
                         </View>
                     </View>
                 )}

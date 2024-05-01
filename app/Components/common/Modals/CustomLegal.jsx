@@ -18,7 +18,7 @@ const CustomLegal = ({visibility, setVisibility}) => {
     >
         <View style={tw`w-full h-full bg-gray-100 pt-5`}>
             <TouchableOpacity style={tw`absolute top-5 right-5 z-10`} onPress={()=> setVisibility(false)}>
-                <Icon name='md-close-circle-outline' size={26} />
+                <Icon name='close-circle-outline' size={26} />
             </TouchableOpacity>
             <Text style={tw`text-center text-gray-600 font-medium text-[18px] mt-2 text-blue-800`}>GLOBEES EX LEGAL</Text>
 

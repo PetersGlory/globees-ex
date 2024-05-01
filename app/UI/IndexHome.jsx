@@ -16,31 +16,31 @@ const IndexHome = () => {
         <Tab.Screen name='Home' component={HomeScreen}  options={{
             tabBarLabel: 'Home',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="md-home-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="home-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
         <Tab.Screen name='Exchange' component={ExchangeScreen}  options={{
             tabBarLabel: 'Exchange',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="md-contract-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="contract-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
         <Tab.Screen name='Payment' component={PaymentScreen}  options={{
             tabBarLabel: 'Payment',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="md-card-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="card-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
         {/* <Tab.Screen name='Support' component={HomeScreen}  options={{
             tabBarLabel: 'Support',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="md-headset-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="headset-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} /> */}
         <Tab.Screen name='More' component={MoreScreen}  options={{
             tabBarLabel: 'More',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="md-help-circle-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="help-circle-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
     </Tab.Navigator>

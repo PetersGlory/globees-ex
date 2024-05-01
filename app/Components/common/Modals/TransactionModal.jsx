@@ -31,7 +31,7 @@ const TransactionModal = ({onpressed, visibility, data}) => {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
         }}>
         <TouchableOpacity style={tw`absolute top-5 right-5 z-10`} onPress={onpressed}>
-            <Ionicons name='md-close-circle-outline' size={26} />
+            <Ionicons name='close-circle-outline' size={26} />
         </TouchableOpacity>
         <ScrollView
           style={tw`bg-white rounded-lg w-full h-full p-4 pt-5`} ref={viewTosnapShotRef}>
@@ -130,7 +130,7 @@ const TransactionModal = ({onpressed, visibility, data}) => {
                     <Text style={tw`text-blue-800`}>Close</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={PrintAsPDF} style={tw`bg-blue-800 w-[53%] flex flex-row rounded-lg justify-evenly items-center p-2`}>
-                    <Ionicons name='md-share-social-outline' color={"#ffffff"} size={20} />
+                    <Ionicons name='share-social-outline' color={"#ffffff"} size={20} />
                     <Text style={tw`text-white`}>Share</Text>
                 </TouchableOpacity>
             </View>

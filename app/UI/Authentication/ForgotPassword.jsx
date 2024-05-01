@@ -65,7 +65,7 @@ const ForgotPassword = ({navigation}) => {
     }}>
       <ScrollView style={tw`h-full w-full ${Platform.OS == "ios" ? "p-5 pt-15" : "" }`}>
         <TouchableOpacity style={tw`w-12 p-2 border border-gray-400 rounded-lg`} onPress={()=>navigation.goBack()}>
-            <Icon name='md-chevron-back' color={"#133A64"} size={26} />
+            <Icon name='chevron-back' color={"#133A64"} size={26} />
         </TouchableOpacity>
 
             {/* Greetings */}

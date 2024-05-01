@@ -101,20 +101,17 @@ const LoginScreen = ({navigation}) => {
     }
 
     const getToken = async () =>{
-        // let accessTokens = await AsyncStorage.setItem('accessToken', '');
         let accessToken = await AsyncStorage.getItem('accessTokenF');
         console.log(accessToken);
         if(accessToken !== null & accessToken !== ""){
           dispatch(setAccessToken(accessToken))
           await AsyncStorage.setItem('accessToken',accessToken);
           getProfile(accessToken)
-        //   registerIndieID(accessToken, 14312, 'NRKYt9PycbIzkLWoNHDK1o');
           getRates();
+          setModal(false);
           setTimeout(()=>{
             navigator.dispatch(StackActions.replace("HomeScreen"));
-            setModal(false);
-            // sendpush('Sign In', `Howdy 👋, you just signed in to Globees Ex now.`,accessToken);
-          })
+          },1500)
         }else{
             alert("Session timeout, kindly login using your credentials.")
             setModal(false);
@@ -157,7 +154,7 @@ const LoginScreen = ({navigation}) => {
     }}>
       <ScrollView style={tw`h-full w-full ${Platform.OS == "ios" ? "p-5 pt-15" : "" }`}>
         <TouchableOpacity style={tw`w-12 p-2 border border-gray-400 rounded-lg`} onPress={()=>navigation.goBack()}>
-            <Icon name='md-chevron-back' color={"#133A64"} size={26} />
+            <Icon name='chevron-back' color={"#133A64"} size={26} />
         </TouchableOpacity>
 
             {/* Greetings */}
@@ -208,7 +205,7 @@ const LoginScreen = ({navigation}) => {
             <Text style={tw`text-center text-[13px] text-gray-700`}>Fingerprint</Text>
             {isBiometricSupported && fingerprint ? (                
                 <TouchableOpacity onPress={fingerPrintAuth} style={tw`w-full mt-2 p-4 items-center rounded-2xl`}>
-                    <Icon name='md-finger-print-outline' size={30} style={tw`text-blue-900`} />
+                    <Icon name='finger-print-outline' size={30} style={tw`text-blue-900`} />
                 </TouchableOpacity>
             ) : (
                 <View>

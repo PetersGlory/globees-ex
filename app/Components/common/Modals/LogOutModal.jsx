@@ -14,7 +14,7 @@ const LogOutModal = ({visibility, setVisibility, text, onPressed}) => {
     }}>
         <View style={styles.centeredView}>            
             <View style={styles.modalView}>                
-                <Icon name="md-help-circle-outline" size={50} style={{
+                <Icon name="help-circle-outline" size={50} style={{
                     ...tw`text-blue-800`,
                 }} />
                 <Text style={tw`text-center text-gray-700 text-[14px]`}>{text}</Text>

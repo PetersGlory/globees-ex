@@ -1,5 +1,5 @@
 import axios from "axios";
-import { registerIndieID, unregisterIndieDevice } from "native-notify";
+// import { registerIndieID, unregisterIndieDevice } from "native-notify";
 import { usePushNotification } from "../../../usePushNotification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -70,47 +70,47 @@ export const primePercent = (value) =>{
     return result;
 }
 
-export const sendpush = (title, message, token) => {
-    const axios = require('axios');
-    let data = JSON.stringify({
-    "subID": token,
-    "appId": 14312,
-    "appToken": "NRKYt9PycbIzkLWoNHDK1o",
-    "title": title,
-    "message": message
-    });
+// export const sendpush = (title, message, token) => {
+//     const axios = require('axios');
+//     let data = JSON.stringify({
+//     "subID": token,
+//     "appId": 14312,
+//     "appToken": "NRKYt9PycbIzkLWoNHDK1o",
+//     "title": title,
+//     "message": message
+//     });
 
-    let config = {
-    method: 'post',
-    maxBodyLength: Infinity,
-    url: 'https://app.nativenotify.com/api/indie/notification',
-    headers: { 
-        'Content-Type': 'application/json'
-    },
-    data : data
-    };
+//     let config = {
+//     method: 'post',
+//     maxBodyLength: Infinity,
+//     url: 'https://app.nativenotify.com/api/indie/notification',
+//     headers: { 
+//         'Content-Type': 'application/json'
+//     },
+//     data : data
+//     };
 
-    axios.request(config)
-    .then((response) => {
-    console.log(JSON.stringify(response.data));
-    })
-    .catch((error) => {
-    console.log(error);
-    });
-//     axios.post(`https://app.nativenotify.com/api/indie/notification`, {
-//         subID: `${token}`,
-//         appId: 14312,
-//         appToken: 'NRKYt9PycbIzkLWoNHDK1o',
-//         title: `${title}`,
-//         message: `${message}`,
-//         bigPictureURL: "https://images.wixstatic.com/media/333ee9_55eceb62dec0461cbdef1b5ac0481fad~mv2.png/v1/fit/h_180,q_100,w_692,al_c,lg_0/333ee9_55eceb62dec0461cbdef1b5ac0481fad~mv2.png"
-//    }).then((result)=>{
-//     console.log(result);
-//    }).catch((err)=>{
-//     console.log(err)
-//    })
-}
+//     axios.request(config)
+//     .then((response) => {
+//     console.log(JSON.stringify(response.data));
+//     })
+//     .catch((error) => {
+//     console.log(error);
+//     });
+// //     axios.post(`https://app.nativenotify.com/api/indie/notification`, {
+// //         subID: `${token}`,
+// //         appId: 14312,
+// //         appToken: 'NRKYt9PycbIzkLWoNHDK1o',
+// //         title: `${title}`,
+// //         message: `${message}`,
+// //         bigPictureURL: "https://images.wixstatic.com/media/333ee9_55eceb62dec0461cbdef1b5ac0481fad~mv2.png/v1/fit/h_180,q_100,w_692,al_c,lg_0/333ee9_55eceb62dec0461cbdef1b5ac0481fad~mv2.png"
+// //    }).then((result)=>{
+// //     console.log(result);
+// //    }).catch((err)=>{
+// //     console.log(err)
+// //    })
+// }
 
-export const unregisterID = (key) =>{
-    unregisterIndieDevice(key, 14312, 'NRKYt9PycbIzkLWoNHDK1o');
-}
+// export const unregisterID = (key) =>{
+//     unregisterIndieDevice(key, 14312, 'NRKYt9PycbIzkLWoNHDK1o');
+// }

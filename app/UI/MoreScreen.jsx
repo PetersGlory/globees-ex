@@ -12,7 +12,7 @@ import CustomSocial from '../Components/common/Modals/CustomSocial'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { StackActions, useNavigation } from '@react-navigation/native'
 import axios from 'axios'
-import { BASE_URL, unregisterID } from '../config/api/Index'
+import { BASE_URL } from '../config/api/Index'
 import { useSelector } from 'react-redux'
 import { selectAccessToken } from '../config/redux/slice'
 import LoadingModal from '../Components/common/Modals/LoadingModal'
@@ -28,14 +28,14 @@ const MoreScreen = ({navigation}) => {
     const key = useSelector(selectAccessToken)
     const [support, setSupport] = React.useState("Hi Globees Ex, I'm contacting from the app and I will need more enquiry. Thank you");
     const [links, setLinks] = useState([
-        {title: "Profile", route: "ProfileScreen", icon: "md-person-circle-outline"},
-        {title: "Transaction History", route: "TransactionScreen", icon: "md-time-outline"},
-        {title: "Help & Support", route: "support", icon: "md-headset-outline"},
-        {title: "Social Media", route: "social", icon: "md-thumbs-up-outline"},
-        {title: "Our blog", route: "blog", icon: "md-newspaper-outline"},
-        // {title: "App rating", route: "LegalScreen", icon: "md-star-half-outline"},
-        {title: "About", route: "AboutScreen", icon: "md-alert-circle-outline"},
-        {title: "Legal", route: "LegalScreen", icon: "md-document-text-outline"},
+        {title: "Profile", route: "ProfileScreen", icon: "person-circle-outline"},
+        {title: "Transaction History", route: "TransactionScreen", icon: "time-outline"},
+        {title: "Help & Support", route: "support", icon: "headset-outline"},
+        {title: "Social Media", route: "social", icon: "thumbs-up-outline"},
+        {title: "Our blog", route: "blog", icon: "newspaper-outline"},
+        // {title: "App rating", route: "LegalScreen", icon: "star-half-outline"},
+        {title: "About", route: "AboutScreen", icon: "alert-circle-outline"},
+        {title: "Legal", route: "LegalScreen", icon: "document-text-outline"},
     ])
 
     const handleDelete = async () => {
@@ -51,11 +51,14 @@ const MoreScreen = ({navigation}) => {
             if(response.status !==200 || response.status !== 201){
                 setRefresh(false)
                 await AsyncStorage.clear();
-                navigator.dispatch(StackActions.replace("LoginScreen"))
+                setEnabledD(false);
+                setTimeout(()=>{                    
+                    navigator.dispatch(StackActions.replace("LoginScreen"))
+                }, 1500);
             }else{
                 if(response.data.error == false){
                     setRefresh(false)
-                    unregisterID(key);
+                    // unregisterID(key);
                 }else{
                     setRefresh(false)
                 }
@@ -97,21 +100,21 @@ const MoreScreen = ({navigation}) => {
                             <Icon name={items.icon} style={tw` text-gray-500`} size={20} />
                             <Text style={tw`text-[14px] ml-2 text-gray-500`}>{items.title}</Text>
                         </View>
-                        <Icon name='md-chevron-forward-outline' style={tw` text-gray-500`} size={20} />
+                        <Icon name='chevron-forward-outline' style={tw` text-gray-500`} size={20} />
                     </TouchableOpacity>
                 ))}
             </View>
             <View style={tw`bg-white rounded-2xl p-2 w-full mt-3 p-6`}>
                 <TouchableOpacity style={tw`flex flex-row items-center pb-3 pt-3 border-b border-gray-200`} onPress={()=>navigation.navigate("AccountLimits")}>
-                    <Icon name="md-person-circle-outline" style={tw` text-gray-500`} size={20} />
+                    <Icon name="person-circle-outline" style={tw` text-gray-500`} size={20} />
                     <Text style={tw`text-[14px] ml-2 text-gray-500`}>Account Limits</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={tw`flex flex-row items-center pb-3 pt-3 border-b border-gray-200`} onPress={()=>setEnabled(true)}>
-                    <Icon name="md-arrow-undo-outline" style={tw` text-gray-500`} size={20} />
+                    <Icon name="arrow-undo-outline" style={tw` text-gray-500`} size={20} />
                     <Text style={tw`text-[14px] ml-2 text-gray-500`}>Logout</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={tw`flex flex-row items-center pb-5 mt-3`} onPress={()=>setEnabledD(true)}>
-                    <Icon name="md-trash-outline" style={tw`text-red-800`} size={20} />
+                    <Icon name="trash-outline" style={tw`text-red-800`} size={20} />
                     <Text style={tw`text-[14px] ml-2 text-red-800`}>Delete Account</Text>
                 </TouchableOpacity>
             </View>
@@ -119,8 +122,10 @@ const MoreScreen = ({navigation}) => {
 
         {enabled ? <LogOutModal visibility={enabled} setVisibility={setEnabled} text={"Are you sure you want to proceed to logout?"} onPressed={async ()=> {
             await AsyncStorage.removeItem("accessToken");
-            navigator.dispatch(StackActions.replace("LoginScreen"));
-            unregisterID(key);
+            setEnabled(false);
+            setTimeout(()=>{
+                navigator.dispatch(StackActions.replace("LoginScreen"));
+            },1500);
         }} /> : null}
         {enabledD ? <LogOutModal visibility={enabledD} setVisibility={setEnabledD} text={"Are you sure you want to proceed in deleting your account?"} onPressed={handleDelete} /> : null}
         <CustomLegal visibility={modalL} setVisibility={setModalL} />

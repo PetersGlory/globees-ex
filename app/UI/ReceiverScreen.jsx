@@ -42,6 +42,7 @@ const ReceiverScreen = ({navigation, route}) => {
         })
     }
 
+
     const handleContinue = (val) =>{
         setEnabled(false);
         if(accounts.account_name !== "" && accounts.bank_name !== "" && accounts.account_number !== ""){
@@ -85,6 +86,14 @@ const ReceiverScreen = ({navigation, route}) => {
                     })
                 }} keyboardType="number-pad" style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
                 {currency_to == "UK" && typeR == "payment" && (
+                    <TextInput placeholder='Sort Code' value={accounts.sort_code} onChangeText={(val)=>{
+                        setAccounts({
+                            ...accounts,
+                            sort_code: val
+                        })
+                    }} keyboardType="number-pad" maxLength={6} style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
+                )}
+                {currency_from == "NGN" && typeR == "exchange" && (
                     <TextInput placeholder='Sort Code' value={accounts.sort_code} onChangeText={(val)=>{
                         setAccounts({
                             ...accounts,

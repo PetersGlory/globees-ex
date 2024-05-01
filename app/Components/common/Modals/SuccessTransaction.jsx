@@ -16,7 +16,7 @@ const SuccessTransaction = ({route}) => {
     <SafeAreaView style={tw`flex flex-grow h-full w-full bg-white`}>
         <View style={tw`w-full h-full items-center justify-center p-5 ${Platform.OS == "ios" && "p-5 w-full h-full"}`}>
         <TouchableOpacity style={tw`absolute top-10 right-5`} onPress={()=> navigator.dispatch(StackActions.replace("HomeScreen"))}>
-            <Icon name='md-close-circle-outline' color={"#133A64"} size={30} />
+            <Icon name='close-circle-outline' color={"#133A64"} size={30} />
         </TouchableOpacity>
 
             <Image source={require('../../../../assets/img/success-bg.png')} style={{

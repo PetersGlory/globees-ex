@@ -100,7 +100,7 @@ const NotificationScreen = () => {
                 >
                   <View style={tw`flex-1 flex flex-row items-center`}>
                     <Icon
-                      name="md-notifications-outline"
+                      name="notifications-outline"
                       style={tw`rounded-full w- p-3 text-blue-800 bg-gray-100 items-center text-center`}
                     />
                     <View style={tw`pl-1 w-full`}>
@@ -132,7 +132,7 @@ const NotificationScreen = () => {
             {/* <CustomHeader title={"History"} /> */}
             <View style={tw`items-center justify-center mt-5`}>
               <Icon
-                name="md-alert-circle-outline"
+                name="alert-circle-outline"
                 size={50}
                 color={"#6B6B6C"}
               />

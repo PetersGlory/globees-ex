@@ -65,12 +65,12 @@ const Header = () => {
           <Text style={tw`text-white font-medium text-[18px]`}>{userProfile?.fullname}</Text>  
         </View> 
         <TouchableOpacity onPress={handleRefresh}>
-          <Icon name='md-reload-outline' color={"#ffffff"} size={20} style={tw`text-center p-2 ml-4`} />
+          <Icon name='reload-outline' color={"#ffffff"} size={20} style={tw`text-center p-2 ml-4`} />
         </TouchableOpacity>
       </TouchableOpacity>
 
       <TouchableOpacity style={tw`flex-1 items-end`} onPress={()=>navigator.push("NotificationScreen")}>
-        <Icon name='md-notifications-outline' color={"#ffffff"} size={20} style={tw`border rounded-2xl text-center p-2 border-white w-[42px]`} />
+        <Icon name='notifications-outline' color={"#ffffff"} size={20} style={tw`border rounded-2xl text-center p-2 border-white w-[42px]`} />
       </TouchableOpacity>
 
       <LoadingModal message={"Loading..."} isloading={true} visibility={modal} setVisibility={setModal} />
