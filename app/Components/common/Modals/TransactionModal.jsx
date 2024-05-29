@@ -8,6 +8,7 @@ import { ScrollView } from 'react-native';
 import {shareAsync} from "expo-sharing"
 import {captureRef} from "react-native-view-shot"
 import { useRef } from 'react';
+import { NumberFormatter } from '../../../config/api/Index';
 
 const TransactionModal = ({onpressed, visibility, data}) => {
   const usersProfile = useSelector(selectUserProfile);
@@ -72,7 +73,7 @@ const TransactionModal = ({onpressed, visibility, data}) => {
                   </View>
                   <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                       <Text style={tw`text-gray-400`}>Received</Text>
-                      <Text style={tw`text-gray-800`}>{data?.amountreceive}</Text>
+                      <Text style={tw`text-gray-800`}>{data?.category !=="crypto" ? data?.amountreceive : NumberFormatter(parseInt(data?.amountreceive))}</Text>
                   </View>
                   {/* <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                       <Text style={tw`text-gray-400`}>Service Charge</Text>
@@ -94,7 +95,7 @@ const TransactionModal = ({onpressed, visibility, data}) => {
                       <Text style={tw`text-gray-400`}>Account Number</Text>
                       <Text style={tw`text-gray-800 capitalize`}>{data?.account_number}</Text>
                   </View>
-                  {data?.category !== "exchange" && (
+                  {data?.category !== "exchange" || data?.category !=="crypto" && (
                     <View style={tw`w-full`}>                      
                       <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                           <Text style={tw`text-gray-400`}>Payment Reason</Text>

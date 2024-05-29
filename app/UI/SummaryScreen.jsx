@@ -4,9 +4,9 @@ import { View, Text, SafeAreaView, Alert } from 'react-native'
 import tw from "twrnc"
 import CustomHeader from '../Components/common/CustomHeader'
 import PrimaryBtn from '../Components/common/PrimaryBtn'
-import { useSelector } from 'react-redux'
-import { selectAccessToken, selectExchange, selectReceiver, selectUserProfile } from '../config/redux/slice'
-import { BASE_URL, primePercent, sendpush } from '../config/api/Index'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectAccessToken, selectExchange, selectRates, selectReceiver, selectUserProfile, setCryptoData } from '../config/redux/slice'
+import { BASE_URL, NumberFormatter, primePercent, sendpush } from '../config/api/Index'
 import axios from 'axios'
 import LoadingModal from '../Components/common/Modals/LoadingModal'
 import { useState } from 'react'
@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const SummaryScreen = ({navigation,route}) => {
     const [modal, setModal] = useState(false);
     const navigator = useNavigation();
+    const dispatch = useDispatch();
     const exchangeed = useSelector(selectExchange);
     const typeR = route.params.category;
     const currency_from = route.params.currency_from;
@@ -26,25 +27,27 @@ const SummaryScreen = ({navigation,route}) => {
     const accountD = useSelector(selectReceiver);
     const key = useSelector(selectAccessToken);
     const usersP = useSelector(selectUserProfile)
+    const rates = useSelector(selectRates)
 
     const {expoPushToken} = usePushNotification();
-    let amounted = exchangeed.from.substring(1);
+    let amounted = exchangeed?.from.substring(1);
+    let rated = rates.find(rate => rate.name === "Usd")
 
     useEffect(()=>{
         setPush();
     },[])
     
-    const amountfrom = typeR == "exchange" ? exchangeed?.from : exchangeed?.from[0] + eval(Number(exchangeed?.from.substring(1)) + Number(primePercent(amounted).toFixed(2)))
+    const amountfrom = typeR == "exchange" ? exchangeed?.from : typeR == "crypto" ? eval((Number(exchangeed?.from) * (rated.amount - 200)) - primePercent(parseInt(exchangeed?.from))) : exchangeed?.from[0] + NumberFormatter(eval(Number(exchangeed?.from.substring(1)) + Number(primePercent(amounted).toFixed(2))))
     
     const setPush = async () =>{
-      console.log(expoPushToken?.data)
+    //   console.log(expoPushToken?.data)
       await AsyncStorage.setItem("pushToken", expoPushToken?.data);
     }
 
     let transactionsData = {
-        amountsend: amountfrom, 
-        amountreceive: exchangeed?.to, 
-        service_charge: exchangeed?.from[0] + primePercent(Number(amounted)).toFixed(2), 
+        amountsend: `${exchangeed?.to} ${currency_from}`, 
+        amountreceive: amountfrom, 
+        service_charge: "0", 
         category: typeR, 
         receiver_name: accountD?.account_name, 
         bank_name: accountD?.bank_name, 
@@ -53,16 +56,24 @@ const SummaryScreen = ({navigation,route}) => {
         payment_reason : accountD?.payment_reason, 
         studentId: accountD?.student_id, 
         iban: accountD?.iban, 
-        swift_bic: accountD?.swift_bic,
-        address: accountD?.address
+        swift_bic: accountD?.swift_bic
     }
 
     const handleContinue = () =>{
-        navigation.navigate("AccountDetails", {
-            category: typeR,
-            currency_from:currency_from,
-            currency_to:currency_to
-        })
+        if(typeR == "crypto"){
+            dispatch(setCryptoData(transactionsData));
+            navigation.navigate("CryptoSuccess", {
+                category: typeR,
+                currency_from:currency_from,
+                currency_to:currency_to
+            })
+        }else{
+            navigation.navigate("AccountDetails", {
+                category: typeR,
+                currency_from:currency_from,
+                currency_to:currency_to
+            })
+        }
     }
     
   return (
@@ -82,18 +93,25 @@ const SummaryScreen = ({navigation,route}) => {
                 </View>
                 <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                     <Text style={tw`text-gray-400`}>Send: </Text>
-                    <Text style={tw`text-gray-800`}>{amountfrom}.00</Text>
+                    {typeR == "crypto" ? (
+                        <Text style={tw`text-gray-800`}>{exchangeed?.to} {currency_from}</Text>
+                    ) : (
+                        <Text style={tw`text-gray-800`}>{amountfrom}.00</Text>)}
                 </View>
                 <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                     <Text style={tw`text-gray-400`}>Receive: </Text>
-                    <Text style={tw`text-gray-800`}>{exchangeed?.to}</Text>
+                    {typeR == "crypto" ? (
+                        <Text style={tw`text-gray-800`}>NGN{NumberFormatter(parseInt(amountfrom))}.00</Text>
+                    ) : (
+                        <Text style={tw`text-gray-800`}>{exchangeed?.to} </Text>)}
+                    
                 </View>
-                {typeR !== "exchange" && (
+                {/* {typeR !== "exchange" && (
                     <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                         <Text style={tw`text-gray-400`}>Service Charge: </Text>
                         <Text style={tw`text-gray-800`}>{exchangeed.from[0] + primePercent(Number(amounted)).toFixed(2)}</Text>
                     </View>
-                )}
+                )} */}
                 <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                     <Text style={tw`text-gray-400`}>Recipient Name: </Text>
                     <Text style={tw`text-gray-800`}>{accountD?.account_name}</Text>
@@ -111,14 +129,14 @@ const SummaryScreen = ({navigation,route}) => {
                     <Text style={tw`text-gray-800`}>{accountD?.sort_code !== "" ? accountD?.sort_code : "N/A"}</Text>
                 </View>
 
-                {typeR !== "exchange" && (
+                {typeR !== "exchange" || typeR !== "crypto" && (
                     <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                         <Text style={tw`text-gray-400`}>Payment Reason: </Text>
                         <Text style={tw`text-gray-800`}>{accountD?.payment_reason}</Text>
                     </View>
                 )}
 
-                {typeR !== "exchange" && currency_to !== "UK" && currency_from !== "NGN" && (
+                {typeR !== "exchange" && currency_to !== "UK" && currency_from !== "NGN" && typeR !=='crypto' && (
                     <View style={tw`w-full`}>
                         <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                             <Text style={tw`text-gray-400`}>Iban: </Text>

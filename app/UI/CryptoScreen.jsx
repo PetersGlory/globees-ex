@@ -11,8 +11,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selectRates, setExchanger } from '../config/redux/slice'
 import LoadingModal from '../Components/common/Modals/LoadingModal'
 import { primePercent } from '../config/api/Index'
+import axios from 'axios'
 
-const PaymentScreen = ({navigation}) => {
+const CryptoScreen = ({navigation}) => {
   const [selected, setSelected] = React.useState("");
   const [selectedC, setSelectedC] = React.useState("");
   const [selectedD, setSelectedD] = React.useState("");
@@ -26,103 +27,88 @@ const PaymentScreen = ({navigation}) => {
   })
   const [rate, setRate] = useState("")
 
-  const handleSelectCountry =(val) =>{
+  const handleSelectCountry = async (val) =>{
     setSelected(val);
+
     setLoading(true);
-    setSelectedD("NGN")
+    setSelectedD(val)
+    // console.log(val)
     // let faced_amount = exchange.to;
-    let amounted = exchange.to;
-    if(selectedC == "UK" ){
-        let rated = rates.find(rate => rate.name === "Euro")
-        setRate(`£1 - ₦${rated.amount}`)
-        let newAmount = eval(Number(amounted) * rated.amount);
-        setExchange({
-          ...exchange,
-          from: "₦"+eval(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
-        });
-    }else if(selectedC == "CAD"){
-      let rated = rates.find(rate => rate.name === "CAD")
-        setRate(`$1 - ₦${rated.amount}`);
-        let newAmount = eval(Number(amounted) * rated.amount);
-        setExchange({
-          ...exchange,
-          from: "₦"+eval(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
-        });
+    // let amounted = faced_amount.substring(1);
+    // if(selectedC == "UK" ){
+    //     let rated = rates.find(rate => rate.name === "Euro")
+    //     setRate(`£1 - ₦${rated.amount}`)
+    //     let newAmount = eval(Number(amounted) * rated.amount);
+    //     setExchange({
+    //       ...exchange,
+    //       from: "₦"+(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
+    //     });
+    // }else if(selectedC == "CAD"){
+    //   let rated = rates.find(rate => rate.name === "CAD")
+    //     setRate(`$1 - ₦${rated.amount}`);
+    //     let newAmount = eval(Number(amounted) * rated.amount);
+    //     setExchange({
+    //       ...exchange,
+    //       from: "₦"+(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
+    //     });
+    // }else{
+    //   let rated = rates.find(rate => rate.name === "Usd")
+    //     setRate(`$1 - ₦${rated.amount}`);
+    //     let newAmount = eval(Number(amounted) * rated.amount);
+    //     // alert();
+    //     setExchange({
+    //       ...exchange,
+    //       from: "₦"+(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
+    //     });
+    // }
+
+    if(val == "BTC"){
+      await btcHandler(exchange.from);  
+    }else if(val == "ETH"){
+      await ethHandler(exchange.from); 
     }else{
-      let rated = rates.find(rate => rate.name === "Usd")
-        setRate(`$1 - ₦${rated.amount}`);
-        let newAmount = eval(Number(amounted) * rated.amount);
-        // alert();
-        setExchange({
-          ...exchange,
-          from: "₦"+eval(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
-        });
+      setExchange({
+        ...exchange,
+        to: exchange.from
+      })
     }
+ 
 
     setTimeout(()=>{      
       setLoading(false);
-    }, 1000)
+  }, 1000)
   }
 
   const handleSelectTo =(val) =>{
     setSelected(val);
     let faced_amount = exchange.to.length >= 1 ? exchange.to.substring(1) : exchange.to;
     
-    if(val == "🇳🇬 NGN" ){
-      setRate("£1 - ₦1240");
-        setExchange({
-          ...exchange,
-          to: "₦"+faced_amount
-        });
-        setSelectedC("NGN")
-    }else if(val == "🇬🇧 UK" ){
-      let rated = rates.find(rate => rate.name === "Euro")
-      setRate(`£1 - ₦${rated.amount}`);
-      setExchange({
-        ...exchange,
-        to: "£"+faced_amount
-      });
-      setSelectedC("UK")
-    }else if(val == "🇨🇦 CAD"){
-      let rated = rates.find(rate => rate.name === "CAD")
-      setRate(`$1 - ₦${rated.amount}`);
-      setExchange({
-        ...exchange,
-        to: "$"+faced_amount
-      });
-      setSelectedC("CAD")
-    }else{
-      let rated = rates.find(rate => rate.name === "Usd")
-      setRate(`$1 - ₦${rated.amount}`);
-      setExchange({
-        ...exchange,
-        to: "$"+faced_amount
-      });
+    if(val !== "" ){      
       setSelectedC("USD")
     }
 
     setExchange({
       ...exchange,
-      from: ""
+      to: ""
     });
 
   }
 
   const data = [
-    {key:'2', value:'🇳🇬 NGN'},
+    {key:'3', value:'🇺🇸 USA'},
     // {key:'3', value:'🇬🇧 UK'},
   ]
   const datas = [
-    {key:'3', value:'🇺🇸 USA'},
-    {key:'4', value:'🇨🇦 CAD'},
-    {key:'5', value:'🇬🇧 UK'},
+    {key:'3', value:'BTC'},
+    {key:'4', value:'USDT'},
+    {key:'5', value:'ETH'},
   ]
   const handleExchange = () => {
     setEnabled(false);
     if(exchange.from !== "" || exchange.from.length >0 && exchange.to !== "" || exchange.to.length >0 ){
       dispatch(setExchanger(exchange));
       navigation.push("ReceiverScreen", {
-        request_type: "payment",
+        request_type: "crypto",
         currency_from: selectedD,
         currency_to: selectedC
       })
@@ -130,21 +116,62 @@ const PaymentScreen = ({navigation}) => {
       alert('All fields are required.')
     }
   }
+
+
+  const btcHandler = async (value) => {
+    console.log(value)
+    axios.request({
+        method: 'GET',
+        url: `https://blockchain.info/tobtc?currency=USD&value=${value}`,
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        }
+    }).then((response)=>{
+        setExchange({
+          ...exchange,
+          to: JSON.stringify(response.data)
+        })
+    }).catch((err)=>{
+        console.error(err)
+    })
+  }
+
+  const ethHandler = async (value) => {
+    axios.request({
+        method: 'GET',
+        url: `https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=ETH`,
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        }
+    }).then((response)=>{
+      const ethPrice = response.data.ETH;
+      const totalValue = eval(ethPrice * value);
+      // console.log(totalValue)
+        setExchange({
+          ...exchange,
+          to: JSON.stringify(totalValue)
+        })
+    }).catch((err)=>{
+        console.error(err)
+    })
+  }
   return (
     <SafeAreaView style={tw`flex-grow w-full h-full`}>
       <StatusBar style="dark" />
       <ScrollView style={tw`h-full w-full ${Platform.OS === "ios" ? "p-5 h-full w-full" : "p-5 h-full w-full"}`}>
-        <CustomHeader title={"Send Money"} />
+        <CustomHeader title={"Crypto Exchange"} />
 
         {/* Currency From section */}
         <View style={tw`border border-gray-300 rounded-2xl p-5 w-full flex flex-row mt-5 items-center justify-between`}>
           <View style={tw`flex-1 flex-col`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Amount:</Text>
+            <Text style={tw`text-gray-800 text-[12px]`}>Amount in USD:</Text>
 
-            <TextInput value={exchange.to} placeholder='0.00' onChangeText={(val)=>{
+            <TextInput value={exchange.from} placeholder='0.00' onChangeText={(val)=>{
               setExchange({
                 ...exchange,
-                to:val
+                from:val
               });
             }} style={tw`mt-4 text-[13px] `} keyboardType='number-pad'  />
           </View>
@@ -161,7 +188,7 @@ const PaymentScreen = ({navigation}) => {
                   height: 40,
                   padding:2
                 }}
-                data={datas}
+                data={data}
                 save='value' />
           </View>
         </View>
@@ -175,7 +202,7 @@ const PaymentScreen = ({navigation}) => {
         {/* Currency To section */}
         <View style={tw`border border-gray-300 rounded-2xl p-5 w-full flex flex-row mt-10 items-center justify-between`}>
           <View style={tw`flex-1`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Currency</Text>
+            <Text style={tw`text-gray-800 text-[12px]`}>Digital Currency</Text>
             <SelectList 
                 setSelected={(val) => {
                   handleSelectCountry(val)
@@ -187,7 +214,7 @@ const PaymentScreen = ({navigation}) => {
                   height: 40,
                   padding:2
                 }}
-                data={data}
+                data={datas}
                 save='value' />
           </View>
 
@@ -195,12 +222,12 @@ const PaymentScreen = ({navigation}) => {
           <View style={tw`flex-1 pl-5 flex-col`}>
             <Text style={tw`text-gray-800 text-[12px]`}>Amount:</Text>
 
-            <TextInput value={exchange.from} placeholder='0.00' onChangeText={(val)=>{
+            <TextInput value={exchange.to} placeholder='0.00' onChangeText={(val)=>{
               setExchange({
                 ...exchange,
-                from:val
+                to:val
               });
-            }} style={tw`mt-4 text-[13px] `} editable={false} keyboardType='number-pad'  />
+            }} style={tw`mt-4 text-[13px] text-gray-400 `} editable={false} keyboardType='number-pad'  />
           </View>
         </View>
 
@@ -211,10 +238,10 @@ const PaymentScreen = ({navigation}) => {
         </View>
       </ScrollView>
 
-      {enabled ? <LogOutModal visibility={enabled} setVisibility={setEnabled} text={`Are you sure you want to proceed to pay ${exchange.to}?`} onPressed={handleExchange} /> : null}
+      {enabled ? <LogOutModal visibility={enabled} setVisibility={setEnabled} text={`Are you sure you want to proceed to exchange ${exchange.to} ${selectedD}?`} onPressed={handleExchange} /> : null}
       <LoadingModal visibility={loading} setVisibility={()=>setLoading(false)} message={"Please wait..."} isloading={true} />
     </SafeAreaView>
   )
 }
 
-export default PaymentScreen
+export default CryptoScreen

@@ -77,7 +77,7 @@ export const usePushNotification = ():PushNotifcationState =>{
         });
 
         responseListener.current  = Notifications.addNotificationReceivedListener((response)=>{
-            console.log(response)
+            const pushDta = response
         });
 
         return ()=>{

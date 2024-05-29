@@ -102,7 +102,7 @@ const ReceiverScreen = ({navigation, route}) => {
                     }} keyboardType="number-pad" maxLength={6} style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
                 )}
 
-                {typeR !== "exchange" && (
+                {typeR !== "exchange" && typeR !== "crypto" && (
                     <View style={tw`w-full`}>
                         <SelectList 
                             setSelected={(val) => {
@@ -128,7 +128,7 @@ const ReceiverScreen = ({navigation, route}) => {
                     </View>
                 )}
 
-                {typeR !== "exchange" && currency_to !== "UK" && (
+                {typeR !== "exchange" || currency_to == "UK" || typeR !== "crypto" && (
                     <View style={tw`w-full`}>
                         <TextInput placeholder='IBAN' value={accounts.iban} onChangeText={(val)=>{
                             setAccounts({

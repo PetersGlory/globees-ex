@@ -4,7 +4,7 @@ import tw from 'twrnc'
 import Icon from  "@expo/vector-icons/Ionicons"
 // import PrimaryBtn from '../../Components/common/PrimaryBtn'
 import LoadingModal from '../../Components/common/Modals/LoadingModal'
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input'
+// import SmoothPinCodeInput from 'react-native-smooth-pincode-input'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL, GENERAL_URL, updatedevicetoken } from '../../config/api/Index'
 import axios from 'axios'
@@ -131,7 +131,7 @@ const VerificationScreen = ({navigation, route}) => {
 
         {/* Forms */}
         <View style={tw`mt-[32px] w-full items-center`}>
-            <SmoothPinCodeInput
+            {/* <SmoothPinCodeInput
                 value={code}
                 onTextChange={codes => {
                     setCode(codes);
@@ -141,16 +141,19 @@ const VerificationScreen = ({navigation, route}) => {
                 cellSpacing={9}
                 codeLength={5}
                 maxDelay={200}
-                cellStyle={{
-                    borderWidth: 1,
-                    borderColor:"#C1B8D1",
-                    borderRadius: 12,
-                    backgroundColor:"#C1B8D1"
-                }}
-                cellStyleFocused={{
-                    backgroundColor: "#ffffff"
-                }}
-            />
+                // cellStyle={{
+                //     borderWidth: 1,
+                //     borderColor:"#C1B8D1",
+                //     borderRadius: 12,
+                //     backgroundColor:"#C1B8D1"
+                // }}
+                // cellStyleFocused={{
+                //     backgroundColor: "#ffffff"
+                // }}
+            /> */}
+            <TextInput placeholder='Input verification code' value={code} onChangeText={(val)=>{
+                setCode(val);
+            }} keyboardType="number-pad" style={tw`p-[16px] w-full rounded-2xl bg-white text-center border border-gray-200`} />
             <View style={tw`items-center justify-between flex flex-row mt-4 w-full`}>
                 
                 <Text style={tw`text-gray-100 font-medium text-[15px]`}>Haven't received email? </Text>

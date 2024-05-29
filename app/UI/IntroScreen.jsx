@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import {
   setAccessToken,
+  setBtc,
   setRates,
   setUserProfile,
 } from "../config/redux/slice";
@@ -37,6 +38,7 @@ const IntroScreen = ({ navigation }) => {
       dispatch(setAccessToken(accessToken));
       getProfile(accessToken);
       getRates();
+      getCryptoAddress();
       navigation.replace("HomeScreen");
     }
   };
@@ -78,6 +80,21 @@ const IntroScreen = ({ navigation }) => {
         console.error(err);
       });
   };
+// getting crypto addresses
+  const getCryptoAddress = () => {
+    axios
+      .request({
+        method: "GET",
+        url: `${GENERAL_URL}/crypto_addresses`,
+      })
+      .then((response) => {
+        let dataRate = response.data.message;
+        dispatch(setBtc(dataRate));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   const updateToken = async (email) => {
     const expoPushToken = await AsyncStorage.getItem("pushToken");
@@ -107,7 +124,7 @@ const IntroScreen = ({ navigation }) => {
   };
   return (
     <SafeAreaView style={tw`flex-grow w-full h-full bg-[#133A64]`}>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <View style={tw`flex-1`} />
       <View style={tw`flex-1 w-full h-full items-center`}>
         <Text style={[tw`text-white text-center text-5xl font-bold mb-5 mt-5 uppercase`]}>Globees Ex</Text>
@@ -132,7 +149,7 @@ const IntroScreen = ({ navigation }) => {
             color: "#133A64",
           }}
         >
-          Welcome...
+          Welcome back ...
         </Text>
         <Text style={tw`text-[15px] text-gray-500 p-4 text-center`}>
           Exchange your currency and send international payments online.

@@ -8,6 +8,8 @@ const initialState = {
     accounts: null,
     exchange: null,
     receiver:null,
+    btc:null,
+    cryptoData: null
 };
 
 
@@ -38,10 +40,17 @@ export const slice = createSlice({
         setReceiver: (state, action) =>{
             state.receiver = action.payload;
         },
+
+        setBtc: (state, action) =>{
+            state.btc = action.payload;
+        },
+        setCryptoData: (state, action) =>{
+            state.cryptoData = action.payload;
+        },
     },
 });
 
-export const { setUserProfile, setAccessToken, setRates, setAccounts, setExchanger, setReceiver } = slice.actions;
+export const { setUserProfile, setAccessToken, setRates, setAccounts, setExchanger, setReceiver, setBtc, setCryptoData } = slice.actions;
 
 //Selectors
 export const selectUserProfile = (state) => state.nav.userPofile;
@@ -50,5 +59,7 @@ export const selectRates = (state) => state.nav.rates;
 export const selectAccounts = (state) => state.nav.accounts;
 export const selectExchange = (state) => state.nav.exchange;
 export const selectReceiver = (state) => state.nav.receiver;
+export const selectBtc = (state) => state.nav.btc;
+export const selectCryptoData = (state) => state.nav.cryptoData;
 
 export default slice.reducer;

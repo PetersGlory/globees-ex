@@ -2,7 +2,7 @@
   "expo": {
     "name": "Globees Ex",
     "slug": "GlobeesEx",
-    "version": "1.1.6",
+    "version": "1.1.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,8 @@
         {
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "assetBundlePatterns": [
       "**/*"
@@ -28,7 +29,7 @@
       "infoPlist": {
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID."
       },
-      "buildNumber": "4"
+      "buildNumber": "6"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +37,7 @@
         "backgroundColor": "#133A64"
       },
       "package": "com.globeesex.GlobeesEx",
-      "versionCode": 19,
+      "versionCode": 22,
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",

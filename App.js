@@ -25,6 +25,8 @@ import SuccessTransaction from './app/Components/common/Modals/SuccessTransactio
 import WelcomeScreen from './app/UI/WelcomeScreen';
 import { usePushNotification } from './usePushNotification';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoScreen from './app/UI/CryptoScreen';
+import CryptoSuccessPage from './app/Components/common/Modals/CryptoSuccessPage';
 // import registerNNPushToken from 'native-notify';
 
 const Stack = createNativeStackNavigator();
@@ -64,6 +66,8 @@ export default function App() {
           <Stack.Screen name='MoreScreen' component={MoreScreen} />
           <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
           <Stack.Screen name='PaymentScreen' component={PaymentScreen} />
+          <Stack.Screen name='CryptoScreen' component={CryptoScreen} />
+          <Stack.Screen name='CryptoSuccess' component={CryptoSuccessPage} />
           <Stack.Screen name='ReceiverScreen' component={ReceiverScreen} />
           <Stack.Screen name='SummaryScreen' component={SummaryScreen} />
           <Stack.Screen name='SuccesScreen' component={SuccessTransaction} />
