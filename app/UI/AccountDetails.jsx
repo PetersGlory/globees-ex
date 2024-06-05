@@ -10,7 +10,7 @@ import { Alert } from 'react-native'
 import { useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { selectAccessToken, selectExchange, selectReceiver, selectUserProfile } from '../config/redux/slice'
-import { BASE_URL, primePercent } from '../config/api/Index'
+import { BASE_URL, NumberFormatter, primePercent } from '../config/api/Index'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 import LoadingModal from '../Components/common/Modals/LoadingModal'
@@ -29,7 +29,7 @@ const AccountDetails = ({navigation, route}) => {
 
     let amounted = exchangeed.from.substring(1);
 
-    const amountfrom = typeR == "exchange" ? exchangeed?.from : exchangeed?.from[0] + eval(Number(exchangeed?.from.substring(1)) + Number(primePercent(amounted).toFixed(2)))
+    const amountfrom = typeR == "exchange" ? exchangeed?.from : exchangeed?.from[0] + NumberFormatter(eval(Number(exchangeed?.from.substring(1)) + Number(primePercent(amounted).toFixed(2))))
 
     let transactionsData = {
         amountsend: amountfrom, 

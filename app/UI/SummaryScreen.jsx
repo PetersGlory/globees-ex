@@ -31,13 +31,13 @@ const SummaryScreen = ({navigation,route}) => {
 
     const {expoPushToken} = usePushNotification();
     let amounted = exchangeed?.from.substring(1);
-    let rated = rates.find(rate => rate.name === "Usd")
+    let rated = rates.find(rate => rate.name === "USD - Crypto")
 
     useEffect(()=>{
         setPush();
     },[])
     
-    const amountfrom = typeR == "exchange" ? exchangeed?.from : typeR == "crypto" ? eval((Number(exchangeed?.from) * (rated.amount - 200)) - primePercent(parseInt(exchangeed?.from))) : exchangeed?.from[0] + NumberFormatter(eval(Number(exchangeed?.from.substring(1)) + Number(primePercent(amounted).toFixed(2))))
+    const amountfrom = typeR == "exchange" ? exchangeed?.from : typeR == "crypto" ? eval((Number(exchangeed?.from) * (rated.amount - 150))) : exchangeed?.from[0] + NumberFormatter(eval(Number(exchangeed?.from.substring(1))))
     
     const setPush = async () =>{
     //   console.log(expoPushToken?.data)
@@ -103,7 +103,7 @@ const SummaryScreen = ({navigation,route}) => {
                     {typeR == "crypto" ? (
                         <Text style={tw`text-gray-800`}>NGN{NumberFormatter(parseInt(amountfrom))}.00</Text>
                     ) : (
-                        <Text style={tw`text-gray-800`}>{exchangeed?.to} </Text>)}
+                        <Text style={tw`text-gray-800`}> {currency_to} {exchangeed?.to} </Text>)}
                     
                 </View>
                 {/* {typeR !== "exchange" && (

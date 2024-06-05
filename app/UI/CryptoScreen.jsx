@@ -27,40 +27,17 @@ const CryptoScreen = ({navigation}) => {
   })
   const [rate, setRate] = useState("")
 
+  
+  let rated = rates.find(rate => rate.name === "Usd")
+
+  
+  let rateds = rates.find(rate => rate.name === "USD - Crypto")
+
   const handleSelectCountry = async (val) =>{
     setSelected(val);
 
     setLoading(true);
     setSelectedD(val)
-    // console.log(val)
-    // let faced_amount = exchange.to;
-    // let amounted = faced_amount.substring(1);
-    // if(selectedC == "UK" ){
-    //     let rated = rates.find(rate => rate.name === "Euro")
-    //     setRate(`£1 - ₦${rated.amount}`)
-    //     let newAmount = eval(Number(amounted) * rated.amount);
-    //     setExchange({
-    //       ...exchange,
-    //       from: "₦"+(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
-    //     });
-    // }else if(selectedC == "CAD"){
-    //   let rated = rates.find(rate => rate.name === "CAD")
-    //     setRate(`$1 - ₦${rated.amount}`);
-    //     let newAmount = eval(Number(amounted) * rated.amount);
-    //     setExchange({
-    //       ...exchange,
-    //       from: "₦"+(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
-    //     });
-    // }else{
-    //   let rated = rates.find(rate => rate.name === "Usd")
-    //     setRate(`$1 - ₦${rated.amount}`);
-    //     let newAmount = eval(Number(amounted) * rated.amount);
-    //     // alert();
-    //     setExchange({
-    //       ...exchange,
-    //       from: "₦"+(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
-    //     });
-    // }
 
     if(val == "BTC"){
       await btcHandler(exchange.from);  
@@ -128,10 +105,11 @@ const CryptoScreen = ({navigation}) => {
             "Content-Type": "application/json",
         }
     }).then((response)=>{
-        setExchange({
-          ...exchange,
-          to: JSON.stringify(response.data)
-        })
+      setExchange({
+        ...exchange,
+        to: JSON.stringify(response.data)
+      })
+      setRate(`${JSON.stringify(response.data)} - ₦${eval((Number(exchange?.from) * (rateds.amount - 150)))}`);
     }).catch((err)=>{
         console.error(err)
     })
@@ -148,11 +126,13 @@ const CryptoScreen = ({navigation}) => {
     }).then((response)=>{
       const ethPrice = response.data.ETH;
       const totalValue = eval(ethPrice * value);
+      
       // console.log(totalValue)
-        setExchange({
-          ...exchange,
-          to: JSON.stringify(totalValue)
-        })
+      setExchange({
+        ...exchange,
+        to: JSON.stringify(totalValue)
+      })
+      setRate(`${totalValue} - ₦${eval((Number(exchange?.from) * (rateds.amount - 150)))}`);
     }).catch((err)=>{
         console.error(err)
     })
@@ -178,18 +158,18 @@ const CryptoScreen = ({navigation}) => {
           <View style={tw`flex-1 pl-5`}>
             <Text style={tw`text-gray-800 text-[12px]`}>Currency:</Text>
             <SelectList 
-                setSelected={(val) => {
-                  handleSelectTo(val)
-                }}
-                placeholder='select'
-                boxStyles={{
-                  width:100,
-                  marginTop:8,
-                  height: 40,
-                  padding:2
-                }}
-                data={data}
-                save='value' />
+              setSelected={(val) => {
+                handleSelectTo(val)
+              }}
+              placeholder='select'
+              boxStyles={{
+                width:100,
+                marginTop:8,
+                height: 40,
+                padding:2
+              }}
+              data={data}
+              save='value' />
           </View>
         </View>
 
@@ -204,18 +184,18 @@ const CryptoScreen = ({navigation}) => {
           <View style={tw`flex-1`}>
             <Text style={tw`text-gray-800 text-[12px]`}>Digital Currency</Text>
             <SelectList 
-                setSelected={(val) => {
-                  handleSelectCountry(val)
-                }}
-                placeholder='select'
-                boxStyles={{
-                  width:100,
-                  marginTop:8,
-                  height: 40,
-                  padding:2
-                }}
-                data={datas}
-                save='value' />
+              setSelected={(val) => {
+                handleSelectCountry(val)
+              }}
+              placeholder='select'
+              boxStyles={{
+                width:100,
+                marginTop:8,
+                height: 40,
+                padding:2
+              }}
+              data={datas}
+              save='value' />
           </View>
 
 

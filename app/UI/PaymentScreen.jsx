@@ -139,7 +139,7 @@ const PaymentScreen = ({navigation}) => {
         {/* Currency From section */}
         <View style={tw`border border-gray-300 rounded-2xl p-5 w-full flex flex-row mt-5 items-center justify-between`}>
           <View style={tw`flex-1 flex-col`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Amount:</Text>
+            <Text style={tw`text-gray-800 text-[12px]`}>Payout Amount:</Text>
 
             <TextInput value={exchange.to} placeholder='0.00' onChangeText={(val)=>{
               setExchange({
@@ -193,18 +193,18 @@ const PaymentScreen = ({navigation}) => {
 
 
           <View style={tw`flex-1 pl-5 flex-col`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Amount:</Text>
+            <Text style={tw`text-gray-800 text-[12px]`}>Deposit Amount:</Text>
 
             <TextInput value={exchange.from} placeholder='0.00' onChangeText={(val)=>{
               setExchange({
                 ...exchange,
                 from:val
               });
-            }} style={tw`mt-4 text-[13px] `} editable={false} keyboardType='number-pad'  />
+            }} style={tw`mt-4 text-[13px] text-gray-500`} editable={false} keyboardType='number-pad'  />
           </View>
         </View>
 
-        <Text style={tw`text-gray-600 text-sm mt-2`}>8& Service Charge applies</Text>
+        <Text style={tw`text-gray-600 text-sm mt-2`}>8% Service Charge applies</Text>
         
         <View style={tw`mt-15`}>
           <PrimaryBtn title={"Continue"} onpressed={()=> setEnabled(true)} />

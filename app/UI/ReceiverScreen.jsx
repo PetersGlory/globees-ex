@@ -102,7 +102,7 @@ const ReceiverScreen = ({navigation, route}) => {
                     }} keyboardType="number-pad" maxLength={6} style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
                 )}
 
-                {typeR !== "exchange" && typeR !== "crypto" && (
+                {typeR !== "exchange" || typeR !== "crypto" && (
                     <View style={tw`w-full`}>
                         <SelectList 
                             setSelected={(val) => {
