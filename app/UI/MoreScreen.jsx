@@ -33,6 +33,7 @@ const MoreScreen = ({navigation}) => {
         {title: "Help & Support", route: "support", icon: "headset-outline"},
         {title: "Social Media", route: "social", icon: "thumbs-up-outline"},
         {title: "Our blog", route: "blog", icon: "newspaper-outline"},
+        {title: "Identity Verification", route: "IdentityVerification", icon: "id-card-outline"},
         // {title: "App rating", route: "LegalScreen", icon: "star-half-outline"},
         {title: "About", route: "AboutScreen", icon: "alert-circle-outline"},
         {title: "Legal", route: "LegalScreen", icon: "document-text-outline"},

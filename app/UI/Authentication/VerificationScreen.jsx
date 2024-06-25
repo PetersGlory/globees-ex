@@ -49,8 +49,6 @@ const VerificationScreen = ({navigation, route}) => {
                     setModal(false);
                     setTimeout(()=>{
                         navigator.dispatch(StackActions.replace("HomeScreen"));
-                        // navigation.replace("HomeScreen");
-                        // sendpush('Sign In', `Howdy ${route.params.email} 👋, you just signed in to Globees Ex now.`,datas.accessToken);
                     }, 1500);
                 }else{
                     setTimeout(()=>{

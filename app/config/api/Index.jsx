@@ -3,8 +3,8 @@ import axios from "axios";
 import { usePushNotification } from "../../../usePushNotification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const BASE_URL = "https://globeesex.com/api/users";
-export const GENERAL_URL = "https://globeesex.com/api/general";
+export const BASE_URL = "https://globeesex.com/api/users" // "http://192.168.0.108:4343/api/users";
+export const GENERAL_URL = "https://globeesex.com/api/general" // "http://192.168.0.108:4343/api/general";
 let allEnd = false;
 export const NumberFormatter = ( x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 export const allEndpoints = async (key) =>{

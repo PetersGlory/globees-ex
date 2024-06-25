@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { View, Text, SafeAreaView, TextInput,ScrollView } from 'react-native'
+import { View, Text, SafeAreaView, TextInput,ScrollView, TouchableOpacity } from 'react-native'
 import tw from "twrnc"
 import { SelectList } from 'react-native-dropdown-select-list'
 import CustomHeader from '../Components/common/CustomHeader'
@@ -8,15 +8,19 @@ import { Platform } from 'react-native'
 import PrimaryBtn from '../Components/common/PrimaryBtn'
 import LogOutModal from '../Components/common/Modals/LogOutModal'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectRates, setExchanger } from '../config/redux/slice'
+import { selectRates, selectUserProfile, setExchanger } from '../config/redux/slice'
 import LoadingModal from '../Components/common/Modals/LoadingModal'
 import { primePercent } from '../config/api/Index'
+import { Marquee } from '@animatereactnative/marquee'
+import CustomLegal from '../Components/common/Modals/CustomLegal'
 
 const PaymentScreen = ({navigation}) => {
   const [selected, setSelected] = React.useState("");
   const [selectedC, setSelectedC] = React.useState("");
   const [selectedD, setSelectedD] = React.useState("");
+  const [modalL, setModalL] = React.useState(false);
   const [enabled, setEnabled] = useState(false);
+  const userProfile = useSelector(selectUserProfile);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const rates = useSelector(selectRates)
@@ -38,7 +42,7 @@ const PaymentScreen = ({navigation}) => {
         let newAmount = eval(Number(amounted) * rated.amount);
         setExchange({
           ...exchange,
-          from: "₦"+eval(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
+          from: "₦"+eval(parseInt(newAmount)).toFixed(2)
         });
     }else if(selectedC == "CAD"){
       let rated = rates.find(rate => rate.name === "CAD")
@@ -46,7 +50,7 @@ const PaymentScreen = ({navigation}) => {
         let newAmount = eval(Number(amounted) * rated.amount);
         setExchange({
           ...exchange,
-          from: "₦"+eval(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
+          from: "₦"+eval(parseInt(newAmount)).toFixed(2)
         });
     }else{
       let rated = rates.find(rate => rate.name === "Usd")
@@ -55,7 +59,7 @@ const PaymentScreen = ({navigation}) => {
         // alert();
         setExchange({
           ...exchange,
-          from: "₦"+eval(parseInt(newAmount) + primePercent(parseInt(newAmount))).toFixed(2)
+          from: "₦"+eval(parseInt(newAmount)).toFixed(2)
         });
     }
 
@@ -119,6 +123,8 @@ const PaymentScreen = ({navigation}) => {
   ]
   const handleExchange = () => {
     setEnabled(false);
+    
+    if(userProfile?.verified_user == "yes"){
     if(exchange.from !== "" || exchange.from.length >0 && exchange.to !== "" || exchange.to.length >0 ){
       dispatch(setExchanger(exchange));
       navigation.push("ReceiverScreen", {
@@ -129,6 +135,9 @@ const PaymentScreen = ({navigation}) => {
     }else{
       alert('All fields are required.')
     }
+  }else{
+    alert('Kindly verify your ID to continue exchange.')
+  }
   }
   return (
     <SafeAreaView style={tw`flex-grow w-full h-full`}>
@@ -158,7 +167,7 @@ const PaymentScreen = ({navigation}) => {
                 boxStyles={{
                   width:100,
                   marginTop:8,
-                  height: 40,
+                  height: 45,
                   padding:2
                 }}
                 data={datas}
@@ -167,7 +176,7 @@ const PaymentScreen = ({navigation}) => {
         </View>
 
         <View style={tw`mt-4 flex flex-row w-full justify-between items-center`}>
-          <Text style={tw`flex-1 border-r p-3 border-gray-400 text-[10px] text-gray-600`}>Rate : {rate}</Text>
+          <Text style={tw`flex-1 border-r p-3 border-gray-400 text-[10px] font-semibold text-gray-600`}>Rate : {rate}</Text>
           <Text style={tw`flex-1 text-center text-[12px]`}>- To -</Text>
           <Text style={tw`flex-1 border-l p-3 border-gray-400 text-[10px] text-gray-600`}>Within minutes</Text>
         </View>
@@ -184,7 +193,7 @@ const PaymentScreen = ({navigation}) => {
                 boxStyles={{
                   width:100,
                   marginTop:8,
-                  height: 40,
+                  height: 45,
                   padding:2
                 }}
                 data={data}
@@ -204,15 +213,26 @@ const PaymentScreen = ({navigation}) => {
           </View>
         </View>
 
-        <Text style={tw`text-gray-600 text-sm mt-2`}>8% Service Charge applies</Text>
+        <View style={tw`flex flex-row items-center mt-2`}>
+          <Text style={tw`text-gray-600 text-[12px]`}>Service charge applies. Check out our </Text> 
+          <TouchableOpacity onPress={()=> setModalL(!modalL)}>
+            <Text style={tw`text-[12px] text-blue-600`}>Payment Gateway T&Cs</Text>
+          </TouchableOpacity>
+        </View>
         
         <View style={tw`mt-15`}>
           <PrimaryBtn title={"Continue"} onpressed={()=> setEnabled(true)} />
+        </View>
+        <View style={tw`mt-5`}>          
+          <Marquee spacing={20} speed={0.3}>
+            <Text style={tw`text-[12px] text-gray-800`}>Kindly update your Identity to be able to to transfer money; Instructions <Text style={tw`font-bold`}>{"Home->More->Identity Verification"}</Text></Text>
+          </Marquee>
         </View>
       </ScrollView>
 
       {enabled ? <LogOutModal visibility={enabled} setVisibility={setEnabled} text={`Are you sure you want to proceed to pay ${exchange.to}?`} onPressed={handleExchange} /> : null}
       <LoadingModal visibility={loading} setVisibility={()=>setLoading(false)} message={"Please wait..."} isloading={true} />
+      <CustomLegal visibility={modalL} setVisibility={setModalL} />
     </SafeAreaView>
   )
 }

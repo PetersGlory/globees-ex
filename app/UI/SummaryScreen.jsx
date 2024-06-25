@@ -31,13 +31,15 @@ const SummaryScreen = ({navigation,route}) => {
 
     const {expoPushToken} = usePushNotification();
     let amounted = exchangeed?.from.substring(1);
-    let rated = rates.find(rate => rate.name === "USD - Crypto")
+    // console.log(currency_from)
+    // console.log(currency_to)
+    let rated = currency_from == "BTC" ? rates.find(rate => rate.name === "BTC - Crypto"): currency_from == "ETH" ? rates.find(rate => rate.name === "ETH - Crypto") : rates.find(rate => rate.name === "USDT - Crypto")
 
     useEffect(()=>{
         setPush();
     },[])
     
-    const amountfrom = typeR == "exchange" ? exchangeed?.from : typeR == "crypto" ? eval((Number(exchangeed?.from) * (rated.amount - 150))) : exchangeed?.from[0] + NumberFormatter(eval(Number(exchangeed?.from.substring(1))))
+    const amountfrom = typeR == "exchange" ? exchangeed?.from : typeR == "crypto" ? eval((Number(exchangeed?.from) * (rated?.amount))) : exchangeed?.from[0] + NumberFormatter(eval(Number(exchangeed?.from.substring(1))+primePercent(parseInt(exchangeed?.from.substring(1)))))
     
     const setPush = async () =>{
     //   console.log(expoPushToken?.data)
@@ -83,7 +85,7 @@ const SummaryScreen = ({navigation,route}) => {
             <CustomHeader title={"Summary Details"} />
 
             <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>
-               kindly go through the {typeR} information and proceed to click.
+               kindly go through the {typeR} information and click continue to proceed.
             </Text>
 
             <View style={tw`bg-white rounded-lg p-5 mt-5`}>
@@ -103,7 +105,7 @@ const SummaryScreen = ({navigation,route}) => {
                     {typeR == "crypto" ? (
                         <Text style={tw`text-gray-800`}>NGN{NumberFormatter(parseInt(amountfrom))}.00</Text>
                     ) : (
-                        <Text style={tw`text-gray-800`}> {currency_to} {exchangeed?.to} </Text>)}
+                        <Text style={tw`text-gray-800`}> {currency_to == "UK" && typeR !== "exchange"  ? "GBP": currency_to =="NGN" && typeR == "exchange" ? "" : currency_to !== "" && typeR !== "exchange" ? currency_to : ""} {exchangeed?.to} </Text>)}
                     
                 </View>
                 {/* {typeR !== "exchange" && (
@@ -124,20 +126,27 @@ const SummaryScreen = ({navigation,route}) => {
                     <Text style={tw`text-gray-400`}>Account Number: </Text>
                     <Text style={tw`text-gray-800`}>{accountD?.account_number}</Text>
                 </View>
-                <View style={tw`flex flex-row items-center mt-4 justify-between`}>
-                    <Text style={tw`text-gray-400`}>Sort Code: </Text>
-                    <Text style={tw`text-gray-800`}>{accountD?.sort_code !== "" ? accountD?.sort_code : "N/A"}</Text>
-                </View>
 
-                {typeR !== "exchange" || typeR !== "crypto" && (
+                {typeR !== "exchange" && typeR !== "crypto" && (
                     <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                         <Text style={tw`text-gray-400`}>Payment Reason: </Text>
                         <Text style={tw`text-gray-800`}>{accountD?.payment_reason}</Text>
                     </View>
                 )}
 
-                {typeR !== "exchange" && currency_to !== "UK" && currency_from !== "NGN" && typeR !=='crypto' && (
+                { (typeR == "exchange" && currency_to == "UK") && (
+                        <View style={tw`flex flex-row items-center mt-4 justify-between`}>
+                            <Text style={tw`text-gray-400`}>Sort Code: </Text>
+                            <Text style={tw`text-gray-800`}>{accountD?.sort_code !== "" ? accountD?.sort_code : "N/A"}</Text>
+                        </View>
+                )}
+
+                {(typeR !== "exchange" && currency_to !== "UK" && currency_from == "NGN" && typeR !=='crypto') && (
                     <View style={tw`w-full`}>
+                        <View style={tw`flex flex-row items-center mt-4 justify-between`}>
+                            <Text style={tw`text-gray-400`}>Sort Code: </Text>
+                            <Text style={tw`text-gray-800`}>{accountD?.sort_code !== "" ? accountD?.sort_code : "N/A"}</Text>
+                        </View>
                         <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                             <Text style={tw`text-gray-400`}>Iban: </Text>
                             <Text style={tw`text-gray-800`}>{accountD?.iban}</Text>

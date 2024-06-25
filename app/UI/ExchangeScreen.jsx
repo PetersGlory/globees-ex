@@ -8,14 +8,16 @@ import { Platform } from 'react-native'
 import PrimaryBtn from '../Components/common/PrimaryBtn'
 import LogOutModal from '../Components/common/Modals/LogOutModal'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectRates, setExchanger } from '../config/redux/slice'
+import { selectRates, selectUserProfile, setExchanger } from '../config/redux/slice'
 import LoadingModal from '../Components/common/Modals/LoadingModal'
+import { Marquee } from '@animatereactnative/marquee'
 
 const ExchangeScreen = ({navigation}) => {
   const [selected, setSelected] = React.useState("");
   const [selectedC, setSelectedC] = React.useState("");
   const [selectedD, setSelectedD] = React.useState("");
   const [enabled, setEnabled] = useState(false);
+  const userProfile = useSelector(selectUserProfile);
   const [loading, setLoading] = useState(false);
   const rates = useSelector(selectRates)
   // console.log(rates)
@@ -101,6 +103,7 @@ const ExchangeScreen = ({navigation}) => {
 
   const handleExchange = () => {
     setEnabled(false);
+    if(userProfile?.verified_user == "yes"){
     if(exchange.from !== "" || exchange.from.length >0 && exchange.to !== "" || exchange.to.length >0 ){
       dispatch(setExchanger(exchange));
       navigation.push("ReceiverScreen", {
@@ -111,6 +114,9 @@ const ExchangeScreen = ({navigation}) => {
     }else{
       alert('All fields are required.')
     }
+  }else{
+    alert('Kindly verify your ID to continue exchange.')
+  }
   }
   return (
     <SafeAreaView style={tw`flex-grow w-full h-full`}>
@@ -130,7 +136,7 @@ const ExchangeScreen = ({navigation}) => {
                 boxStyles={{
                   width:100,
                   marginTop:8,
-                  height: 40,
+                  height: 45,
                   padding:2
                 }}
                 data={data}
@@ -166,7 +172,7 @@ const ExchangeScreen = ({navigation}) => {
                 boxStyles={{
                   width:100,
                   marginTop:8,
-                  height: 40,
+                  height: 45,
                   padding:2
                 }}
                 data={datas}
@@ -180,7 +186,7 @@ const ExchangeScreen = ({navigation}) => {
                 ...exchange,
                 to:val
               });
-            }} style={tw`mt-4 text-[13px] `} editable={false} keyboardType='number-pad'  />
+            }} style={tw`mt-4 text-[13px] text-gray-500`} editable={false} keyboardType='number-pad'  />
           </View>
         </View>
 
@@ -188,6 +194,11 @@ const ExchangeScreen = ({navigation}) => {
 
         <View style={tw`mt-12`}>
           <PrimaryBtn title={"Continue"} onpressed={()=> setEnabled(true)} />
+        </View>
+        <View style={tw`mt-5`}>          
+          <Marquee spacing={20} speed={0.3}>
+            <Text style={tw`text-[12px] text-gray-800`}>Kindly update your Identity to be able to exchange your currency; Instructions <Text style={tw`font-bold`}>{"Home->More->Identity Verification"}</Text></Text>
+          </Marquee>
         </View>
       </ScrollView>
 

@@ -27,8 +27,8 @@ const WelcomeScreen = () => {
     <SafeAreaView style={tw`flex-grow w-full items-center justify-center h-full bg-[#133A64]`}>
         <StatusBar style="light" /> 
         <View style={tw`flex-1`} />
-        <View style={tw`flex-1 w-full h-full items-center p-5`}>
-            <Text style={[tw`text-white text-center text-3xl font-semibold mb-5 mt-5`]}>{"Exchange and \n\ Payment Gateway"}</Text>
+        <View style={tw`flex-1 w-full h-full items-center px-5 py-3 mb-5 mt-5`}>
+            <Text style={[tw`text-white text-center text-3xl font-semibold`]}>{"Exchange and \n\ Payment Gateway"}</Text>
         </View>
         <View style={tw`flex-1`}>
             <Image source={require("../../assets/img/logos.png")} style={{

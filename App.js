@@ -27,6 +27,7 @@ import { usePushNotification } from './usePushNotification';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoScreen from './app/UI/CryptoScreen';
 import CryptoSuccessPage from './app/Components/common/Modals/CryptoSuccessPage';
+import IdentityVerify from './app/UI/Authentication/IdentityVerify';
 // import registerNNPushToken from 'native-notify';
 
 const Stack = createNativeStackNavigator();
@@ -52,6 +53,7 @@ export default function App() {
           headerShown:false,
         }}>
           <Stack.Screen name='WelcomeScreen' component={WelcomeScreen} />
+          <Stack.Screen name='IdentityVerification' component={IdentityVerify} />
           <Stack.Screen name='IntroScreen' component={IntroScreen} />
           <Stack.Screen name='LoginScreen' component={LoginScreen} />
           <Stack.Screen name='VerificationScreen' component={VerificationScreen} />

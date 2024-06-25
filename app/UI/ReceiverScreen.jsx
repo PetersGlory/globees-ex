@@ -66,7 +66,7 @@ const ReceiverScreen = ({navigation, route}) => {
                 Kindly enter the correct receiver’s account details required to continue..
             </Text>
 
-            <View style={tw`mt-10 w-full`}>
+            <View style={tw`mt-5 w-full`}>
                 <TextInput placeholder='Recipient Name' value={accounts.account_name} onChangeText={(val)=>{
                     setAccounts({
                         ...accounts,
@@ -85,7 +85,7 @@ const ReceiverScreen = ({navigation, route}) => {
                         account_number: val
                     })
                 }} keyboardType="number-pad" style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
-                {currency_to == "UK" && typeR == "payment" && (
+                {(currency_to == "UK" && typeR == "payment") || (currency_to == "UK" && typeR == "exchange") && (
                     <TextInput placeholder='Sort Code' value={accounts.sort_code} onChangeText={(val)=>{
                         setAccounts({
                             ...accounts,
@@ -93,16 +93,16 @@ const ReceiverScreen = ({navigation, route}) => {
                         })
                     }} keyboardType="number-pad" maxLength={6} style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
                 )}
-                {currency_from == "NGN" && typeR == "exchange" && (
+                {/* {currency_from == "NGN" && typeR !== "exchange" && (
                     <TextInput placeholder='Sort Code' value={accounts.sort_code} onChangeText={(val)=>{
                         setAccounts({
                             ...accounts,
                             sort_code: val
                         })
                     }} keyboardType="number-pad" maxLength={6} style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
-                )}
+                )} */}
 
-                {typeR !== "exchange" || typeR !== "crypto" && (
+                {typeR !== "exchange" && typeR !== "crypto" && (
                     <View style={tw`w-full`}>
                         <SelectList 
                             setSelected={(val) => {
@@ -128,7 +128,7 @@ const ReceiverScreen = ({navigation, route}) => {
                     </View>
                 )}
 
-                {typeR !== "exchange" || currency_to == "UK" || typeR !== "crypto" && (
+                {typeR !== "exchange" && currency_to !== "UK" && typeR !== "crypto" && (
                     <View style={tw`w-full`}>
                         <TextInput placeholder='IBAN' value={accounts.iban} onChangeText={(val)=>{
                             setAccounts({
