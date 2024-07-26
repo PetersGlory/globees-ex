@@ -29,7 +29,7 @@ const IdentityVerify = ({navigation}) => {
         {key:'2', value:'NIN'},
         // {key:'3', value:'Voters Card'},
         {key:'4', value:'Nigerian Passport'},
-        {key:'5', value:'Drivers Lisence'},
+        {key:'5', value:'Drivers License'},
         // {key:'5', value:'ETH'},
     ]
 
@@ -118,12 +118,6 @@ const IdentityVerify = ({navigation}) => {
                     }}
                     placeholder='Choose Identity Type'
                     boxStyles={tw`p-[14px] mt-4 rounded-2xl border border-gray-200 text-gray-200 bg-white`}
-                    // {
-                    //     width:100,
-                    //     marginTop:8,
-                    //     height: 40,
-                    //     padding:2
-                    // }
                     dropdownTextStyles={tw`text-gray-200`}
                     data={datas}
                     save='value' 

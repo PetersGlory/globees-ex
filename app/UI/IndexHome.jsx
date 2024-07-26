@@ -7,6 +7,7 @@ import ExchangeScreen from './ExchangeScreen';
 import MoreScreen from './MoreScreen';
 import PaymentScreen from './PaymentScreen';
 import tw from 'twrnc'
+import CryptoScreen from './CryptoScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,12 +32,12 @@ const IndexHome = () => {
               <Ionicons name="card-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
-        {/* <Tab.Screen name='Support' component={HomeScreen}  options={{
-            tabBarLabel: 'Support',
+        <Tab.Screen name='Crypto' component={CryptoScreen}  options={{
+            tabBarLabel: 'Crypto',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="headset-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="cash-outline" style={tw`mb-1`} color={color} size={20} />
             ),
-        }} /> */}
+        }} />
         <Tab.Screen name='More' component={MoreScreen}  options={{
             tabBarLabel: 'More',
             tabBarIcon: ({ color, size }) => (

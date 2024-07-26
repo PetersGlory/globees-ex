@@ -47,13 +47,13 @@ const HomeScreen = ({navigation}) => {
               height: 26,
             }} />
             <Text style={tw`mt-5 text-gray-700 text-left font-bold`}>Payment Gateway</Text>
-            <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click to tranfer money for payments abroad.</Text>
+            <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click here to tranfer money for international payments.</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={tw`shadow w-[30%] rounded-2xl pt-6 pl-5 pr-5 pb-6 shadow bg-white flex flex-col`} onPress={()=> navigation.push("CryptoScreen")}>
             <Icon name="cash-outline" size={30} style={tw`text-blue-900`} />
             <Text style={tw`mt-5 text-gray-700 text-left font-bold`}>Crypto Exchange </Text>
-            <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click here to exchange your digital currency of your choice.</Text>
+            <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>Click here to exchange the digital currency of your choice.</Text>
           </TouchableOpacity>
 
         </View>

@@ -197,7 +197,7 @@ const ExchangeScreen = ({navigation}) => {
         </View>
         <View style={tw`mt-5`}>          
           <Marquee spacing={20} speed={0.3}>
-            <Text style={tw`text-[12px] text-gray-800`}>Kindly update your Identity to be able to exchange your currency; Instructions <Text style={tw`font-bold`}>{"Home->More->Identity Verification"}</Text></Text>
+            <Text style={tw`text-[12px] text-gray-800`}>Kindly update your Identity to be able to exchange your currency; Instructions <Text style={tw`font-bold`}>{"Home->More->Identity Verification"}</Text></Text>
           </Marquee>
         </View>
       </ScrollView>
