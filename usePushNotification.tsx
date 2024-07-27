@@ -52,7 +52,23 @@ export const usePushNotification = ():PushNotifcationState =>{
                 projectId: Constants.expoConfig?.extra?.eas.projectId,
             });
         }else{
-            alert("Use a real device.");
+            const {status:existingStatus} = await Notifications.getPermissionsAsync();
+            let finalState = existingStatus;
+
+            if(existingStatus !== "granted"){
+                const {status} = await Notifications.requestPermissionsAsync();
+                finalState = status;
+            }
+
+            if(existingStatus !== "granted"){
+                // alert("Failed to get the push token for push notification");
+                return;
+            }
+
+            token = await Notifications.getExpoPushTokenAsync({
+                projectId: Constants.expoConfig?.extra?.eas.projectId,
+            });
+            console.log("Use a real device.");
         }
 
         if(Platform.OS === "android"){

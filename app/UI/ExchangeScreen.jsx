@@ -35,6 +35,12 @@ const ExchangeScreen = ({navigation}) => {
         from: "₦"
       });
       setSelectedD("NGN")
+    }else if(val == "🇪🇺 EUR" ){
+      setExchange({
+        to: "",
+        from: "€"
+      });
+      setSelectedD("EUR")
     }else{
       setExchange({
         to: "",
@@ -47,6 +53,7 @@ const ExchangeScreen = ({navigation}) => {
   const handleSelectTo =(val) =>{
     setLoading(true);
     setSelected(val);
+    console.log(val)
     let faced_amount = exchange.from;
     let amounted = faced_amount.substring(1);
     if(val == "🇳🇬 NGN" ){
@@ -74,8 +81,14 @@ const ExchangeScreen = ({navigation}) => {
           ...exchange,
           to: "£"+amounted
         });
+      }else if(exchange.from[0] == "€"){        
+        setRate("€1 - £1")
+        setExchange({
+          ...exchange,
+          to: "£"+amounted
+        });
       }else{
-        let rated = rates.find(rate => rate.name === "Euro")
+        let rated = rates.find(rate => rate.name === "Pounds")
         setRate(`£1 - ₦${rated.amount}`)
         let newAmount = eval(Number(amounted) / rated.amount);
         // alert();
@@ -84,6 +97,30 @@ const ExchangeScreen = ({navigation}) => {
           to: "£"+newAmount.toFixed(2)
         });
         setSelectedC("UK")
+      }
+    }else if(val == "🇪🇺 EUR" ){
+      if(val == "🇪🇺 EUR" && exchange.from[0] == "€"){
+        setRate("€1 - €1")
+        setExchange({
+          ...exchange,
+          to: "€"+amounted
+        });
+      }else if(exchange.from[0] == "£" ){        
+        setRate("£1 - €1")
+        setExchange({
+          ...exchange,
+          to: "€"+amounted
+        });
+      }else{
+        let rated = rates.find(rate => rate.name === "Euro")
+        setRate(`€1 - ₦${rated.amount}`)
+        let newAmount = eval(Number(amounted) / rated.amount);
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "€"+newAmount.toFixed(2)
+        });
+        setSelectedC("EUR")
       }
     }
 
@@ -95,10 +132,12 @@ const ExchangeScreen = ({navigation}) => {
   const data = [
     {key:'2', value:'🇳🇬 NGN'},
     {key:'3', value:'🇬🇧 UK'},
+    {key:'4', value:'🇪🇺 EUR'},
   ]
   const datas = [
     {key:'2', value:'🇳🇬 NGN'},
     {key:'5', value:'🇬🇧 UK'},
+    {key:'6', value:'🇪🇺 EUR'},
   ]
 
   const handleExchange = () => {

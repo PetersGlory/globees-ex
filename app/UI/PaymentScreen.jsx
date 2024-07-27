@@ -37,7 +37,7 @@ const PaymentScreen = ({navigation}) => {
     // let faced_amount = exchange.to;
     let amounted = exchange.to;
     if(selectedC == "UK" ){
-        let rated = rates.find(rate => rate.name === "Euro")
+        let rated = rates.find(rate => rate.name === "Pounds")
         setRate(`£1 - ₦${rated.amount}`)
         let newAmount = eval(Number(amounted) * rated.amount);
         setExchange({
@@ -48,6 +48,15 @@ const PaymentScreen = ({navigation}) => {
       let rated = rates.find(rate => rate.name === "CAD")
         setRate(`$1 - ₦${rated.amount}`);
         let newAmount = eval(Number(amounted) * rated.amount);
+        setExchange({
+          ...exchange,
+          from: "₦"+eval(parseInt(newAmount)).toFixed(2)
+        });
+    }else if(selectedC == "EUR" ){
+        let rated = rates.find(rate => rate.name === "Euro")
+        setRate(`€1 - ₦${rated.amount}`)
+        let newAmount = eval(Number(amounted) * rated.amount);
+        // alert();
         setExchange({
           ...exchange,
           from: "₦"+eval(parseInt(newAmount)).toFixed(2)
@@ -80,7 +89,7 @@ const PaymentScreen = ({navigation}) => {
         });
         setSelectedC("NGN")
     }else if(val == "🇬🇧 UK" ){
-      let rated = rates.find(rate => rate.name === "Euro")
+      let rated = rates.find(rate => rate.name === "Pounds")
       setRate(`£1 - ₦${rated.amount}`);
       setExchange({
         ...exchange,
@@ -95,6 +104,15 @@ const PaymentScreen = ({navigation}) => {
         to: "$"+faced_amount
       });
       setSelectedC("CAD")
+    }else if(val == "🇪🇺 EUR" ){
+        let rated = rates.find(rate => rate.name === "Euro")
+        setRate(`€1 - ₦${rated.amount}`)
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "€"+faced_amount
+        });
+        setSelectedC("EUR")
     }else{
       let rated = rates.find(rate => rate.name === "Usd")
       setRate(`$1 - ₦${rated.amount}`);
@@ -120,6 +138,7 @@ const PaymentScreen = ({navigation}) => {
     {key:'3', value:'🇺🇸 USA'},
     {key:'4', value:'🇨🇦 CAD'},
     {key:'5', value:'🇬🇧 UK'},
+    {key:'6', value:'🇪🇺 EUR'},
   ]
   const handleExchange = () => {
     setEnabled(false);

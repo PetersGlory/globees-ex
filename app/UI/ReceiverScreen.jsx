@@ -85,7 +85,7 @@ const ReceiverScreen = ({navigation, route}) => {
                         account_number: val
                     })
                 }} keyboardType="number-pad" style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
-                {(currency_to == "UK" && typeR == "payment") || (currency_to == "UK" && typeR == "exchange") && (
+                {(currency_to == "EUR" && typeR == "payment") || (currency_to == "UK" && typeR == "payment") || (currency_to == "UK" && typeR == "exchange") && (
                     <TextInput placeholder='Sort Code' value={accounts.sort_code} onChangeText={(val)=>{
                         setAccounts({
                             ...accounts,
@@ -128,7 +128,7 @@ const ReceiverScreen = ({navigation, route}) => {
                     </View>
                 )}
 
-                {typeR !== "exchange" && currency_to !== "UK" && typeR !== "crypto" && (
+                {typeR !== "exchange" && currency_to !== "UK" && currency_to !== "EUR" && typeR !== "crypto" && (
                     <View style={tw`w-full`}>
                         <TextInput placeholder='IBAN' value={accounts.iban} onChangeText={(val)=>{
                             setAccounts({

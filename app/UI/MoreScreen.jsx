@@ -14,11 +14,12 @@ import { StackActions, useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import { BASE_URL } from '../config/api/Index'
 import { useSelector } from 'react-redux'
-import { selectAccessToken } from '../config/redux/slice'
+import { selectAccessToken, selectUserProfile } from '../config/redux/slice'
 import LoadingModal from '../Components/common/Modals/LoadingModal'
 
 const MoreScreen = ({navigation}) => {
     const navigator = useNavigation();
+    const userProfile = useSelector(selectUserProfile);
     const [enabled, setEnabled] = useState(false);
     const [enabledD, setEnabledD] = useState(false);
     const [about, setAbout] = React.useState(false);
@@ -82,7 +83,14 @@ const MoreScreen = ({navigation}) => {
                         setModalL(true)
                     }else if(items.route == "AboutScreen"){
                         setAbout(true)
-                    }else if(items.route == "blog"){
+                    }else if(items.route == "IdentityVerification"){
+                        if(userProfile?.verified_user == "yes"){
+                            alert("You've already verified your account.")
+                        }else{
+                            navigation.navigate(items.route)
+                        }
+                    }
+                    else if(items.route == "blog"){
                         Linking.openURL("https://globeesex.blogspot.com/");
                     }else if(items.route == "social"){
                         setSocial(true);

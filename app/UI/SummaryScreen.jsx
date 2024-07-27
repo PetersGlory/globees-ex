@@ -141,7 +141,7 @@ const SummaryScreen = ({navigation,route}) => {
                         </View>
                 )}
 
-                {(typeR !== "exchange" && currency_to !== "UK" && currency_from == "NGN" && typeR !=='crypto') && (
+                {(typeR !== "exchange" && currency_to !== "UK" && currency_to !== "EUR" && currency_from == "NGN" && typeR !=='crypto') && (
                     <View style={tw`w-full`}>
                         <View style={tw`flex flex-row items-center mt-4 justify-between`}>
                             <Text style={tw`text-gray-400`}>Sort Code: </Text>
