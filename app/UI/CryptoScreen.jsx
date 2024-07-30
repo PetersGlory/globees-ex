@@ -80,7 +80,6 @@ const CryptoScreen = ({navigation}) => {
 
   const data = [
     {key:'3', value:'🇺🇸 USA'},
-    // {key:'3', value:'🇬🇧 UK'},
   ]
   const datas = [
     {key:'3', value:'BTC'},
@@ -173,17 +172,18 @@ const CryptoScreen = ({navigation}) => {
             }} style={tw`mt-1 mb-2 text-[13px] `} keyboardType='number-pad'  />
             <Text style={tw`flex-1 text-[11px] text-gray-500`}>{exchange.to} ~ {selected}</Text>
           </View>
-          <View style={tw`flex-1 items-end`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Digital Currency:</Text>
+          <View style={tw`flex-1 flex-col text-right`}>
+            <Text style={tw`text-gray-800 text-right text-[12px]`}>Digital Currency:</Text>
               <SelectList 
                 setSelected={(val) => {
                   handleSelectCountry(val)
                 }}
                 placeholder='select'
                 boxStyles={{
-                  width:100,
+                  ...tw`w-[100%]`,
+                  // width:100,
                   marginTop:8,
-                  // height: 45,
+                  height: 45,
                   padding:2
                 }}
                 data={datas}

@@ -63,6 +63,15 @@ const ExchangeScreen = ({navigation}) => {
           ...exchange,
           to: "₦"+amounted
         });
+      }else if (exchange.from[0] == "€") {
+        let rated = rates.find(rate => rate.name === "Naira - Euro")
+        setRate(`€1 - ₦${rated.amount}`)
+        let newAmount = eval(Number(amounted) * rated.amount);
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "₦"+newAmount.toFixed(2)
+        });
       }else{
         let rated = rates.find(rate => rate.name === "Naira")
         setRate(`${selectedD == "UK" ? "£" : "₦"}1 - ₦${rated.amount}`)
@@ -72,8 +81,8 @@ const ExchangeScreen = ({navigation}) => {
           ...exchange,
           to: "₦"+newAmount.toFixed(2)
         });
-        setSelectedC("NGN")
       }
+      setSelectedC("NGN")
     }else if(val == "🇬🇧 UK" ){
       if(val == "🇬🇧 UK" && exchange.from[0] == "£"){
         setRate("£1 - £1")
@@ -111,7 +120,7 @@ const ExchangeScreen = ({navigation}) => {
           ...exchange,
           to: "€"+amounted
         });
-      }else{
+      }else if(exchange.from[0] == "₦" ){
         let rated = rates.find(rate => rate.name === "Euro")
         setRate(`€1 - ₦${rated.amount}`)
         let newAmount = eval(Number(amounted) / rated.amount);
@@ -120,8 +129,17 @@ const ExchangeScreen = ({navigation}) => {
           ...exchange,
           to: "€"+newAmount.toFixed(2)
         });
-        setSelectedC("EUR")
+      }else{
+        let rated = rates.find(rate => rate.name === "Naira - Euro")
+        setRate(`€1 - ₦${rated.amount}`)
+        let newAmount = eval(Number(amounted) / rated.amount);
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "€"+newAmount.toFixed(2)
+        });
       }
+      setSelectedC("EUR")
     }
 
     setTimeout(()=>{      
