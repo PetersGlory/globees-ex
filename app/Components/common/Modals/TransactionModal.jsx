@@ -8,7 +8,7 @@ import { ScrollView } from 'react-native';
 import {shareAsync} from "expo-sharing"
 import {captureRef} from "react-native-view-shot"
 import { useRef } from 'react';
-import { NumberFormatter } from '../../../config/api/Index';
+import { NumberFormatter, PRIMARY_COLOR } from '../../../config/api/Index';
 
 const TransactionModal = ({onpressed, visibility, data}) => {
   const usersProfile = useSelector(selectUserProfile);
@@ -42,7 +42,7 @@ const TransactionModal = ({onpressed, visibility, data}) => {
                 height: 100,
                 tintColor: "#133A64"
               }} alt={'logo'} /> */}
-              <Image source={require('../../../../assets/img/logo_dark.png')} style={{
+              <Image source={require('../../../../assets/img/logo-bg.png')} style={{
                 ...tw`rounded-full`,
                 width: 100,
                 height: 100
@@ -127,10 +127,10 @@ const TransactionModal = ({onpressed, visibility, data}) => {
             </View>
 
             <View style={tw`w-full flex flex-row mt-4 items-center justify-between mb-5`}>
-                <TouchableOpacity onPress={onpressed} style={tw`p-2 w-[45%] rounded-lg border-blue-800 border bg-white items-center`}>
-                    <Text style={tw`text-blue-800`}>Close</Text>
+                <TouchableOpacity onPress={onpressed} style={tw`p-2 w-[45%] rounded-lg border-[${PRIMARY_COLOR}] border bg-white items-center`}>
+                    <Text style={tw`text-[${PRIMARY_COLOR}]`}>Close</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={PrintAsPDF} style={tw`bg-blue-800 w-[53%] flex flex-row rounded-lg justify-evenly items-center p-2`}>
+                <TouchableOpacity onPress={PrintAsPDF} style={tw`bg-[${PRIMARY_COLOR}] w-[53%] flex flex-row rounded-lg justify-evenly items-center p-2`}>
                     <Ionicons name='share-social-outline' color={"#ffffff"} size={20} />
                     <Text style={tw`text-white`}>Share</Text>
                 </TouchableOpacity>

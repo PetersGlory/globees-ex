@@ -20,10 +20,10 @@ const IndexHome = () => {
               <Ionicons name="home-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
-        <Tab.Screen name='Exchange' component={ExchangeScreen}  options={{
-            tabBarLabel: 'Exchange',
+        <Tab.Screen name='Crypto' component={CryptoScreen}  options={{
+            tabBarLabel: 'Crypto',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="contract-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="cash-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
         <Tab.Screen name='Payment' component={PaymentScreen}  options={{
@@ -32,10 +32,10 @@ const IndexHome = () => {
               <Ionicons name="card-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
-        <Tab.Screen name='Crypto' component={CryptoScreen}  options={{
-            tabBarLabel: 'Crypto',
+        <Tab.Screen name='Exchange' component={ExchangeScreen}  options={{
+            tabBarLabel: 'Exchange',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="cash-outline" style={tw`mb-1`} color={color} size={20} />
+              <Ionicons name="contract-outline" style={tw`mb-1`} color={color} size={20} />
             ),
         }} />
         <Tab.Screen name='More' component={MoreScreen}  options={{

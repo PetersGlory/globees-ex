@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet, Modal, ActivityIndicator, Image, TouchableOpacity } from 'react-native'
 import Icon from "@expo/vector-icons/Ionicons"
 import tw from "twrnc"
+import { PRIMARY_COLOR } from '../../../config/api/Index'
 
 const LogOutModal = ({visibility, setVisibility, text, onPressed}) => {
   return (
@@ -15,7 +16,7 @@ const LogOutModal = ({visibility, setVisibility, text, onPressed}) => {
         <View style={styles.centeredView}>            
             <View style={styles.modalView}>                
                 <Icon name="help-circle-outline" size={50} style={{
-                    ...tw`text-blue-800`,
+                    ...tw`text-[${PRIMARY_COLOR}]`,
                 }} />
                 <Text style={tw`text-center text-gray-700 text-[14px]`}>{text}</Text>
                 <View style={tw`flex flex-row items-center justify-between p-2 mt-2 w-full`}>
@@ -24,7 +25,7 @@ const LogOutModal = ({visibility, setVisibility, text, onPressed}) => {
                     }} style={tw`border border-gray-600 rounded-lg p-3 w-[100px]`}>
                         <Text style={tw`text-gray-700 text-center`}>Cancel</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={onPressed} style={tw`bg-blue-900 rounded-lg p-3 w-[100px]`}>
+                    <TouchableOpacity onPress={onPressed} style={tw`bg-[${PRIMARY_COLOR}] rounded-lg p-3 w-[100px]`}>
                         <Text style={tw`text-white text-center`}>Yes</Text>
                     </TouchableOpacity>
                 </View>

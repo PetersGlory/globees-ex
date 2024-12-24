@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, Modal, ActivityIndicator, Image, TouchableOpacity } from 'react-native'
+import { PRIMARY_COLOR } from '../../../config/api/Index';
 
 const LoadingModal = ({visibility, setVisibility, isloading, message}) => {
   return (
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
     },
 
     btnPrimary:{
-        backgroundColor: "#028C25",
+        backgroundColor: PRIMARY_COLOR,
         borderRadius: 5,
         color: "#ffffff",
         display:"flex",

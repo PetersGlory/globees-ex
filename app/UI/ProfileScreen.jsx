@@ -129,7 +129,7 @@ const ProfileScreen = () => {
         {/* Image */}
         <TouchableOpacity style={tw`mt-2 justify-center items-center`}>
           <Image
-            source={require("../../assets/img/logo_dark.png")}
+            source={require("../../assets/img/logo-bg.png")}
             style={{
               ...tw`rounded-full`,
               width: 100,

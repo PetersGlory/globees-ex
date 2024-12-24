@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const BASE_URL = "https://globeesex.com/api/users" // "http://192.168.0.108:4343/api/users";
 export const GENERAL_URL = "https://globeesex.com/api/general" // "http://192.168.0.108:4343/api/general";
+export const PRIMARY_COLOR = "#03203E";
 let allEnd = false;
 export const NumberFormatter = ( x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 export const allEndpoints = async (key) =>{

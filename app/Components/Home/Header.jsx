@@ -8,6 +8,7 @@ import { selectAccessToken, selectUserProfile, setRates, setUserProfile } from '
 import LoadingModal from '../common/Modals/LoadingModal'
 import { BASE_URL, GENERAL_URL, updatedevicetoken } from '../../config/api/Index'
 import axios from 'axios'
+import { StatusBar } from 'expo-status-bar'
 
 const Header = () => {
   const [modal, setModal] = useState(false);
@@ -59,6 +60,7 @@ const Header = () => {
   }
   return (
     <View style={tw`w-full flex flex-row items-center justify-between p-5`}>
+      <StatusBar style="light" />
       <TouchableOpacity style={tw`flex-1 flex flex-row`} onPress={()=>navigator.push("MoreScreen")}>
         <View>
           <Text style={tw`text-white text-[12px]`}>Welcome back!</Text>

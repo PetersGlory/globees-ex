@@ -4,6 +4,7 @@ import React,{ useRef, useEffect } from 'react'
 import { Image, ImageBackground } from 'react-native'
 import { View, Text, SafeAreaView, Animated } from 'react-native'
 import tw from  "twrnc"
+import { PRIMARY_COLOR } from '../config/api/Index'
 
 const WelcomeScreen = () => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -24,14 +25,14 @@ const WelcomeScreen = () => {
         }, 4500);
     }
   return (
-    <SafeAreaView style={tw`flex-grow w-full items-center justify-center h-full bg-[#133A64]`}>
+    <SafeAreaView style={tw`flex-grow w-full items-center justify-center h-full bg-[${PRIMARY_COLOR}]`}>
         <StatusBar style="light" /> 
         <View style={tw`flex-1`} />
         <View style={tw`flex-1 w-full h-full items-center px-5 py-3 mb-5 mt-5`}>
             <Text style={[tw`text-white text-center text-3xl font-semibold`]}>{"Exchange and \n\ Payment Gateway"}</Text>
         </View>
         <View style={tw`flex-1`}>
-            <Image source={require("../../assets/img/logos.png")} style={{
+            <Image source={require("../../assets/img/logo.png")} style={{
             width: 150,
             height: 150,
             }} alt="intro" />

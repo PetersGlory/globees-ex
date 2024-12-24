@@ -26,7 +26,7 @@ import {
 import QRCode from "react-native-qrcode-svg";
 import { usePushNotification } from "../../../../usePushNotification";
 import CustomHeader from "../CustomHeader";
-import { BASE_URL } from "../../../config/api/Index";
+import { BASE_URL, PRIMARY_COLOR } from "../../../config/api/Index";
 import LoadingModal from "./LoadingModal";
 import axios from "axios";
 
@@ -96,7 +96,7 @@ const CryptoSuccessPage = ({ route }) => {
   };
   // const typeR = route.params.category;
   return (
-    <SafeAreaView style={tw`flex flex-grow h-full w-full bg-[#20242d]`}>
+    <SafeAreaView style={tw`flex flex-grow h-full w-full bg-[${PRIMARY_COLOR}]`}>
       <TouchableOpacity
         style={tw`absolute top-10 right-5`}
         onPress={() => navigator.goBack()}

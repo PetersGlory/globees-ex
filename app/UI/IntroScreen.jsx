@@ -10,7 +10,7 @@ import {
   setRates,
   setUserProfile,
 } from "../config/redux/slice";
-import { BASE_URL, GENERAL_URL } from "../config/api/Index";
+import { BASE_URL, GENERAL_URL, PRIMARY_COLOR } from "../config/api/Index";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import SecondaryBtn from "../Components/common/SecondaryBtn";
@@ -123,12 +123,12 @@ const IntroScreen = ({ navigation }) => {
       });
   };
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full bg-[#133A64]`}>
+    <SafeAreaView style={tw`flex-grow w-full h-full bg-[${PRIMARY_COLOR}]`}>
       <StatusBar style="light" />
       <View style={tw`flex-1`} />
       <View style={tw`flex-1 w-full h-full items-center`}>
         <Text style={[tw`text-white text-center text-5xl font-bold mb-5 mt-5 uppercase`]}>Globees Ex</Text>
-        <Image source={require("../../assets/img/logos.png")} style={{
+        <Image source={require("../../assets/img/logo.png")} style={{
           width: 200,
           height: 200,
         }} alt="intro" />
@@ -140,13 +140,13 @@ const IntroScreen = ({ navigation }) => {
         style={{
           ...tw`bg-white h-[45%] p-8 pt-10 rounded-t-8`,
           flexShrink: 0,
-          boxShadow: "0px -35px 25px 0px #FFF",
+          boxShadow: "0px -5px 15px 0px #FFF",
         }}
       >
         <Text
           style={{
             ...tw`text-3xl font-bold text-center`,
-            color: "#133A64",
+            color: PRIMARY_COLOR,
           }}
         >
           Welcome back ...
