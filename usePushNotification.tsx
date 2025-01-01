@@ -88,11 +88,11 @@ export const usePushNotification = ():PushNotifcationState =>{
             setExpoPushToken(token);
         });
 
-        notificationListener.current = Notifications.addNotificationReceivedListener((notification)=>{
+        notificationListener.current = Notifications.addNotificationReceivedListener((notification: any)=>{
             setNotification(notification);
         });
 
-        responseListener.current  = Notifications.addNotificationReceivedListener((response)=>{
+        responseListener.current  = Notifications.addNotificationReceivedListener((response: any)=>{
             const pushDta = response
         });
 
