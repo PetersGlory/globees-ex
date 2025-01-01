@@ -122,7 +122,7 @@ const LoginScreen = () => {
       getRates();
       setModal(false);
       setTimeout(() => {
-        router.replace("HomeScreen" as never);
+        router.replace("/(tabs)");
       }, 1500);
     } else {
       alert("Session timeout, kindly login using your credentials.");
