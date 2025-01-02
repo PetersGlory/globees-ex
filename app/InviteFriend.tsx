@@ -8,6 +8,8 @@ import {
   SafeAreaView,
   Image,
   Clipboard,
+  ScrollView,
+  Share,
 } from "react-native";
 import tw from "twrnc";
 import { PRIMARY_COLOR } from "@/hooks/api/Index";
@@ -26,6 +28,36 @@ const InviteFriendsScreen = () => {
     alert("Referral code copied to clipboard");
     // You could add a toast notification here
   };
+
+  const handleShare = async () => {
+    try {
+      const result = await Share.share(
+        {
+          message: `Hey! I'm using Globees Ex to send money. Join me and get £10 when you send upto £100 in one transaction. Plus £5 when you complete KYC verification, download and use my referral code '${referralCode}' to sign up`,
+          title: "Globees Ex",
+          url: referralCode, // iOS only
+        },
+        {
+          dialogTitle: "Globees Ex", // Android only
+        }
+      );
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+          console.log(result);
+        } else {
+          // shared
+          console.log(result);
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error:any) {
+      alert(error?.message);
+      console.log(error);
+    }
+  }
 
   return (
     <SafeAreaView style={tw`flex-1 py-6 bg-[${PRIMARY_COLOR}]`}>
@@ -46,11 +78,11 @@ const InviteFriendsScreen = () => {
       {/* Main Content */}
       <View style={tw`flex-1 items-center px-4`}>
         {/* Illustration */}
-        <View style={tw`w-full h-[30%] my-4`}>
+        <View style={tw`w-[85%] h-[43%] my-4`}>
           <Image
-            source={require("../assets/images/refer.png")}
+            source={require("../assets/images/rewards.png")}
             style={tw`w-full h-full`}
-            resizeMode="contain"
+            resizeMode="stretch"
           />
         </View>
 
@@ -61,19 +93,18 @@ const InviteFriendsScreen = () => {
 
         <Text style={tw`text-white text-center text-sm mb-4`}>
           Invite a friend and you get £10 each when they send upto £100 in one
-          transaction. Plus £5 to your friend when they complete KYC
-          verification.
+          transaction. Plus £5 to your friend When they complete Know Your Customer (KYC) verification process.
         </Text>
 
         {/* Referral Code Section */}
         <View
-          style={tw`w-full bg-[#464679] rounded-xl p-4 flex-row justify-between items-center mb-4`}
+          style={tw`w-full bg-[#464679] rounded-xl px-4 py-2.5 flex-row justify-between items-center mb-4`}
         >
           <View>
             <Text style={tw`text-white/60 text-sm mb-1`}>
               Your referral code
             </Text>
-            <Text style={tw`text-white text-xl font-semibold`}>
+            <Text style={tw`text-white text-xl font-semibold uppercase`}>
               {referralCode}
             </Text>
           </View>
@@ -87,7 +118,8 @@ const InviteFriendsScreen = () => {
 
         {/* Invite Button */}
         <TouchableOpacity
-          style={tw`w-full bg-[#10B981] rounded-xl p-4 flex-row items-center justify-between mb-4`}
+        onPress={handleShare}
+          style={tw`w-full bg-[#10B981] rounded-lg px-4 py-2.5 flex-row items-center justify-between mb-4`}
         >
           <View style={tw`flex-row items-center`}>
             {/* Small cartoon icon would go here */}
@@ -101,11 +133,11 @@ const InviteFriendsScreen = () => {
         {/* Terms and Conditions */}
         <TouchableOpacity onPress={() => setModal(true)}>
           <Text style={tw`text-white/80 text-sm underline`}>
-            *Terms and conditions apply
+            Terms and conditions apply
           </Text>
         </TouchableOpacity>
       </View>
-      <CustomLegal visibility={modal} setVisibility={setModal} />
+      <CustomLegal isRefer={true} visibility={modal} setVisibility={setModal} />
     </SafeAreaView>
   );
 };

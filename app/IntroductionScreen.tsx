@@ -153,15 +153,14 @@ const IntroScreen = () => {
       >
         <Text
           style={{
-            ...tw`text-2xl font-bold text-center`,
+            ...tw`text-3xl font-bold text-center`,
             color: PRIMARY_COLOR,
           }}
         >
-          Exchange fiat, crypto, and make cross-border payments.
+          Welcome back...
         </Text>
         <Text style={tw`text-[15px] text-gray-500 p-4 text-center`}>
-          Instantly swap or transfer money to friends, family, loved ones and
-          pay towards your tuition, fees, bills, and expenses in minutes.
+          {"Swap or transfer fiat, crypto, and make cross-border payments in minutes."}
         </Text>
         <View style={tw`flex flex-row items-center mt-5 justify-between`}>
           <View style={tw`w-[49%]`}>

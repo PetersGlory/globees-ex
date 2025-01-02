@@ -85,6 +85,7 @@ const RewardsScreen = () => {
             <Text style={tw`text-sm`}>Invite Friend</Text>
             </TouchableOpacity>
           </View>
+          <Text style={tw`text-xs text-gray-400 w-full text-center font-semibold`}>100pts - £1</Text>
         </View>
 
         <View style={tw`mt-5`}>

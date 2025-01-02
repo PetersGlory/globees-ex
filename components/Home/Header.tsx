@@ -102,7 +102,7 @@ const Header = () => {
             size={16}
             style={tw`w-auto`}
           />
-          <Text style={tw`text-white font-bold text-[10px]`}>Get 15.0 EUR</Text>
+          <Text style={tw`text-white font-bold text-[10px]`}>Get 15.0 GBP</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={tw``}

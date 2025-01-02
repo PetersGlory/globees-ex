@@ -50,6 +50,18 @@ const HomeScreen = () => {
         <View style={tw`flex flex-row gap-5 items-center justify-between`}>
           <TouchableOpacity
             style={tw`shadow w-[30%] rounded-2xl pt-6 pl-5 pr-5 pb-6 shadow bg-white flex flex-col`}
+            onPress={() => router.push("/(tabs)/ExchangeScreen")}
+          >
+            <Icon name="contract-outline" size={30} style={tw`text-blue-900`} />
+            <Text style={tw`mt-5 text-gray-700 text-left font-bold`}>
+              Fiat Exchange
+            </Text>
+            <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>
+              Click here to exchange the currency of your choice.
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={tw`shadow w-[30%] rounded-2xl pt-6 pl-5 pr-5 pb-6 shadow bg-white flex flex-col`}
             onPress={() => router.push("/(tabs)/CryptoScreen")}
           >
             <Icon name="cash-outline" size={30} style={tw`text-blue-900`} />
@@ -78,18 +90,6 @@ const HomeScreen = () => {
             </Text>
             <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>
               Click here to tranfer money for international payments.
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={tw`shadow w-[30%] rounded-2xl pt-6 pl-5 pr-5 pb-6 shadow bg-white flex flex-col`}
-            onPress={() => router.push("/(tabs)/ExchangeScreen")}
-          >
-            <Icon name="contract-outline" size={30} style={tw`text-blue-900`} />
-            <Text style={tw`mt-5 text-gray-700 text-left font-bold`}>
-              Fiat Exchange
-            </Text>
-            <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>
-              Click here to exchange the currency of your choice.
             </Text>
           </TouchableOpacity>
         </View>

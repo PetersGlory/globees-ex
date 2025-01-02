@@ -4,7 +4,7 @@ import tw from "twrnc"
 import Icon from "@expo/vector-icons/Ionicons"
 import { WebView } from 'react-native-webview';
 
-const CustomLegal = ({visibility, setVisibility}:any) => {
+const CustomLegal = ({visibility, setVisibility, isRefer}:any) => {
   return (
     <Modal
     animationType="slide"
@@ -18,11 +18,11 @@ const CustomLegal = ({visibility, setVisibility}:any) => {
             <TouchableOpacity style={tw`absolute top-5 right-5 z-10`} onPress={()=> setVisibility(false)}>
                 <Icon name='close-circle-outline' size={26} />
             </TouchableOpacity>
-            <Text style={tw`text-center text-gray-600 font-medium text-[18px] mt-2 text-blue-800`}>GLOBEES EX LEGAL</Text>
+            <Text style={tw`text-center text-gray-600 font-semibold text-[18px] mt-2 text-blue-800 capitalize`}>{isRefer ? "GLOBEES EX Referral terms" : "GLOBEES EX LEGAL"}</Text>
 
-            <View style={tw`mt-2 w-full p-2 flex h-[95%] flex-col`}>
+            <View style={tw`mt-2 w-full p-2 flex h-[95%] flex-col rounded-t-3xl`}>
                 <WebView
-                    source={{ uri: 'https://www.globees.co.uk/terms-and-conditions' }}
+                    source={{ uri: isRefer ? 'https://www.globees.co.uk/referralprogramterms' :'https://www.globees.co.uk/terms-and-conditions' }}
                 />
             </View>
         </View>

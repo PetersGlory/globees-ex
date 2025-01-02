@@ -70,21 +70,21 @@ const AccountLimits = () => {
             <View style={tw`bg-white rounded-lg p-5 mt-5 gap-4`}>
               <Text style={tw`text-[15px] text-gray-800 mt-2`}>
                 Daily Transaction:{" "}
-                <Text style={tw`text-blue-800 font-bold`}>NGN5,000,000</Text>{" "}
+                <Text style={tw`text-blue-800 font-bold`}>NGN 5,000,000</Text>{" "}
               </Text>
               <Text style={tw`text-[15px] text-gray-800 mt-2`}>
                 Weekly Transaction:{" "}
-                <Text style={tw`text-blue-800 font-bold`}>NGN15,000,000</Text>{" "}
+                <Text style={tw`text-blue-800 font-bold`}>NGN 15,000,000</Text>{" "}
               </Text>
               <Text style={tw`text-[15px] text-gray-800 mt-2`}>
                 Monthly Transaction:{" "}
-                <Text style={tw`text-blue-800 font-bold`}>NGN50,000,000</Text>{" "}
+                <Text style={tw`text-blue-800 font-bold`}>NGN 50,000,000</Text>{" "}
               </Text>
 
               <View style={tw`mt-2`}>
                 <Text style={tw`text-[13px] text-gray-800`}>
                   Deposit Per Transaction is{" "}
-                  <Text style={tw`text-blue-800 font-bold`}>NGN5,000,000.</Text>{" "}
+                  <Text style={tw`text-blue-800 font-bold`}>NGN 5,000,000.</Text>{" "}
                 </Text>
               </View>
             </View>

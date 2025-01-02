@@ -178,7 +178,7 @@ const LoginScreen = () => {
       >
         <TouchableOpacity
           style={tw`w-12 p-2 border border-gray-400 rounded-lg`}
-          onPress={() => router.push("IntroScreen" as never)}
+          onPress={() => router.push("/IntroductionScreen")}
         >
           <Icon name="chevron-back" color={PRIMARY_COLOR} size={26} />
         </TouchableOpacity>
