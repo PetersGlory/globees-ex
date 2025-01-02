@@ -31,12 +31,12 @@ const MoreScreen = () => {
         {title: "Profile", route: "ProfileScreen", icon: "person-circle-outline"},
         {title: "Transaction History", route: "TransactionScreen", icon: "time-outline"},
         {title: "Identity Verification", route: "IdentityVerification", icon: "id-card-outline"},
-        {title: "Help & Support", route: "support", icon: "headset-outline"},
-        {title: "Social Media", route: "social", icon: "thumbs-up-outline"},
-        {title: "Our blog", route: "blog", icon: "newspaper-outline"},
         {title: "Rewards", route: "RewardsScreen", icon: "gift-outline"},
+        {title: "Social Media", route: "social", icon: "thumbs-up-outline"},
+        {title: "Blog", route: "blog", icon: "newspaper-outline"},
         {title: "About", route: "AboutScreen", icon: "alert-circle-outline"},
         {title: "Legal", route: "LegalScreen", icon: "document-text-outline"},
+        {title: "Help & Support", route: "support", icon: "headset-outline"},
     ])
 
     const handleDelete = async () => {

@@ -34,7 +34,7 @@ const AccountLimits = () => {
         <CustomHeader title={"Account Limits"} />
 
         <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>
-          The limit shows how much you can send with your Globees Ex Account.
+          This shows how much you can spend with your Globees Ex account.
         </Text>
 
         <View style={tw`w-full mt-5`}>
@@ -67,7 +67,7 @@ const AccountLimits = () => {
           </View>
 
           {country == "NG" ? (
-            <View style={tw`bg-white rounded-lg p-5 mt-5`}>
+            <View style={tw`bg-white rounded-lg p-5 mt-5 gap-4`}>
               <Text style={tw`text-[15px] text-gray-800 mt-2`}>
                 Daily Transaction:{" "}
                 <Text style={tw`text-blue-800 font-bold`}>NGN5,000,000</Text>{" "}
@@ -81,15 +81,15 @@ const AccountLimits = () => {
                 <Text style={tw`text-blue-800 font-bold`}>NGN50,000,000</Text>{" "}
               </Text>
 
-              <View style={tw`mt-4`}>
-                <Text style={tw`text-[13px] text-gray-800 mt-2`}>
+              <View style={tw`mt-2`}>
+                <Text style={tw`text-[13px] text-gray-800`}>
                   Deposit Per Transaction is{" "}
                   <Text style={tw`text-blue-800 font-bold`}>NGN5,000,000.</Text>{" "}
                 </Text>
               </View>
             </View>
           ) : (
-            <View style={tw`bg-white rounded-lg p-5 mt-5`}>
+            <View style={tw`bg-white rounded-lg p-5 mt-5 gap-4`}>
               <Text style={tw`text-[15px] text-gray-800 mt-2`}>
                 Daily Transaction:{" "}
                 <Text style={tw`text-blue-800 font-bold`}>5,000.00 GBP</Text>{" "}
@@ -105,7 +105,7 @@ const AccountLimits = () => {
               </Text>
 
               <View style={tw`mt-4`}>
-                <Text style={tw`text-[13px] text-gray-800 mt-2`}>
+                <Text style={tw`text-[13px] text-gray-800`}>
                   Deposit Per Transaction is{" "}
                   <Text style={tw`text-blue-800 font-bold`}>5,000.00 GBP</Text>{" "}
                 </Text>

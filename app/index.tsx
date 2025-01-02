@@ -28,7 +28,7 @@ const WelcomeScreen = () => {
         <StatusBar style="light" /> 
         <View style={tw`flex-1`} />
         <View style={tw`flex-1 w-full h-full items-center px-5 py-3 mb-5 mt-5`}>
-            <Text style={[tw`text-white text-center text-3xl font-semibold`]}>{"Exchange and \n\ Payment Gateway"}</Text>
+            {/* <Text style={[tw`text-white text-center text-3xl font-semibold`]}>{"Exchange and \n\ Payment Gateway"}</Text> */}
         </View>
         <View style={tw`flex-1`}>
             <Image source={require("../assets/images/logo.png")} style={{

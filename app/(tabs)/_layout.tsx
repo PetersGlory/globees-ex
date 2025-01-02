@@ -46,6 +46,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="ExchangeScreen"
+        options={{
+          headerShown: false,
+          title: 'Exchange',
+          tabBarIcon: ({ color }) => <Ionicons name="contract-outline" style={tw`mb-1`} color={color} size={20} />,
+        }}
+      />
+      <Tabs.Screen
         name="CryptoScreen"
         options={{
           headerShown: false,
@@ -59,14 +67,6 @@ export default function TabLayout() {
           headerShown: false,
           title: 'Payment',
           tabBarIcon: ({ color }) => <Ionicons name="card-outline" style={tw`mb-1`} color={color} size={20} />,
-        }}
-      />
-      <Tabs.Screen
-        name="ExchangeScreen"
-        options={{
-          headerShown: false,
-          title: 'Exchange',
-          tabBarIcon: ({ color }) => <Ionicons name="contract-outline" style={tw`mb-1`} color={color} size={20} />,
         }}
       />
       <Tabs.Screen

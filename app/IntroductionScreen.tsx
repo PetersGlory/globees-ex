@@ -9,7 +9,12 @@ import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
 import { BASE_URL, GENERAL_URL, PRIMARY_COLOR } from "@/hooks/api/Index";
 import SecondaryBtn from "@/components/common/SecondaryBtn";
-import { setAccessToken, setBtc, setRates, setUserProfile } from "@/hooks/redux/slice";
+import {
+  setAccessToken,
+  setBtc,
+  setRates,
+  setUserProfile,
+} from "@/hooks/redux/slice";
 
 const IntroScreen = () => {
   const dispatch = useDispatch();
@@ -27,9 +32,9 @@ const IntroScreen = () => {
 
   const getToken = async () => {
     // let accessTokens = await AsyncStorage.setItem('accessToken', '');
-    let accessToken:string | null = await AsyncStorage.getItem("accessToken");
+    let accessToken: string | null = await AsyncStorage.getItem("accessToken");
     console.log(accessToken);
-    if ((accessToken !== null) && (accessToken !== "")) {
+    if (accessToken !== null && accessToken !== "") {
       dispatch(setAccessToken(accessToken));
       getProfile(accessToken);
       getRates();
@@ -39,7 +44,7 @@ const IntroScreen = () => {
   };
 
   // Getting Profile
-  const getProfile = (key:string) => {
+  const getProfile = (key: string) => {
     axios
       .request({
         method: "GET",
@@ -75,7 +80,7 @@ const IntroScreen = () => {
         console.error(err);
       });
   };
-// getting crypto addresses
+  // getting crypto addresses
   const getCryptoAddress = () => {
     axios
       .request({
@@ -91,7 +96,7 @@ const IntroScreen = () => {
       });
   };
 
-  const updateToken = async (email:string) => {
+  const updateToken = async (email: string) => {
     const expoPushToken = await AsyncStorage.getItem("pushToken");
     let datas = {
       user_type: "user",
@@ -120,11 +125,21 @@ const IntroScreen = () => {
       <StatusBar style="light" />
       <View style={tw`flex-1`} />
       <View style={tw`flex-1 w-full h-full items-center`}>
-        <Text style={[tw`text-white text-center text-5xl font-bold mb-5 mt-5 uppercase`]}>Globees Ex</Text>
-        <Image source={require("../assets/images/logo.png")} style={{
-          width: 200,
-          height: 200,
-        }} alt="intro" />
+        <Text
+          style={[
+            tw`text-white text-center text-5xl font-bold mb-5 mt-5 uppercase`,
+          ]}
+        >
+          Globees Ex
+        </Text>
+        <Image
+          source={require("../assets/images/logo.png")}
+          style={{
+            width: 200,
+            height: 200,
+          }}
+          alt="intro"
+        />
       </View>
       <View style={tw`flex-1`} />
       <View style={tw`flex-1`} />
@@ -138,22 +153,25 @@ const IntroScreen = () => {
       >
         <Text
           style={{
-            ...tw`text-3xl font-bold text-center`,
+            ...tw`text-2xl font-bold text-center`,
             color: PRIMARY_COLOR,
           }}
         >
-          Welcome back ...
+          Exchange fiat, crypto, and make cross-border payments.
         </Text>
         <Text style={tw`text-[15px] text-gray-500 p-4 text-center`}>
-          Exchange your currency and send international payments online.
-          Instantly transfer money to your family or friends, and swiftly pay towards your tuition fees, bills, and expenses.
+          Instantly swap or transfer money to friends, family, loved ones and
+          pay towards your tuition, fees, bills, and expenses in minutes.
         </Text>
         <View style={tw`flex flex-row items-center mt-5 justify-between`}>
           <View style={tw`w-[49%]`}>
             <SecondaryBtn title={"Login"} onpressed={btnGetstarted} />
           </View>
           <View style={tw`w-[49%]`}>
-            <SecondaryBtn title={"Register"} onpressed={()=> router.push("RegistrationScreen" as never)} />
+            <SecondaryBtn
+              title={"Register"}
+              onpressed={() => router.push("RegistrationScreen" as never)}
+            />
           </View>
         </View>
       </View>

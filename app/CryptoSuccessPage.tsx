@@ -18,8 +18,8 @@ import { selectAccessToken, selectBtc, selectCryptoData, selectExchange } from "
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api/Index";
 import { router, useLocalSearchParams } from "expo-router";
-import PrimaryBtn from "@/components/common/PrimaryBtn";
 import LoadingModal from "@/components/common/Modals/LoadingModal";
+import SecondaryBtn from "@/components/common/SecondaryBtn";
 
 const CryptoSuccessPage = () => {
   const params = useLocalSearchParams();
@@ -158,7 +158,7 @@ const CryptoSuccessPage = () => {
         </Text>
 
         <View style={tw`items-center w-full mt-5`}>
-          <PrimaryBtn title={"Continue"} onpressed={handleContinue} />
+          <SecondaryBtn title={"Continue"} onpressed={handleContinue} />
         </View>
       </View>
       <LoadingModal

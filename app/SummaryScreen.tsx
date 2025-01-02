@@ -85,7 +85,7 @@ const SummaryScreen = () => {
     }
     
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full p-5`}>
+    <SafeAreaView style={tw`flex-grow bg-gray-100 w-full h-full p-5`}>
         <StatusBar style='dark' />
         <ScrollView style={tw`w-full h-full ${Platform.OS == "ios" ? "p-5 w-full h-full" : ""}`}>
             <CustomHeader title={"Summary Details"} />
