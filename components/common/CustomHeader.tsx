@@ -13,7 +13,7 @@ const CustomHeader = ({title}:any) => {
         <Icon name="chevron-back-outline" style={tw`text-center`} size={20} />
       </TouchableOpacity>
       <Text style={tw`text-center font-medium text-[15px]`}>{title}</Text>
-      <TouchableOpacity style={tw`rounded-lg p-2 items-center border border-blue-800`} onPress={()=> router.push("NotificationScreen")}>
+      <TouchableOpacity style={tw`rounded-lg p-2 items-center border border-blue-800`} onPress={()=> router.push("/NotificationScreen")}>
           <Icon name="notifications-outline" style={tw`text-center`} size={20} />
         </TouchableOpacity>
     </View>

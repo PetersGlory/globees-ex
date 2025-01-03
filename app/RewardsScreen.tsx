@@ -6,7 +6,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import axios from 'axios';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, RefreshControl } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, RefreshControl, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 
@@ -63,11 +63,11 @@ const RewardsScreen = () => {
   }, 0);
 
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full px-4 py-5 gap-4 bg-gray-50 `}>
+    <SafeAreaView style={tw`flex-grow w-full h-full px-4 py-5 gap-4 bg-gray-50 ${Platform.OS == "ios" ? "px-4" : ""}`}>
       {/* Header */}
       <CustomHeader title={"Rewards"} />
 
-      <ScrollView style={tw`flex-1`} refreshControl={<RefreshControl refreshing={loading} onRefresh={onLoading} />} >
+      <ScrollView style={tw`flex-1 ${Platform.OS == "ios" ? "px-4" : ""}`} refreshControl={<RefreshControl refreshing={loading} onRefresh={onLoading} />} >
         {/* Points Card */}
         <View style={tw`bg-white rounded-xl p-4 gap-2 shadow-sm`}>
           <View style={tw`flex-row items-center justify-between`}>
