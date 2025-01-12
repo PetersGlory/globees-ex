@@ -26,7 +26,7 @@ const MoreScreen = () => {
     const [modalL, setModalL] = React.useState(false);
     const [refresh, setRefresh] = useState(false);
     const key = useSelector(selectAccessToken)
-    const [support, setSupport] = React.useState("Hi Globees Ex, I'm contacting from the app and I will need more enquiry. Thank you");
+    const [support] = React.useState("Hi Globees Ex, I'm contacting from the app and I will need more enquiry. Thank you");
     const [links, setLinks] = useState([
         {title: "Profile", route: "ProfileScreen", icon: "person-circle-outline"},
         {title: "Transaction History", route: "TransactionScreen", icon: "time-outline"},

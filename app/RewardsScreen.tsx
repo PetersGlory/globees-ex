@@ -63,9 +63,11 @@ const RewardsScreen = () => {
   }, 0);
 
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full px-4 py-5 gap-4 bg-gray-50 ${Platform.OS == "ios" ? "px-4" : ""}`}>
+    <SafeAreaView style={tw`flex-grow w-full h-full px-4 py-5 gap-4 bg-gray-50`}>
       {/* Header */}
+      <View style={tw` ${Platform.OS == "ios" ? "px-4" : ""}`}>
       <CustomHeader title={"Rewards"} />
+      </View>
 
       <ScrollView style={tw`flex-1 ${Platform.OS == "ios" ? "px-4" : ""}`} refreshControl={<RefreshControl refreshing={loading} onRefresh={onLoading} />} >
         {/* Points Card */}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Modal, TouchableOpacity } from 'react-native'
+import { View, Text, Modal, TouchableOpacity, Platform } from 'react-native'
 import tw from "twrnc"
 import Icon from "@expo/vector-icons/Ionicons"
 import { WebView } from 'react-native-webview';
@@ -14,8 +14,8 @@ const CustomLegal = ({visibility, setVisibility, isRefer}:any) => {
         setVisibility(false);
     }}
     >
-        <View style={tw`w-full h-full bg-gray-100 pt-5`}>
-            <TouchableOpacity style={tw`absolute top-5 right-5 z-10`} onPress={()=> setVisibility(false)}>
+        <View style={tw`w-full h-full bg-gray-100 ${Platform.OS == "ios" ? "pt-20" :" pt-5"}`}>
+            <TouchableOpacity style={tw`absolute top-5 ${Platform.OS == "ios" ? "top-20" :""} right-5 z-10`} onPress={()=> setVisibility(false)}>
                 <Icon name='close-circle-outline' size={26} />
             </TouchableOpacity>
             <Text style={tw`text-center text-gray-600 font-semibold text-[18px] mt-2 text-blue-800 capitalize`}>{isRefer ? "GLOBEES EX Referral terms" : "GLOBEES EX LEGAL"}</Text>

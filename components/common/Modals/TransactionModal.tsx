@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, Modal, TouchableOpacity, Image} from 'react-native';
+import { Text, View, Modal, TouchableOpacity, Image, Platform} from 'react-native';
 import tw from "twrnc"
 import Ionicons from  '@expo/vector-icons/Ionicons'
 import { useSelector } from 'react-redux';
@@ -35,11 +35,11 @@ const TransactionModal: React.FC<TransactionModalProps> = ({onpressed, visibilit
           ...tw`flex flex-col flex-1 justify-center items-center`,
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
         }}>
-        <TouchableOpacity style={tw`absolute top-5 right-5 z-10`} onPress={onpressed}>
+        <TouchableOpacity style={tw`absolute ${Platform.OS === "ios" ? "top-20" : "top-5" } right-5 z-10`} onPress={onpressed}>
             <Ionicons name='close-circle-outline' size={26} />
         </TouchableOpacity>
         <ScrollView
-          style={tw`bg-white rounded-lg w-full h-full p-4 pt-5`} ref={viewTosnapShotRef.current}>
+          style={tw`bg-white rounded-lg w-full h-full p-4 ${Platform.OS === "ios" ? "pt-20" : "pt-5" }`} ref={viewTosnapShotRef.current}>
             <View style={tw`text-center flex items-center`}>
               <Image source={require("../../../assets/images/logo-bg.png")} style={{
                 ...tw`rounded-full`,

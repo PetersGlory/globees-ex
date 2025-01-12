@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Platform,
+  Linking,
 } from "react-native";
 import tw from "twrnc";
 import Icon from "@expo/vector-icons/Ionicons";
@@ -22,6 +24,7 @@ import LoadingModal from "@/components/common/Modals/LoadingModal";
 const HomeScreen = () => {
   const [modal, setModal] = useState(true);
   const userProfile = useSelector(selectUserProfile);
+  const [support] = React.useState("Hi Globees Ex, I'm interested in knowing more about the crypto section. Thank you");
 
   useEffect(() => {
     if (userProfile !== null) {
@@ -62,14 +65,25 @@ const HomeScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={tw`shadow w-[30%] rounded-2xl pt-6 pl-5 pr-5 pb-6 shadow bg-white flex flex-col`}
-            onPress={() => router.push("/(tabs)/CryptoScreen")}
+            onPress={() => {
+              if (Platform.OS == "ios") {
+                Linking.openURL('whatsapp://send?text=' + support + '&phone=447778068566').then((data) => {
+                  console.log('WhatsApp Opened');
+                })
+                  .catch(() => {
+                    alert('Make sure Whatsapp installed on your device');
+                  });
+              } else {
+                router.push("/(tabs)/CryptoScreen")
+              }
+            }}
           >
             <Icon name="cash-outline" size={30} style={tw`text-blue-900`} />
             <Text style={tw`mt-5 text-gray-700 text-left font-bold`}>
               Crypto Exchange{" "}
             </Text>
             <Text style={tw`mt-2 text-gray-600 text-left text-xs`}>
-              Click here to exchange the digital currency of your choice.
+              {Platform.OS == "ios" ? "Click to contact us on Whatsapp for more Information." : "Click here to exchange the digital currency of your choice."}
             </Text>
           </TouchableOpacity>
 

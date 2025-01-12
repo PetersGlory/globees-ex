@@ -15,7 +15,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          height: 65,
+          height: Platform.OS === "ios" ? 85 : 65,
           elevation: 0,
           shadowColor: '#000',
           shadowOffset: {
@@ -25,7 +25,7 @@ export default function TabLayout() {
           shadowOpacity: 0.25,
           shadowRadius: 3.84,
           borderTopWidth: 0,
-          paddingBottom: Platform.OS === 'ios' ? 0 : 5,
+          paddingBottom: Platform.OS === 'ios' ? 10 : 5,
           paddingTop: 5,
         },
         tabBarLabelStyle: {
