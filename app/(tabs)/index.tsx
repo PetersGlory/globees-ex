@@ -113,12 +113,14 @@ const HomeScreen = () => {
       <View style={tw`w-full rounded-t-2xl bg-gray-100 h-[70%]`}>
         <Transactions />
       </View>
-      <LoadingModal
-        message={"Loading..."}
-        isloading={true}
-        visibility={modal}
-        setVisibility={setModal}
-      />
+      {modal && (
+        <View style={tw`w-full flex-1 items-center justify-center`}>
+          <LoadingModal
+            text={"Loading..."}
+            visibility={modal}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

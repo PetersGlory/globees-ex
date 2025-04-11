@@ -1,5 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
-import CustomLegal from "@/components/common/Modals/CustomLegal";
 import React, { useState } from "react";
 import {
   View,
@@ -7,137 +5,167 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
-  Clipboard,
-  ScrollView,
   Share,
+  Alert,
+  Platform,
+  ScrollView,
+  Clipboard,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
-import { PRIMARY_COLOR } from "@/hooks/api/Index";
-import { StatusBar } from "expo-status-bar";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
+import { StatusBar } from "expo-status-bar";
+import CustomLegal from "@/components/common/Modals/CustomLegal";
+import { PRIMARY_COLOR } from "@/hooks/api/Index";
 import { selectUserProfile } from "@/hooks/redux/slice";
 
+interface UserProfile {
+  user_id: string;
+  fullname?: string;
+}
+
 const InviteFriendsScreen = () => {
-  const [modal, setModal] = useState(false);
-  const userAcc = useSelector(selectUserProfile);
-  const referralCode = userAcc?.user_id || "";
+  const [isLegalModalVisible, setLegalModalVisible] = useState(false);
+  const userProfile = useSelector(selectUserProfile) as UserProfile;
+  const referralCode = userProfile?.user_id || "";
 
   const copyToClipboard = () => {
     Clipboard.setString(referralCode);
-    alert("Referral code copied to clipboard");
-    // You could add a toast notification here
+    Alert.alert(
+      "Success",
+      "Referral code copied to clipboard",
+      [{ text: "OK" }],
+      { cancelable: true }
+    );
   };
 
   const handleShare = async () => {
     try {
+      const shareMessage = `Hey! I'm using Globees Ex to send money. Join me and get £10 when you send up to £100 in one transaction. Plus £5 when you complete KYC verification. Download and use my referral code '${referralCode}' to sign up!`;
+      
       const result = await Share.share(
         {
-          message: `Hey! I'm using Globees Ex to send money. Join me and get £10 when you send upto £100 in one transaction. Plus £5 when you complete KYC verification, download and use my referral code '${referralCode}' to sign up`,
+          message: shareMessage,
           title: "Globees Ex",
           url: referralCode, // iOS only
         },
         {
-          dialogTitle: "Globees Ex", // Android only
+          dialogTitle: "Invite Friends to Globees Ex", // Android only
+          subject: "Join me on Globees Ex", // iOS only
         }
       );
 
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          // shared with activity type of result.activityType
-          console.log(result);
+          console.log("Shared with activity type:", result.activityType);
         } else {
-          // shared
-          console.log(result);
+          console.log("Shared successfully");
         }
       } else if (result.action === Share.dismissedAction) {
-        // dismissed
+        console.log("Share dismissed");
       }
-    } catch (error:any) {
-      alert(error?.message);
-      console.log(error);
+    } catch (error) {
+      console.error("Error sharing:", error);
+      Alert.alert(
+        "Error",
+        "Failed to share referral code. Please try again.",
+        [{ text: "OK" }],
+        { cancelable: true }
+      );
     }
-  }
+  };
 
   return (
-    <SafeAreaView style={tw`flex-1 py-6 bg-[${PRIMARY_COLOR}]`}>
+    <SafeAreaView style={tw`flex-1 pt-5 bg-[${PRIMARY_COLOR}]`}>
       <StatusBar style="light" />
+      
       {/* Header */}
-      <View style={tw`p-4 flex-row items-center`}>
+      <View style={tw`p-4 flex-row items-center justify-between`}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={tw`w-10 h-10 bg-white rounded-full items-center justify-center`}
+          style={tw`w-10 h-10 bg-white/20 rounded-full items-center justify-center`}
         >
-          <Ionicons name="close-circle-outline" size={24} color="#000" />
+          <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={tw`text-white text-xl text-center font-semibold ml-4`}>
-          Invite friends
+        <Text style={tw`text-white text-xl font-semibold`}>
+          Invite Friends
         </Text>
+        <View style={tw`w-10`} /> {/* Spacer for alignment */}
       </View>
 
       {/* Main Content */}
-      <View style={tw`flex-1 items-center px-4`}>
+      <ScrollView style={tw`flex-1`} contentContainerStyle={tw`items-center px-4 pb-8`}>
         {/* Illustration */}
-        <View style={tw`w-[85%] h-[43%] my-4`}>
+        <View style={tw`w-[85%] h-[200px] my-6`}>
           <Image
             source={require("../assets/images/rewards.png")}
             style={tw`w-full h-full`}
-            resizeMode="stretch"
+            resizeMode="contain"
           />
         </View>
 
         {/* Reward Text */}
-        <Text style={tw`text-white text-xl font-bold text-center mb-2`}>
-          Earn £50 if you exchange upto £500 a week
-        </Text>
-
-        <Text style={tw`text-white text-center text-sm mb-4`}>
-          Invite a friend and you get £10 each when they send upto £100 in one
-          transaction. Plus £5 to your friend When they complete Know Your Customer (KYC) verification process.
-        </Text>
+        <View style={tw`items-center mb-6`}>
+          <Text style={tw`text-white text-2xl font-bold text-center mb-3`}>
+            Earn £50 Weekly Bonus
+          </Text>
+          <Text style={tw`text-white/90 text-center text-base leading-6`}>
+            Invite a friend and you both get £10 when they send up to £100 in one transaction. 
+            Plus £5 bonus when they complete KYC verification.
+          </Text>
+        </View>
 
         {/* Referral Code Section */}
-        <View
-          style={tw`w-full bg-[#464679] rounded-xl px-4 py-2.5 flex-row justify-between items-center mb-4`}
-        >
-          <View>
-            <Text style={tw`text-white/60 text-sm mb-1`}>
-              Your referral code
-            </Text>
-            <Text style={tw`text-white text-xl font-semibold uppercase`}>
+        <View style={tw`w-full bg-white/10 rounded-xl p-4 mb-6`}>
+          <Text style={tw`text-white/60 text-sm mb-2`}>
+            Your referral code
+          </Text>
+          <View style={tw`flex-row items-center justify-between`}>
+            <Text style={tw`text-white text-2xl font-bold tracking-wider`}>
               {referralCode}
             </Text>
+            <TouchableOpacity
+              onPress={copyToClipboard}
+              style={tw`bg-white/20 px-4 py-2 rounded-full flex-row items-center`}
+            >
+              <Ionicons name="copy-outline" size={16} color="#fff" style={tw`mr-1`} />
+              <Text style={tw`text-white font-medium`}>Copy</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={copyToClipboard}
-            style={tw`bg-white/20 px-4 py-2 rounded-full`}
-          >
-            <Text style={tw`text-white font-medium`}>Copy</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Invite Button */}
         <TouchableOpacity
-        onPress={handleShare}
-          style={tw`w-full bg-[#10B981] rounded-lg px-4 py-2.5 flex-row items-center justify-between mb-4`}
+          onPress={handleShare}
+          style={tw`w-full bg-[#10B981] rounded-xl p-4 mb-6 flex-row items-center justify-between`}
         >
           <View style={tw`flex-row items-center`}>
-            {/* Small cartoon icon would go here */}
-            <Text style={tw`text-white text-xl font-semibold ml-2`}>
-              Invite friends
+            <Ionicons name="share-social-outline" size={24} color="#fff" style={tw`mr-3`} />
+            <Text style={tw`text-white text-lg font-semibold`}>
+              Invite Friends
             </Text>
           </View>
-          <Ionicons name="chevron-forward-outline" size={24} color="#fff" />
+          <Ionicons name="chevron-forward" size={24} color="#fff" />
         </TouchableOpacity>
 
         {/* Terms and Conditions */}
-        <TouchableOpacity onPress={() => setModal(true)}>
+        <TouchableOpacity 
+          onPress={() => setLegalModalVisible(true)}
+          style={tw`flex-row items-center`}
+        >
+          <Ionicons name="document-text-outline" size={16} color="#fff" style={tw`mr-1`} />
           <Text style={tw`text-white/80 text-sm underline`}>
             Terms and conditions apply
           </Text>
         </TouchableOpacity>
-      </View>
-      <CustomLegal isRefer={true} visibility={modal} setVisibility={setModal} />
+      </ScrollView>
+
+      <CustomLegal 
+        isRefer={true} 
+        visibility={isLegalModalVisible} 
+        setVisibility={setLegalModalVisible} 
+      />
     </SafeAreaView>
   );
 };

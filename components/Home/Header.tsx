@@ -15,120 +15,118 @@ import { BASE_URL, GENERAL_URL, updatedevicetoken } from "@/hooks/api/Index";
 import LoadingModal from "../common/Modals/LoadingModal";
 import { router } from "expo-router";
 
-const Header = () => {
-  const [modal, setModal] = useState(false);
-  const userProfile = useSelector(selectUserProfile);
-  const dispatch = useDispatch();
-  const key = useSelector(selectAccessToken);
+interface UserProfile {
+  fullname: string;
+  email: string;
+}
 
-  const handleRefresh = () => {
-    setModal(true);
-    getProfile(key);
-    getRates();
-    setTimeout(() => {
-      setModal(false);
+const Header = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const userProfile = useSelector(selectUserProfile) as UserProfile;
+  const dispatch = useDispatch();
+  const accessToken = useSelector(selectAccessToken);
+
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.all([
+        getProfile(accessToken),
+        getRates()
+      ]);
       router.replace("/(tabs)");
-    });
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Getting Profile
-  const getProfile = (key: any) => {
-    axios
-      .request({
-        method: "GET",
-        url: `${BASE_URL}/profile`,
+  const getProfile = async (token: string) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/profile`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + key,
+          Authorization: `Bearer ${token}`,
         },
-      })
-      .then((response) => {
-        let dataUser = response.data.data;
-        dispatch(setUserProfile(dataUser));
-        updatedevicetoken(dataUser.email, key);
-      })
-      .catch((err) => {
-        console.error(err);
       });
+      const userData = response.data.data;
+      dispatch(setUserProfile(userData));
+      await updatedevicetoken(userData.email, token);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      throw error;
+    }
   };
 
-  // Getting Rates
-  const getRates = () => {
-    axios
-      .request({
-        method: "GET",
-        url: `${GENERAL_URL}/rates`,
-      })
-      .then((response) => {
-        let dataRate = response.data.message;
-        dispatch(setRates(dataRate));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+  const getRates = async () => {
+    try {
+      const response = await axios.get(`${GENERAL_URL}/rates`);
+      dispatch(setRates(response.data.message));
+    } catch (error) {
+      console.error("Error fetching rates:", error);
+      throw error;
+    }
   };
+
   return (
     <View style={tw`w-full flex flex-row items-center justify-between px-3 py-2`}>
       <StatusBar style="light" />
+      
+      {/* Left Section - Welcome Message */}
       <TouchableOpacity
-        style={tw`flex-1 flex flex-row`}
+        style={tw`flex-1 flex flex-row items-center`}
         onPress={() => router.push("/MoreScreen")}
       >
         <View>
-          <Text style={tw`text-white text-[12px]`}>Welcome back!</Text>
-          <Text style={tw`text-white font-medium text-[18px]`}>
-            {userProfile?.fullname}
+          <Text style={tw`text-white text-xs`}>Welcome back!</Text>
+          <Text style={tw`text-white font-medium text-lg`}>
+            {userProfile?.fullname || "User"}
           </Text>
         </View>
-        <TouchableOpacity onPress={handleRefresh}>
+        <TouchableOpacity 
+          onPress={handleRefresh}
+          style={tw`ml-4`}
+        >
           <Icon
             name="reload-outline"
-            color={"#ffffff"}
+            color="#ffffff"
             size={20}
-            style={tw`text-center p-2 ml-4`}
+            style={tw`p-2`}
           />
         </TouchableOpacity>
       </TouchableOpacity>
 
-      <View style={tw`w-auto flex flex-row gap-2 items-center justify-end flex-1`}>
+      {/* Right Section - Rewards and Notifications */}
+      <View style={tw`flex flex-row gap-2 items-center`}>
         <TouchableOpacity
-          style={tw`w-auto items-center flex-row gap-2 px-2 border rounded-2xl text-center py-2 border-white`}
+          style={tw`flex-row items-center gap-2 px-3 py-2 border border-white rounded-2xl`}
           onPress={() => router.push("/RewardsScreen")}
         >
           <Icon
             name="gift-outline"
-            color={"#ffffff"}
+            color="#ffffff"
             size={16}
-            style={tw`w-auto`}
           />
-          <Text style={tw`text-white font-bold text-[10px]`}>Get 15.0 GBP</Text>
+          <Text style={tw`text-white font-bold text-xs`}>Get 15.0 GBP</Text>
         </TouchableOpacity>
+        
         <TouchableOpacity
-          style={tw``}
           onPress={() => router.push("/NotificationScreen")}
         >
           <Icon
             name="notifications-outline"
-            color={"#ffffff"}
+            color="#ffffff"
             size={18}
-            style={tw`border rounded-2xl text-center p-2 border-white w-auto`}
+            style={tw`p-2 border border-white rounded-2xl`}
           />
         </TouchableOpacity>
       </View>
 
-      {modal && (
-        <View
-          style={tw`w-full flex flex-col h-full absolute top-0 bottom-0 items-center justify-center bg-transparent`}
-        >
-          <LoadingModal
-            message={"Loading..."}
-            isloading={true}
-            visibility={modal}
-            setVisibility={setModal}
-          />
-        </View>
-      )}
+      <LoadingModal 
+        visibility={isLoading}
+        text="Loading..."
+      />
     </View>
   );
 };

@@ -1,87 +1,65 @@
 import React from 'react'
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native'
+import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import Icon from "@expo/vector-icons/Ionicons"
 import tw from "twrnc"
 import { PRIMARY_COLOR } from '@/hooks/api/Index'
 
-const LogOutModal = ({visibility, setVisibility, text, onPressed}:any) => {
+interface LogOutModalProps {
+  visibility: boolean;
+  setVisibility: (value: boolean) => void;
+  text: string;
+  onPressed: () => void;
+}
+
+const LogOutModal: React.FC<LogOutModalProps> = ({visibility, setVisibility, text, onPressed}) => {
   return (
     <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visibility}
-        onRequestClose={() => {
-        setVisibility(false);
-    }}>
-        <View style={styles.centeredView}>            
-            <View style={styles.modalView}>                
-                <Icon name="help-circle-outline" size={50} style={{
-                    ...tw`text-[${PRIMARY_COLOR}]`,
-                }} />
-                <Text style={tw`text-center text-gray-700 text-[14px]`}>{text}</Text>
-                <View style={tw`flex flex-row items-center justify-between p-2 mt-2 w-full`}>
-                    <TouchableOpacity onPress={()=> {
-                        setVisibility(false);
-                    }} style={tw`border border-gray-600 rounded-lg p-3 w-[100px]`}>
-                        <Text style={tw`text-gray-700 text-center`}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={onPressed} style={tw`bg-[${PRIMARY_COLOR}] rounded-lg p-3 w-[100px]`}>
-                        <Text style={tw`text-white text-center`}>Yes</Text>
-                    </TouchableOpacity>
-                </View>
+      animationType="fade"
+      transparent={true}
+      visible={visibility}
+      onRequestClose={() => setVisibility(false)}
+    >
+      <View style={tw`flex-1 justify-center items-center bg-black/50 px-4`}>            
+        <View style={tw`bg-white w-full max-w-[350px] rounded-2xl p-6 shadow-xl`}>                
+          <View style={tw`items-center mb-4`}>
+            <View style={tw`bg-red-50 rounded-full p-3 mb-4`}>
+              <Icon 
+                name="alert-circle" 
+                size={40} 
+                color="#EF4444"
+              />
             </View>
+            <Text style={tw`text-xl font-semibold text-gray-900 mb-2`}>
+              Confirm Action
+            </Text>
+            <Text style={tw`text-center text-gray-600 text-base`}>
+              {text}
+            </Text>
+          </View>
+
+          <View style={tw`flex-row items-center justify-between gap-3 mt-4`}>
+            <TouchableOpacity 
+              onPress={() => setVisibility(false)}
+              style={tw`flex-1 py-3 px-4 rounded-xl border border-gray-200 bg-gray-50`}
+            >
+              <Text style={tw`text-gray-700 text-center font-medium`}>
+                Cancel
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              onPress={onPressed}
+              style={tw`flex-1 py-3 px-4 rounded-xl bg-red-500`}
+            >
+              <Text style={tw`text-white text-center font-medium`}>
+                Confirm
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
+      </View>
     </Modal>
   )
 }
 
-const styles = StyleSheet.create({
-    dflex: {
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        marginTop: 20,
-    },
-
-    btnPrimary:{
-        backgroundColor: "#028C25",
-        borderRadius: 5,
-        color: "#ffffff",
-        display:"flex",
-        alignItems:"center",
-        justifyContent:"center",
-        width:"100%",
-        height:45,
-        marginTop: 34
-    },
-    modalText: {
-        marginBottom: 15,
-        fontWeight: "500",
-        marginTop: 18.38,
-        color: "#393836"
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        // marginTop: 22,
-        backgroundColor: "rgba(0, 0, 0, 0.5);"
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 30,
-        width:"80%",
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-        width: 0,
-        height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
 export default LogOutModal

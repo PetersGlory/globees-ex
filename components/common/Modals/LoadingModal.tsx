@@ -1,96 +1,30 @@
-import { PRIMARY_COLOR } from '@/hooks/api/Index';
 import React from 'react'
-import { View, Text, StyleSheet, Modal, ActivityIndicator, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Modal, ActivityIndicator } from 'react-native'
+import tw from "twrnc"
+import { PRIMARY_COLOR } from '@/hooks/api/Index'
 
-const LoadingModal = ({visibility, setVisibility, isloading, message}:any) => {
+interface LoadingModalProps {
+  visibility: boolean;
+  text?: string;
+}
+
+const LoadingModal: React.FC<LoadingModalProps> = ({ visibility, text = "Please wait..." }) => {
   return (
     <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visibility}
-        onRequestClose={() => {
-        setVisibility(false);
-    }}>
-        <View style={styles.centeredView}>
-            {isloading ? <View style={styles.modalView}>
-                
-                <ActivityIndicator size="large" color="#1D3A70" />
-                <TouchableOpacity onPress={()=> {
-                    setVisibility(false);
-                }}>
-                <Text style={styles.modalText}>{message}</Text>
-                </TouchableOpacity>
-            </View> :
-            <View>
-                
-                <View style={styles.modalView}>
-                    
-                    <Image source={require('../../../assets/images/success-bg.png')} style={{
-                        width: 80,
-                        height:80
-                    }} alt={'completed'} />
-                    <TouchableOpacity onPress={()=> {
-                        setVisibility(false);
-                    }}>
-                        <Text style={styles.modalText}>{message}</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            }
+      animationType="fade"
+      transparent={true}
+      visible={visibility}
+    >
+      <View style={tw`flex-1 justify-center items-center bg-black/50`}>
+        <View style={tw`bg-white rounded-2xl p-6 shadow-xl min-w-[200px] items-center`}>
+          <ActivityIndicator size="large" color={PRIMARY_COLOR} style={tw`mb-4`} />
+          <Text style={tw`text-gray-700 text-base text-center font-medium`}>
+            {text}
+          </Text>
         </View>
+      </View>
     </Modal>
   )
 }
 
-const styles = StyleSheet.create({
-    dflex: {
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        marginTop: 20,
-    },
-
-    btnPrimary:{
-        backgroundColor: PRIMARY_COLOR,
-        borderRadius: 5,
-        color: "#ffffff",
-        display:"flex",
-        alignItems:"center",
-        justifyContent:"center",
-        width:"100%",
-        height:45,
-        marginTop: 34
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-        fontSize:14,
-        fontWeight: "500",
-        marginTop: 18.38,
-        color: "#393836"
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 10,
-        backgroundColor: "rgba(0, 0, 0, 0.5);"
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 30,
-        width:"80%",
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-        width: 0,
-        height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-});
 export default LoadingModal
