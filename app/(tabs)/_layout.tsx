@@ -1,43 +1,80 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import tw from "twrnc"
+import { PRIMARY_COLOR } from '@/hooks/api/Index';
+import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
   return (
+    
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: PRIMARY_COLOR,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+        tabBarStyle: {
+          backgroundColor: '#ffffff',
+          height: Platform.OS === "ios" ? 85 : 65,
+          elevation: 0,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
           },
-          default: {},
-        }),
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          borderTopWidth: 0,
+          paddingBottom: Platform.OS === 'ios' ? 10 : 5,
+          paddingTop: 5,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+          paddingBottom: 5,
+        },
+        tabBarItemStyle: {
+          paddingTop: 5,
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
+          headerShown: false,
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="home-outline" style={tw`mb-1`} color={color} size={20} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="ExchangeScreen"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          headerShown: false,
+          title: 'Exchange',
+          tabBarIcon: ({ color }) => <Ionicons name="contract-outline" style={tw`mb-1`} color={color} size={20} />,
+        }}
+      />
+      <Tabs.Screen
+        name="CryptoScreen"
+        options={{
+          headerShown: false,
+          title: 'Crypto',
+          tabBarIcon: ({ color }) => <Ionicons name="cash-outline" style={tw`mb-1`} color={color} size={20} />,
+        }}
+      />
+      <Tabs.Screen
+        name="PaymentScreen"
+        options={{
+          headerShown: false,
+          title: 'Payment',
+          tabBarIcon: ({ color }) => <Ionicons name="card-outline" style={tw`mb-1`} color={color} size={20} />,
+        }}
+      />
+      <Tabs.Screen
+        name="MoreScreen"
+        options={{
+          headerShown: false,
+          title: 'More',
+          tabBarIcon: ({ color }) => <Ionicons name="help-circle-outline" style={tw`mb-1`} color={color} size={20} />,
         }}
       />
     </Tabs>

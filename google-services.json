@@ -1,0 +1,29 @@
+{
+    "project_info": {
+      "project_number": "628856772000",
+      "project_id": "globeeex",
+      "storage_bucket": "globeeex.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:628856772000:android:1e12f0b0485593bf2d40c5",
+          "android_client_info": {
+            "package_name": "com.globeesex.GlobeesEx"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyCov84fvTFTKWKm17_wldIX5PG9zBpJn9I"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
