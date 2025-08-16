@@ -155,7 +155,13 @@ const PaymentScreen = () => {
         (exchange.from.length > 0 && exchange.to !== "") ||
         exchange.to.length > 0
       ) {
-        dispatch(setExchanger(exchange));
+        const exchangeNewData = {
+          from: exchange.from,
+          to: exchange.to,
+          selectedC,
+          selectedD
+        }
+        dispatch(setExchanger(exchangeNewData));
         router.push({
           pathname: "/ReceiverScreen",
           params: {
@@ -317,15 +323,14 @@ const PaymentScreen = () => {
           <LogOutModal
             visibility={enabled}
             setVisibility={setEnabled}
-            text={`Are you sure you want to proceed to pay ${exchange.to}?`}
+            isLogout={false}
+            text={`Are you sure you want to proceed to pay ${selectedC == "NGN" ? "₦" +exchange.to :selectedC== "EUR" ? "£"+exchange.to : "$"+exchange.to}?`}
             onPressed={handleExchange}
           />
         ) : null}
         <LoadingModal
           visibility={loading}
-          setVisibility={() => setLoading(false)}
-          message={"Please wait..."}
-          isloading={true}
+          text={"Please wait..."}
         />
         <CustomLegal visibility={modalL} setVisibility={setModalL} />
       </View>

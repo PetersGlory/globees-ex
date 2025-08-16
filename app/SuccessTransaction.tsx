@@ -25,7 +25,15 @@ const SuccessTransaction = () => {
             }} alt={'completed'} />
 
             <Text style={tw`text-center font-medium text-gray-700 text-[15px]`}>Transfer in progress</Text>
-            <Text style={tw`text-center font-bold text-blue-700 text-xl mt-2`}>{exchangeed?.to}</Text>
+            {typeR == "payment" ? (
+                <>
+                    <Text style={tw`text-center font-bold text-blue-700 text-xl mt-2`}>{exchangeed?.selectedC == "NGN" ? "₦" +exchangeed?.to :exchangeed?.selectedC== "EUR" ? "£"+exchangeed?.to : "$"+exchangeed?.to}</Text>
+                </>
+            ): (
+                <>
+                    <Text style={tw`text-center font-bold text-blue-700 text-xl mt-2`}>{exchangeed?.to}</Text>
+                </>
+            )}
             {typeR !== "exchange" ? (
                 <Text style={tw`text-center text-gray-500 mt-5 text-[14px]`}>
                     Your payment will be processed in minutes...

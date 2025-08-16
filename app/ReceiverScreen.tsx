@@ -16,6 +16,7 @@ import CustomHeader from "@/components/common/CustomHeader";
 import PrimaryBtn from "@/components/common/PrimaryBtn";
 import LogOutModal from "@/components/common/Modals/LogOutModal";
 import { router, useLocalSearchParams } from "expo-router";
+import { PRIMARY_COLOR } from "@/hooks/api/Index";
 
 const ReceiverScreen = () => {
   const params = useLocalSearchParams();
@@ -88,6 +89,7 @@ const ReceiverScreen = () => {
           <TextInput
             placeholder="Recipient Name"
             value={accounts.account_name}
+            placeholderTextColor={PRIMARY_COLOR}
             onChangeText={(val) => {
               setAccounts({
                 ...accounts,
@@ -100,6 +102,7 @@ const ReceiverScreen = () => {
           <TextInput
             placeholder="Bank Name"
             value={accounts.bank_name}
+            placeholderTextColor={PRIMARY_COLOR}
             onChangeText={(val) => {
               setAccounts({
                 ...accounts,
@@ -112,6 +115,7 @@ const ReceiverScreen = () => {
           <TextInput
             placeholder="Account Number"
             value={accounts.account_number}
+            placeholderTextColor={PRIMARY_COLOR}
             onChangeText={(val) => {
               setAccounts({
                 ...accounts,
@@ -126,6 +130,7 @@ const ReceiverScreen = () => {
             (currency_to == "UK" && typeR == "exchange" && (
               <TextInput
                 placeholder="Sort Code"
+                placeholderTextColor={PRIMARY_COLOR}
                 value={accounts.sort_code}
                 onChangeText={(val) => {
                   setAccounts({
@@ -166,6 +171,7 @@ const ReceiverScreen = () => {
                 <TextInput
                   placeholder="Student ID"
                   value={accounts.student_id}
+                  placeholderTextColor={PRIMARY_COLOR}
                   onChangeText={(val) => {
                     setAccounts({
                       ...accounts,
@@ -186,6 +192,7 @@ const ReceiverScreen = () => {
               <View style={tw`w-full`}>
                 <TextInput
                   placeholder="IBAN"
+                  placeholderTextColor={PRIMARY_COLOR}
                   value={accounts.iban}
                   onChangeText={(val) => {
                     setAccounts({
@@ -198,6 +205,7 @@ const ReceiverScreen = () => {
                 />
                 <TextInput
                   placeholder="SWIFT/BIC"
+                  placeholderTextColor={PRIMARY_COLOR}
                   value={accounts.swift_bic}
                   onChangeText={(val) => {
                     setAccounts({
@@ -210,6 +218,7 @@ const ReceiverScreen = () => {
                 />
                 <TextInput
                   placeholder="Recipient Address"
+                  placeholderTextColor={PRIMARY_COLOR}
                   value={accounts.address}
                   onChangeText={(val) => {
                     setAccounts({
@@ -234,6 +243,7 @@ const ReceiverScreen = () => {
         {enabled ? (
           <LogOutModal
             visibility={enabled}
+            isLogout={false}
             setVisibility={setEnabled}
             text={`Are you sure you want to proceed?`}
             onPressed={handleContinue}

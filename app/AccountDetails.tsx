@@ -275,10 +275,8 @@ const AccountDetails = () => {
       </View>
       <View style={tw`w-full items-center justify-center flex flex-col`}>
         <LoadingModal
-          message={"Loading..."}
-          isloading={true}
+          text={"Loading..."}
           visibility={modal}
-          setVisibility={setModal}
         />
       </View>
     </SafeAreaView>

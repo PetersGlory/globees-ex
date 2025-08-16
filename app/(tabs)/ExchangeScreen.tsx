@@ -308,7 +308,8 @@ const ExchangeScreen = () => {
       <View style={tw`w-full items-center justify-center flex flex-col`}>
         {enabled ? (
           <LogOutModal
-            visibility={enabled}
+            visibility={enabled}            
+            isLogout={false}
             setVisibility={setEnabled}
             text={`Are you sure you want to proceed to exchange ${exchange.from} to ${exchange.to}?`}
             onPressed={handleExchange}
@@ -316,9 +317,7 @@ const ExchangeScreen = () => {
         ) : null}
         <LoadingModal
           visibility={loading}
-          setVisibility={() => setLoading(false)}
-          message={"Please wait..."}
-          isloading={true}
+          text={"Please wait..."}
         />
       </View>
     </SafeAreaView>

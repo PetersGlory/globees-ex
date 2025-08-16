@@ -211,9 +211,7 @@ const ProfileScreen = () => {
       </ScrollView>
       <LoadingModal
         visibility={enabled}
-        isloading={loading}
-        setVisibility={setEnabled}
-        message={message}
+        text={message}
       />
     </SafeAreaView>
   );

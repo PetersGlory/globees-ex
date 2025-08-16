@@ -6,12 +6,13 @@ import { PRIMARY_COLOR } from '@/hooks/api/Index'
 
 interface LogOutModalProps {
   visibility: boolean;
+  isLogout?: boolean;
   setVisibility: (value: boolean) => void;
   text: string;
   onPressed: () => void;
 }
 
-const LogOutModal: React.FC<LogOutModalProps> = ({visibility, setVisibility, text, onPressed}) => {
+const LogOutModal: React.FC<LogOutModalProps> = ({visibility, isLogout, setVisibility, text, onPressed}) => {
   return (
     <Modal
       animationType="fade"
@@ -23,11 +24,19 @@ const LogOutModal: React.FC<LogOutModalProps> = ({visibility, setVisibility, tex
         <View style={tw`bg-white w-full max-w-[350px] rounded-2xl p-6 shadow-xl`}>                
           <View style={tw`items-center mb-4`}>
             <View style={tw`bg-red-50 rounded-full p-3 mb-4`}>
-              <Icon 
-                name="alert-circle" 
-                size={40} 
-                color="#EF4444"
-              />
+              {isLogout ? (
+                <Icon 
+                  name="alert-circle" 
+                  size={40} 
+                  color="#EF4444"
+                />
+              ): (
+                <Icon 
+                  name="information-circle-outline" 
+                  size={40} 
+                  color={PRIMARY_COLOR}
+                />
+              )}
             </View>
             <Text style={tw`text-xl font-semibold text-gray-900 mb-2`}>
               Confirm Action
@@ -49,7 +58,7 @@ const LogOutModal: React.FC<LogOutModalProps> = ({visibility, setVisibility, tex
             
             <TouchableOpacity 
               onPress={onPressed}
-              style={tw`flex-1 py-3 px-4 rounded-xl bg-red-500`}
+              style={tw`flex-1 py-3 px-4 rounded-xl ${isLogout ? "bg-red-500" : `bg-[${PRIMARY_COLOR}]`}`}
             >
               <Text style={tw`text-white text-center font-medium`}>
                 Confirm

@@ -189,9 +189,7 @@ const VerificationScreen = () => {
       <View style={tw`w-full items-center justify-center flex flex-col`}>
         <LoadingModal
           visibility={modal}
-          setVisibility={setModal}
-          message={message}
-          isloading={loading}
+          text={message}
         />
       </View>
     </SafeAreaView>

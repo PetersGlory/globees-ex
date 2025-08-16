@@ -307,15 +307,14 @@ const CryptoScreen = () => {
             <LogOutModal
               visibility={enabled}
               setVisibility={setEnabled}
+              isLogout={false}
               text={`Are you sure you want to proceed to exchange ${exchange.to} ${selectedD}?`}
               onPressed={handleExchange}
             />
           ) : null}
           <LoadingModal
             visibility={loading}
-            setVisibility={() => setLoading(false)}
-            message={"Please wait..."}
-            isloading={true}
+            text={"Please wait..."}
           />
         </View>
       </SafeAreaView>

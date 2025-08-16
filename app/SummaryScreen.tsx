@@ -184,7 +184,7 @@ const SummaryScreen = () => {
                 {/* <Text style={tw`mt-3 text-[12px] text-gray-600`}>Note: Do not click paid if the payment has not been sent from your bank. Ensure to send the exact amount required to process your payment instantly.</Text> */}
             </View>
         </ScrollView>
-      <LoadingModal message={"Loading..."} isloading={true} visibility={modal} setVisibility={setModal} />
+      <LoadingModal text={"Loading..."} visibility={modal} />
     </SafeAreaView>
   )
 }
