@@ -48,7 +48,7 @@ const AccountLimits = () => {
                 setCountry("NG");
               }}
             >
-              <Text style={tw`text-gray-700 text-[15px]`}>
+              <Text style={tw`text-gray-700 font-bold text-[13px]`}>
                 🇳🇬 NGN (Naira) Limit
               </Text>
             </TouchableOpacity>
@@ -60,14 +60,14 @@ const AccountLimits = () => {
                 setCountry("UK");
               }}
             >
-              <Text style={tw`text-gray-700 text-[15px]`}>
+              <Text style={tw`text-gray-700 font-bold text-[13px]`}>
                 🇬🇧 GBP (Pounds) Limit
               </Text>
             </TouchableOpacity>
           </View>
 
           {country == "NG" ? (
-            <View style={tw`bg-white rounded-lg p-5 mt-5 gap-4`}>
+            <View style={tw`bg-gray-50 rounded-lg p-5 mt-5 gap-4`}>
               <Text style={tw`text-[15px] text-gray-800 mt-2`}>
                 Daily Transaction:{" "}
                 <Text style={tw`text-blue-800 font-bold`}>NGN 5,000,000</Text>{" "}
@@ -89,7 +89,7 @@ const AccountLimits = () => {
               </View>
             </View>
           ) : (
-            <View style={tw`bg-white rounded-lg p-5 mt-5 gap-4`}>
+            <View style={tw`bg-gray-50 rounded-lg p-5 mt-5 gap-4`}>
               <Text style={tw`text-[15px] text-gray-800 mt-2`}>
                 Daily Transaction:{" "}
                 <Text style={tw`text-blue-800 font-bold`}>5,000.00 GBP</Text>{" "}

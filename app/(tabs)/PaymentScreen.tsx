@@ -42,7 +42,7 @@ const PaymentScreen = () => {
     setLoading(true);
     setSelectedD("NGN");
     // let faced_amount = exchange.to;
-    let amounted = exchange.to;
+    let amounted = exchange?.to?.substring(1);
     if (selectedC == "UK") {
       let rated = rates.find((rate:any) => rate.name === "Pounds");
       setRate(`£1 - ₦${rated.amount}`);
@@ -83,57 +83,100 @@ const PaymentScreen = () => {
   };
 
   const handleSelectTo = (val:any) => {
+    setLoading(true);
     setSelected(val);
-    let faced_amount =
-      exchange.to.length >= 1 ? exchange.to.substring(1) : exchange.to;
-
+    console.log(val);
+    let faced_amount = exchange.from;
+    let amounted = faced_amount.substring(1);
     if (val == "🇳🇬 NGN") {
-      setRate("£1 - ₦1240");
-      setExchange({
-        ...exchange,
-        to: "₦" + faced_amount,
-      });
+      if (val == "🇳🇬 NGN" && exchange.from[0] == "₦") {
+        setRate("₦1 - ₦1");
+        setExchange({
+          ...exchange,
+          to: "₦" + amounted,
+        });
+      } else if (exchange.from[0] == "€") {
+        let rated = rates.find((rate:any) => rate.name === "Naira - Euro");
+        setRate(`€1 - ₦${rated.amount}`);
+        let newAmount = Number(amounted) * rated.amount;
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "₦" + newAmount.toFixed(2),
+        });
+      } else {
+        let rated = rates.find((rate:any) => rate.name === "Naira");
+        setRate(`${selectedD == "UK" ? "£" : "₦"}1 - ₦${rated.amount}`);
+        let newAmount = Number(amounted) * rated.amount;
+        // alert(newAmount);
+        setExchange({
+          ...exchange,
+          to: "₦" + newAmount.toFixed(2),
+        });
+      }
       setSelectedC("NGN");
     } else if (val == "🇬🇧 UK") {
-      let rated = rates.find((rate:any) => rate.name === "Pounds");
-      setRate(`£1 - ₦${rated.amount}`);
-      setExchange({
-        ...exchange,
-        to: "£" + faced_amount,
-      });
-      setSelectedC("UK");
-    } else if (val == "🇨🇦 CAD") {
-      let rated = rates.find((rate:any) => rate.name === "CAD");
-      setRate(`$1 - ₦${rated.amount}`);
-      setExchange({
-        ...exchange,
-        to: "$" + faced_amount,
-      });
-      setSelectedC("CAD");
+      if (val == "🇬🇧 UK" && exchange.from[0] == "£") {
+        setRate("£1 - £1");
+        setExchange({
+          ...exchange,
+          to: "£" + amounted,
+        });
+      } else if (exchange.from[0] == "€") {
+        setRate("€1 - £1");
+        setExchange({
+          ...exchange,
+          to: "£" + amounted,
+        });
+      } else {
+        let rated = rates.find((rate:any) => rate.name === "Pounds");
+        setRate(`£1 - ₦${rated.amount}`);
+        let newAmount = Number(amounted) / rated.amount;
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "£" + newAmount.toFixed(2),
+        });
+        setSelectedC("UK");
+      }
     } else if (val == "🇪🇺 EUR") {
-      let rated = rates.find((rate:any) => rate.name === "Euro");
-      setRate(`€1 - ₦${rated.amount}`);
-      // alert();
-      setExchange({
-        ...exchange,
-        to: "€" + faced_amount,
-      });
+      if (val == "🇪🇺 EUR" && exchange.from[0] == "€") {
+        setRate("€1 - €1");
+        setExchange({
+          ...exchange,
+          to: "€" + amounted,
+        });
+      } else if (exchange.from[0] == "£") {
+        setRate("£1 - €1");
+        setExchange({
+          ...exchange,
+          to: "€" + amounted,
+        });
+      } else if (exchange.from[0] == "₦") {
+        let rated = rates.find((rate:any) => rate.name === "Euro");
+        setRate(`€1 - ₦${rated.amount}`);
+        let newAmount = Number(amounted) / rated.amount;
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "€" + newAmount.toFixed(2),
+        });
+      } else {
+        let rated = rates.find((rate:any) => rate.name === "Naira - Euro");
+        setRate(`€1 - ₦${rated.amount}`);
+        let newAmount = Number(amounted) / rated.amount;
+        // alert();
+        setExchange({
+          ...exchange,
+          to: "€" + newAmount.toFixed(2),
+        });
+      }
       setSelectedC("EUR");
-    } else {
-      let rated = rates.find((rate:any) => rate.name === "USD");
-      console.log(rated.amount);
-      setRate(`$1 - ₦${rated.amount}`);
-      setExchange({
-        ...exchange,
-        to: "$" + faced_amount,
-      });
-      setSelectedC("USD");
     }
 
-    setExchange({
-      ...exchange,
-      from: "",
-    });
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   };
 
   const data = [
@@ -304,7 +347,13 @@ const PaymentScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
-          <PrimaryBtn title={"Continue"} onpressed={() => setEnabled(true)} />
+          <PrimaryBtn title={"Continue"} onpressed={() => {
+            if(exchange.from !== ""){
+              setEnabled(true);
+            }else{
+              alert("Kindly select NGN and complete the required fields to continue");
+            }
+          }} />
         </View>
         <View style={tw`mt-5`}>
           <Marquee spacing={20} speed={0.3}>
@@ -324,7 +373,7 @@ const PaymentScreen = () => {
             visibility={enabled}
             setVisibility={setEnabled}
             isLogout={false}
-            text={`Are you sure you want to proceed to pay ${selectedC == "NGN" ? "₦" +exchange.to :selectedC== "EUR" ? "£"+exchange.to : "$"+exchange.to}?`}
+            text={`Are you sure you want to proceed to pay ${exchange.to}?`}
             onPressed={handleExchange}
           />
         ) : null}

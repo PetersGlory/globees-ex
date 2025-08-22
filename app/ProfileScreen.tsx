@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
 import tw from "twrnc";
@@ -19,65 +20,81 @@ import { selectAccessToken, selectUserProfile } from "@/hooks/redux/slice";
 import { usePushNotification } from "@/usePushNotification";
 import { BASE_URL } from "@/hooks/api/Index";
 import CustomHeader from "@/components/common/CustomHeader";
-import PrimaryBtn from "@/components/common/PrimaryBtn";
 import LoadingModal from "@/components/common/Modals/LoadingModal";
+import Icon from "@expo/vector-icons/Ionicons";
+import PrimaryBtn from "@/components/common/PrimaryBtn";
 
 const ProfileScreen = () => {
   const [selected, setSelected] = React.useState("");
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
   const profileUser = useSelector(selectUserProfile);
   const key = useSelector(selectAccessToken);
+  
   const gender = [
     { key: "2", value: "Male" },
     { key: "3", value: "Female" },
   ];
+  
   const [regs, setRegs] = React.useState({
     fullname: "",
     phone: "+234",
     address: "",
     gender: "",
+    emergency_contact: "",
   });
 
-  
-  const {expoPushToken} = usePushNotification();
+  const { expoPushToken } = usePushNotification();
+
   useFocusEffect(
     useCallback(() => {
       setRegs({
-        fullname: profileUser?.fullname,
-        phone: profileUser?.phone,
-        address: profileUser?.address,
-        gender: profileUser?.gender
-      })
+        fullname: profileUser?.fullname || "",
+        phone: profileUser?.phone || "+234",
+        address: profileUser?.address || "",
+        gender: profileUser?.gender || "",
+        emergency_contact: profileUser?.emergency_contact || "",
+      });
       setPush();
-    }, [])
+    }, [profileUser])
   );
 
   useEffect(() => {
     setRegs({
-      fullname: profileUser?.fullname,
-      phone: profileUser?.phone,
-      address: profileUser?.address,
-      gender: profileUser?.gender,
+      fullname: profileUser?.fullname || "",
+      phone: profileUser?.phone || "+234",
+      address: profileUser?.address || "",
+      gender: profileUser?.gender || "",
+      emergency_contact: profileUser?.emergency_contact || "",
     });
-    // allsubs();
     setPush();
-  }, []);
-  const setPush = async () =>{
-    console.log(expoPushToken?.data)
-    if(expoPushToken?.data){
+  }, [profileUser]);
+
+  const setPush = async () => {
+    if (expoPushToken?.data) {
       await AsyncStorage.setItem("pushToken", expoPushToken.data);
     }
-  }
-  
-  const handleUpdate = () => {
-    setMessage("Loading...");
+  };
+
+  const handleUpdate = async () => {
+    if (!regs.fullname.trim()) {
+      Alert.alert("Error", "Full name is required");
+      return;
+    }
+
+    // if (!regs.address.trim()) {
+    //   Alert.alert("Error", "Country is required");
+    //   return;
+    // }
+
+    setMessage("Updating profile...");
     setEnabled(true);
     setLoading(true);
 
-    axios
-      .request({
+    try {
+      const result = await axios.request({
         method: "POST",
         url: `${BASE_URL}/update/profile`,
         data: regs,
@@ -86,129 +103,204 @@ const ProfileScreen = () => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + key,
         },
-      })
-      .then((result) => {
-        console.log(result.data);
-        const datas = result.data;
-        setMessage(datas.message);
-        if (!datas.error) {
-          setLoading(false);
-          setTimeout(() => {
-            setEnabled(false);
-          }, 3000);
-          // sendpush('Profile Updated',`${regs.fullname} you just updated your profile information`,key);
-        } else {
-          setTimeout(() => {
-            setEnabled(false);
-            setLoading(false);
-          }, 3000);
-        }
-      })
-      .catch((err) => {
-        setMessage(err.message);
+      });
+
+      const datas = result.data;
+      setMessage(datas.message);
+      
+      if (!datas.error) {
+        setLoading(false);
+        setIsEditing(false);
+        Alert.alert("Success", "Profile updated successfully!");
+        setTimeout(() => {
+          setEnabled(false);
+        }, 2000);
+      } else {
+        Alert.alert("Error", datas.message || "Failed to update profile");
         setTimeout(() => {
           setEnabled(false);
           setLoading(false);
-        }, 3000);
-        console.log(err);
-      });
+        }, 2000);
+      }
+    } catch (err: any) {
+      setMessage(err.message || "Network error");
+      Alert.alert("Error", "Failed to update profile. Please try again.");
+      setTimeout(() => {
+        setEnabled(false);
+        setLoading(false);
+      }, 2000);
+    }
   };
 
-  // const allsubs = async () =>{
-  //     let response = await axios.get(`https://app.nativenotify.com/api/expo/indie/subs/14312/NRKYt9PycbIzkLWoNHDK1o`);
-  //     console.log(response.data)
-  // }
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setRegs({
+      fullname: profileUser?.fullname || "",
+      phone: profileUser?.phone || "+234",
+      address: profileUser?.address || "",
+      gender: profileUser?.gender || "",
+      emergency_contact: profileUser?.emergency_contact || "",
+    });
+  };
+
   return (
-    <SafeAreaView style={tw`flex-grow p-5 pt-10 bg-white h-full`}>
-      {/* User Information */}
-      <ScrollView
-        style={tw`w-full bg-white h-[55%] rounded-lg ${
-          Platform.OS == "ios" ? "pl-5 pr-5" : ""
-        }`}
+    <SafeAreaView style={tw`flex-1 bg-gray-50`}>
+      <ScrollView 
+        style={tw`flex-1`}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`pb-8`}
       >
-        <CustomHeader title={"Profile"} />
-
-        {/* Image */}
-        <TouchableOpacity style={tw`mt-2 justify-center items-center`}>
-          <Image
-            source={require("../assets/images/logo-bg.png")}
-            style={{
-              ...tw`rounded-full`,
-              width: 100,
-              height: 100,
-            }}
-            alt="Avarter"
-          />
-        </TouchableOpacity>
-        {/* fullname Input */}
-        <View>
-          <Text style={tw`text-gray-700`}>Full Name</Text>
-          <TextInput
-            style={tw`border border-gray-300 mt-2 rounded-lg p-3 text-gray-600`}
-            keyboardType="default"
-            onChangeText={(val) => {
-              setRegs({
-                ...regs,
-                fullname: val,
-              });
-            }}
-            value={regs.fullname}
-            placeholder="E.g John"
-          />
-        </View>
-        {/* phone Input */}
-        <View style={tw`mt-5`}>
-          <Text style={tw`text-gray-700`}>Mobile Number</Text>
-          <TextInput
-            editable={false}
-            style={tw`border border-gray-300 mt-2 rounded-lg p-3 text-gray-600`}
-            keyboardType="phone-pad"
-            onChangeText={(val) => {
-              setRegs({
-                ...regs,
-                phone: val,
-              });
-            }}
-            value={regs.phone}
-            placeholder="E.g +234--"
-          />
-        </View>
-        {/* Gender */}
-        <View style={tw`mt-5`}>
-          <Text style={tw`text-gray-700`}>Gender</Text>
-          <SelectList
-            setSelected={(val:any) => {
-              setSelected(val);
-              setRegs({
-                ...regs,
-                gender: val,
-              });
-            }}
-            data={gender}
-            save="value"
-          />
-        </View>
-        {/* Address Input */}
-        <View style={tw`mt-5`}>
-          <Text style={tw`text-gray-700`}>Country</Text>
-          <TextInput
-            style={tw`border border-gray-300 mt-2 rounded-lg p-3 text-gray-600`}
-            onChangeText={(val) => {
-              setRegs({
-                ...regs,
-                address: val,
-              });
-            }}
-            value={regs.address}
-            keyboardType="default"
-            placeholder="E.g UK"
-          />
+        {/* Header Section */}
+        <View style={tw`bg-white px-5 pt-3 pb-6`}>
+          <CustomHeader title="Profile" />
+          
+          {/* Profile Avatar Section */}
+          <View style={tw`items-center mt-4`}>
+            <View style={tw`relative`}>
+              <Image
+                source={require("../assets/images/logo-bg.png")}
+                style={tw`w-26 h-26 rounded-full border-4 border-blue-100`}
+                alt="Profile Avatar"
+              />
+              {!isEditing && (
+                <TouchableOpacity 
+                  style={tw`absolute -bottom-2 -right-2 bg-blue-500 w-10 h-10 rounded-full items-center justify-center border-3 border-white shadow-lg`}
+                  onPress={handleEdit}
+                >
+                  <Icon name="pencil" size={18} color="#ffffff" />
+                </TouchableOpacity>
+              )}
+            </View>
+            
+            <Text style={tw`text-2xl font-bold text-gray-900 mt-4 mb-1`}>
+              {profileUser?.fullname || "User Profile"}
+            </Text>
+            <Text style={tw`text-gray-500 text-base mb-2`}>
+              {profileUser?.email || "user@example.com"}
+            </Text>
+            
+            {/* Verification Badge */}
+            <View style={tw`${profileUser?.verified_user === "yes" ? 'bg-green-100' : 'bg-yellow-100'} px-4 py-2 rounded-full`}>
+              <View style={tw`flex-row items-center`}>
+                <Icon 
+                  name={profileUser?.verified_user === "yes" ? "checkmark-circle" : "time"} 
+                  size={16} 
+                  color={profileUser?.verified_user === "yes" ? "#059669" : "#d97706"} 
+                />
+                <Text style={tw`${profileUser?.verified_user === "yes" ? 'text-green-700' : 'text-yellow-700'} font-semibold text-sm ml-2`}>
+                  {profileUser?.verified_user === "yes" ? "Verified Account" : "Pending Verification"}
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
 
-        <View style={tw`w-full mt-5`}>
-          <PrimaryBtn title={"Update"} onpressed={handleUpdate} />
+        {/* Form Section */}
+        <View style={tw`px-5`}>
+          <View style={tw`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden`}>
+            {/* Form Header */}
+            <View style={tw`bg-gray-100 p-4`}>
+              <Text style={tw`text-gray-800 text-lg font-bold`}>Personal Information</Text>
+              <Text style={tw`text-gray-500 text-sm mt-1`}>Update your profile details</Text>
+            </View>
+            
+            {/* Form Fields */}
+            <View style={tw`p-5 space-y-4`}>
+              {/* Full Name */}
+              <View>
+                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
+                  <Icon name="person" size={16} color="#6b7280" style={tw`mr-2`} />
+                  Full Name
+                </Text>
+                <TextInput
+                  style={tw`border border-gray-200 rounded-xl p-4 text-gray-800 text-base bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
+                  keyboardType="default"
+                  onChangeText={(val) => setRegs({...regs, fullname: val})}
+                  value={regs.fullname}
+                  placeholder="Enter your full name"
+                  editable={isEditing}
+                />
+              </View>
+
+              {/* Phone Number */}
+              <View>
+                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
+                  <Icon name="call" size={16} color="#6b7280" style={tw`mr-2`} />
+                  Mobile Number
+                </Text>
+                <TextInput
+                  style={tw`border border-gray-200 rounded-xl p-4 text-gray-600 text-base bg-gray-100`}
+                  keyboardType="phone-pad"
+                  value={regs.phone}
+                  placeholder="Phone number"
+                  editable={false}
+                />
+                <Text style={tw`text-gray-400 text-xs mt-1 italic`}>Phone number cannot be changed</Text>
+              </View>
+
+              {/* Gender */}
+              <View>
+                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
+                  <Icon name="male-female" size={16} color="#6b7280" style={tw`mr-2`} />
+                  Gender
+                </Text>
+                <SelectList
+                  setSelected={(val: any) => {
+                    setSelected(val);
+                    setRegs({...regs, gender: val});
+                  }}
+                  data={gender}
+                  save="value"
+                  placeholder={regs.gender ? regs.gender : "Select gender"}
+                  // disabled={!isEditing}
+                  boxStyles={tw`border border-gray-200 rounded-xl p-4 bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
+                  inputStyles={tw`text-gray-800 text-base`}
+                  dropdownStyles={tw`border border-gray-200 rounded-xl bg-white shadow-lg`}
+                  dropdownTextStyles={tw`text-gray-800 text-base`}
+                />
+              </View>
+
+              {/* Country */}
+              <View>
+                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
+                  <Icon name="alert-circle" size={16} color="#6b7280" style={tw`mr-2`} />
+                  Emergency Contact
+                </Text>
+                <TextInput
+                  style={tw`border border-gray-200 rounded-xl p-4 text-gray-800 text-base bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
+                  onChangeText={(val) => setRegs({...regs, emergency_contact: val})}
+                  value={regs.emergency_contact}
+                  keyboardType="default"
+                  placeholder="Enter emergency contact"
+                  editable={isEditing}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Action Buttons */}
+          {isEditing ? (
+            <View style={tw`mt-6 space-y-3`}>
+              <PrimaryBtn
+                title={loading ? "Saving..." : "Save Changes"}
+                onpressed={handleUpdate}
+              />
+            </View>
+          ) : (
+            <View style={tw`mt-6`}>
+              <PrimaryBtn
+                title={"Edit Profile"}
+                onpressed={handleEdit}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
+
       <LoadingModal
         visibility={enabled}
         text={message}

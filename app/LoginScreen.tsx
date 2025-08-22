@@ -289,9 +289,9 @@ const LoginScreen = () => {
         <View style={tw`w-full h-full items-center bg-transparent justify-center flex flex-col`}>
         <LoadingModal
           visibility={modal}
-          setVisibility={setModal}
-          message={message}
-          isloading={loading}
+          // setVisibility={setModal}
+          text={message}
+          // isloading={loading}
         />
       </View>
       )}

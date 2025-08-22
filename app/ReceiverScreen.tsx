@@ -53,7 +53,7 @@ const ReceiverScreen = () => {
     });
   };
 
-  const handleContinue = (val:any) => {
+  const handleContinue = () => {
     setEnabled(false);
     if (
       accounts.account_name !== "" &&

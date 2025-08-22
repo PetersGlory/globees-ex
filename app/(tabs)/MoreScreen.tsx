@@ -32,7 +32,7 @@ const MoreScreen = () => {
     const [links, setLinks] = useState([
         {title: "Profile", route: "ProfileScreen", icon: "person-circle-outline", color: "blue"},
         {title: "Transaction History", route: "TransactionScreen", icon: "time-outline", color: "green"},
-        {title: "Identity Verification", route: "IdentityVerification", icon: "id-card-outline", color: "purple"},
+        {title: "Identity Verification", route: "IdentityVerify", icon: "id-card-outline", color: "purple"},
         {title: "Rewards", route: "RewardsScreen", icon: "gift-outline", color: "yellow"},
         {title: "Social Media", route: "social", icon: "thumbs-up-outline", color: "pink"},
         {title: "Blog", route: "blog", icon: "newspaper-outline", color: "indigo"},
