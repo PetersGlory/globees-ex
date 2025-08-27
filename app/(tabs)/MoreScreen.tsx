@@ -152,8 +152,8 @@ const MoreScreen = () => {
                                         setModalL(true)
                                     }else if(items.route == "AboutScreen"){
                                         setAbout(true)
-                                    }else if(items.route == "IdentityVerification"){
-                                        if(userProfile?.verified_user == "yes"){
+                                    }else if(items.route == "IdentityVerify"){
+                                        if(userProfile?.verified_user == "yes" || userProfile?.verified_user == "true"){
                                             alert("You've already verified your account.")
                                         }else{
                                             router.navigate(items.route as never);
