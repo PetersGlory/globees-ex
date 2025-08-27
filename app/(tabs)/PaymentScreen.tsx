@@ -37,6 +37,8 @@ const PaymentScreen = () => {
   });
   const [rate, setRate] = useState("");
 
+  // console.log(rates)
+
   const handleSelectCountry = (val:any) => {
     setSelected(val);
     setLoading(true);
@@ -85,7 +87,7 @@ const PaymentScreen = () => {
   const handleSelectTo = (val:any) => {
     setLoading(true);
     setSelected(val);
-    console.log(val);
+    console.log("val", val);
     let faced_amount = exchange.from;
     let amounted = faced_amount.substring(1);
     if (val == "🇳🇬 NGN") {
@@ -131,11 +133,11 @@ const PaymentScreen = () => {
       } else {
         let rated = rates.find((rate:any) => rate.name === "Pounds");
         setRate(`£1 - ₦${rated.amount}`);
-        let newAmount = Number(amounted) / rated.amount;
+        // let newAmount = Number(amounted) / rated.amount;
         // alert();
         setExchange({
           ...exchange,
-          to: "£" + newAmount.toFixed(2),
+          to: "£0.00",
         });
         setSelectedC("UK");
       }
@@ -164,14 +166,107 @@ const PaymentScreen = () => {
       } else {
         let rated = rates.find((rate:any) => rate.name === "Naira - Euro");
         setRate(`€1 - ₦${rated.amount}`);
-        let newAmount = Number(amounted) / rated.amount;
         // alert();
         setExchange({
           ...exchange,
-          to: "€" + newAmount.toFixed(2),
+          to: "€0.00",
         });
       }
       setSelectedC("EUR");
+    } else if (val == "🇺🇸 USA") {
+      // USD conversions
+      if (val == "🇺🇸 USA" && exchange.from[0] == "$") {
+        setRate("$1 - $1");
+        setExchange({
+          ...exchange,
+          to: "$" + amounted,
+        });
+      } else if (exchange.from[0] == "€") {
+        // Euro to USD
+        // 1 USD = 1600 NGN, 1 EUR = 2215 NGN
+        // 1 EUR = (2215/1600) USD ≈ 1.384 USD
+        setRate("€1 - $1.38");
+        let newAmount = Number(amounted) * (2215 / 1600);
+        setExchange({
+          ...exchange,
+          to: "$" + newAmount.toFixed(2),
+        });
+      } else if (exchange.from[0] == "£") {
+        // Pounds to USD
+        // 1 GBP = 2215 NGN, 1 USD = 1600 NGN
+        // 1 GBP = (2215/1600) USD ≈ 1.38 USD
+        setRate("£1 - $1.38");
+        let newAmount = Number(amounted) * (2215 / 1600);
+        setExchange({
+          ...exchange,
+          to: "$" + newAmount.toFixed(2),
+        });
+      } else if (exchange.from[0] == "₦") {
+        // Naira to USD
+        let rated = rates.find((rate: any) => rate.name === "USD");
+        setRate(`$1 - ₦${rated.amount}`);
+        let newAmount = Number(amounted) / rated.amount;
+        setExchange({
+          ...exchange,
+          to: "$" + newAmount.toFixed(2),
+        });
+      } else {
+        // Default/fallback
+        let rated = rates.find((rate: any) => rate.name === "USD");
+        setRate(`$1 - ₦${rated.amount}`);
+        setExchange({
+          ...exchange,
+          to: "$0.00",
+        });
+      }
+      setSelectedC("USA");
+    } else if (val == "🇨🇦 CAD") {
+      // CAD conversions
+      if (val == "🇨🇦 CAD" && exchange.from[0] == "$") {
+        setRate("$1 - $1");
+        setExchange({
+          ...exchange,
+          to: "$" + amounted,
+        });
+      } else if (exchange.from[0] == "€") {
+        // Euro to CAD
+        // 1 EUR = 2215 NGN, 1 CAD = 1110 NGN
+        // 1 EUR = (2215/1110) CAD ≈ 1.996 CAD
+        setRate("€1 - $2.00");
+        let newAmount = Number(amounted) * (2215 / 1110);
+        setExchange({
+          ...exchange,
+          to: "$" + newAmount.toFixed(2),
+        });
+      } else if (exchange.from[0] == "£") {
+        // Pounds to CAD
+        // 1 GBP = 2215 NGN, 1 CAD = 1110 NGN
+        // 1 GBP = (2215/1110) CAD ≈ 1.996 CAD
+        setRate("£1 - $2.00");
+        let newAmount = Number(amounted) * (2215 / 1110);
+        setExchange({
+          ...exchange,
+          to: "$" + newAmount.toFixed(2),
+        });
+      } else if (exchange.from[0] == "₦") {
+        // Naira to CAD
+        let rated = rates.find((rate: any) => rate.name === "CAD");
+        setRate(`$1 - ₦${rated.amount}`);
+        let newAmount = Number(amounted) / rated.amount;
+        setExchange({
+          ...exchange,
+          to: "$" + newAmount.toFixed(2),
+        });
+      } else {
+        // Default/fallback
+        let rated = rates.find((rate: any) => rate.name === "CAD");
+        setRate(`$1 - ₦${rated.amount}`);
+        setExchange({
+          ...exchange,
+          to: "$0.00",
+        });
+      }
+      setSelectedC("CAD");
     }
 
     setTimeout(() => {
@@ -373,7 +468,7 @@ const PaymentScreen = () => {
             visibility={enabled}
             setVisibility={setEnabled}
             isLogout={false}
-            text={`Are you sure you want to proceed to pay ${exchange.to}?`}
+            text={`Are you sure you want to proceed to send ${exchange.to}?`}
             onPressed={handleExchange}
           />
         ) : null}

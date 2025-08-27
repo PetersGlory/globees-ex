@@ -43,7 +43,7 @@ const ProfileScreen = () => {
     phone: "+234",
     address: "",
     gender: "",
-    emergency_contact: "",
+    country: "",
   });
 
   const { expoPushToken } = usePushNotification();
@@ -55,7 +55,7 @@ const ProfileScreen = () => {
         phone: profileUser?.phone || "+234",
         address: profileUser?.address || "",
         gender: profileUser?.gender || "",
-        emergency_contact: profileUser?.emergency_contact || "",
+        country: profileUser?.country || "",
       });
       setPush();
     }, [profileUser])
@@ -67,7 +67,7 @@ const ProfileScreen = () => {
       phone: profileUser?.phone || "+234",
       address: profileUser?.address || "",
       gender: profileUser?.gender || "",
-      emergency_contact: profileUser?.emergency_contact || "",
+      country: profileUser?.country || "",
     });
     setPush();
   }, [profileUser]);
@@ -143,7 +143,7 @@ const ProfileScreen = () => {
       phone: profileUser?.phone || "+234",
       address: profileUser?.address || "",
       gender: profileUser?.gender || "",
-      emergency_contact: profileUser?.emergency_contact || "",
+      country: profileUser?.country || "",
     });
   };
 
@@ -268,14 +268,14 @@ const ProfileScreen = () => {
               <View>
                 <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
                   <Icon name="alert-circle" size={16} color="#6b7280" style={tw`mr-2`} />
-                  Emergency Contact
+                  Country
                 </Text>
                 <TextInput
                   style={tw`border border-gray-200 rounded-xl p-4 text-gray-800 text-base bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
-                  onChangeText={(val) => setRegs({...regs, emergency_contact: val})}
-                  value={regs.emergency_contact}
+                  onChangeText={(val) => setRegs({...regs, country: val})}
+                  value={regs.country}
                   keyboardType="default"
-                  placeholder="Enter emergency contact"
+                  placeholder="Enter country"
                   editable={isEditing}
                 />
               </View>
