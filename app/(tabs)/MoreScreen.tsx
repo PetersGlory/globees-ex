@@ -17,6 +17,7 @@ import CustomAbout from '@/components/common/Modals/CustomAbout'
 import CustomSocial from '@/components/common/Modals/CustomSocial'
 import LoadingModal from '@/components/common/Modals/LoadingModal'
 import app from '../../app.json'
+import CustomVerify from '@/components/common/Modals/CustomVerify'
 
 const MoreScreen = () => {
     const userProfile = useSelector(selectUserProfile);
@@ -25,6 +26,7 @@ const MoreScreen = () => {
     const [about, setAbout] = React.useState(false);
     const [social, setSocial] = React.useState(false);
     const [modalL, setModalL] = React.useState(false);
+    const [modalV, setModalV] = React.useState(false);
     const [refresh, setRefresh] = useState(false);
     const key = useSelector(selectAccessToken)
     const [support] = React.useState("Hi Globees Ex, I'm contacting from the app and I will need more enquiry. Thank you");
@@ -154,7 +156,7 @@ const MoreScreen = () => {
                                         setAbout(true)
                                     }else if(items.route == "IdentityVerify"){
                                         if(userProfile?.verified_user == "yes" || userProfile?.verified_user == "true"){
-                                            alert("You've already verified your account.")
+                                            setModalV(true);
                                         }else{
                                             router.navigate(items.route as never);
                                         }
@@ -279,6 +281,11 @@ const MoreScreen = () => {
             <CustomLegal visibility={modalL} setVisibility={setModalL} />
             <CustomAbout visibility={about} setVisibility={setAbout} />
             <CustomSocial visibility={social} setVisibility={setSocial} />
+
+            <CustomVerify 
+                visibility={modalV} 
+                setVisibility={setModalV} 
+            />
             
             <LoadingModal 
                 visibility={refresh} 

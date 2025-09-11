@@ -202,6 +202,7 @@ const LoginScreen = () => {
         <View style={tw`mt-[32px] w-full`}>
           <TextInput
             placeholder="Email"
+            placeholderTextColor="#9ca3af"
             value={logins.email}
             onChangeText={(val) => {
               setLogins({
@@ -214,6 +215,7 @@ const LoginScreen = () => {
           />
           <TextInput
             placeholder="Password"
+            placeholderTextColor="#9ca3af"
             value={logins.password}
             secureTextEntry={true}
             onChangeText={(val) => {

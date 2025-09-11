@@ -159,6 +159,7 @@ const VerificationScreen = () => {
               setCode(val);
             }}
             keyboardType="number-pad"
+            placeholderTextColor="#9ca3af"
             style={tw`p-[16px] w-full rounded-2xl bg-white text-center border border-gray-200`}
           />
           <View

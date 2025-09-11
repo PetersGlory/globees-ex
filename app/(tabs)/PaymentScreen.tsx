@@ -337,6 +337,7 @@ const PaymentScreen = () => {
             <TextInput
               value={exchange.to}
               placeholder="0.00"
+              placeholderTextColor="#9ca3af"
               onChangeText={(val) => {
                 setExchange({
                   ...exchange,

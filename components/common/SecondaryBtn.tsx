@@ -11,7 +11,7 @@ interface SecondaryBtnProps {
 const SecondaryBtn: React.FC<SecondaryBtnProps> = ({title, onpressed}) => {
   return (
     <TouchableOpacity style={{
-        ...tw`rounded-2xl p-3 w-full`,
+        ...tw`rounded-2xl p-3 w-full z-40`,
         backgroundColor: '#ffd301'
     }} onPress={onpressed}>
       <Text style={tw`text-center font-bold text-[${PRIMARY_COLOR}] text-xl`}>{title}</Text>

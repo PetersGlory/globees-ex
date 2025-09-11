@@ -23,6 +23,7 @@ import CustomHeader from "@/components/common/CustomHeader";
 import LoadingModal from "@/components/common/Modals/LoadingModal";
 import Icon from "@expo/vector-icons/Ionicons";
 import PrimaryBtn from "@/components/common/PrimaryBtn";
+import CustomDropdown from "@/components/common/CustomDropdown";
 
 const ProfileScreen = () => {
   const [selected, setSelected] = React.useState("");
@@ -50,24 +51,26 @@ const ProfileScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      const userCountry = getcountry();
       setRegs({
         fullname: profileUser?.fullname || "",
         phone: profileUser?.phone || "+234",
         address: profileUser?.address || "",
         gender: profileUser?.gender || "",
-        country: profileUser?.country || "",
+        country: userCountry as never || profileUser?.country || "",
       });
       setPush();
     }, [profileUser])
   );
 
   useEffect(() => {
+    const userCountry = getcountry();
     setRegs({
       fullname: profileUser?.fullname || "",
       phone: profileUser?.phone || "+234",
       address: profileUser?.address || "",
       gender: profileUser?.gender || "",
-      country: profileUser?.country || "",
+      country: userCountry as never || profileUser?.country || "",
     });
     setPush();
   }, [profileUser]);
@@ -76,18 +79,23 @@ const ProfileScreen = () => {
     if (expoPushToken?.data) {
       await AsyncStorage.setItem("pushToken", expoPushToken.data);
     }
+    console.log(regs.country)
   };
+
+  const getcountry = async () =>{
+    const countryUser = await AsyncStorage.getItem("userCountry");
+    return countryUser;
+  }
+
+  const storeCountry = async (country:string) =>{
+    await AsyncStorage.setItem("userCountry", country);
+  }
 
   const handleUpdate = async () => {
     if (!regs.fullname.trim()) {
       Alert.alert("Error", "Full name is required");
       return;
     }
-
-    // if (!regs.address.trim()) {
-    //   Alert.alert("Error", "Country is required");
-    //   return;
-    // }
 
     setMessage("Updating profile...");
     setEnabled(true);
@@ -111,6 +119,7 @@ const ProfileScreen = () => {
       if (!datas.error) {
         setLoading(false);
         setIsEditing(false);
+        storeCountry(regs.country);
         Alert.alert("Success", "Profile updated successfully!");
         setTimeout(() => {
           setEnabled(false);
@@ -143,7 +152,7 @@ const ProfileScreen = () => {
       phone: profileUser?.phone || "+234",
       address: profileUser?.address || "",
       gender: profileUser?.gender || "",
-      country: profileUser?.country || "",
+      country: getcountry() as never || profileUser?.country || "",
     });
   };
 
@@ -270,14 +279,17 @@ const ProfileScreen = () => {
                   <Icon name="alert-circle" size={16} color="#6b7280" style={tw`mr-2`} />
                   Country
                 </Text>
-                <TextInput
+                <CustomDropdown placeholder={regs.country !== "" && regs.country !== null ? regs.country : "Select country"} onChange={(val)=> {
+                  setRegs({...regs,country:val.name})}
+                } />
+                {/* <TextInput
                   style={tw`border border-gray-200 rounded-xl p-4 text-gray-800 text-base bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
                   onChangeText={(val) => setRegs({...regs, country: val})}
                   value={regs.country}
                   keyboardType="default"
                   placeholder="Enter country"
                   editable={isEditing}
-                />
+                /> */}
               </View>
             </View>
           </View>

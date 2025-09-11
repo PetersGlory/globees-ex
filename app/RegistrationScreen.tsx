@@ -101,6 +101,7 @@ const LoginScreen = () => {
           <TextInput
             placeholder="Full Name"
             value={logins.fullname}
+            placeholderTextColor="#9ca3af"
             onChangeText={(val) => {
               setLogins({
                 ...logins,
@@ -113,6 +114,7 @@ const LoginScreen = () => {
           <TextInput
             placeholder="Phone Number"
             value={logins.phone}
+            placeholderTextColor="#9ca3af"
             onChangeText={(val) => {
               setLogins({
                 ...logins,
@@ -124,6 +126,7 @@ const LoginScreen = () => {
           />
           <TextInput
             placeholder="Email"
+            placeholderTextColor="#9ca3af"
             value={logins.email}
             onChangeText={(val) => {
               setLogins({
@@ -137,6 +140,7 @@ const LoginScreen = () => {
           <TextInput
             placeholder="Password"
             value={logins.password}
+            placeholderTextColor="#9ca3af"
             onChangeText={(val) => {
               setLogins({
                 ...logins,
@@ -150,6 +154,7 @@ const LoginScreen = () => {
           <TextInput
             placeholder="Referral code (Optional)"
             value={logins.referral}
+            placeholderTextColor="#9ca3af"
             onChangeText={(val) => {
               setLogins({
                 ...logins,
@@ -181,14 +186,14 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <View style={tw`w-full items-center justify-center flex flex-col`}>
+      {modal && (<View style={tw`w-full items-center justify-center flex flex-col`}>
         <LoadingModal
           visibility={modal}
-          setVisibility={setModal}
-          message={message}
-          isloading={loading}
+          // setVisibility={setModal}
+          text={message}
+          // isloading={loading}
         />
-      </View>
+      </View>)}
     </SafeAreaView>
   );
 };
