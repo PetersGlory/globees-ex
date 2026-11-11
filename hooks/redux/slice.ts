@@ -1,7 +1,18 @@
 import {createSlice} from '@reduxjs/toolkit';
+import type { RootState } from './store';
 
+interface NavState {
+    userPofile: any;
+    accessToken: any;
+    rates: any;
+    accounts: any;
+    exchange: any;
+    receiver: any;
+    btc: any;
+    cryptoData: any;
+}
 
-const initialState = {
+const initialState: NavState = {
     userPofile: null,
     accessToken: null,
     rates: null,
@@ -53,13 +64,13 @@ export const slice = createSlice({
 export const { setUserProfile, setAccessToken, setRates, setAccounts, setExchanger, setReceiver, setBtc, setCryptoData } = slice.actions;
 
 //Selectors
-export const selectUserProfile = (state) => state.nav.userPofile;
-export const selectAccessToken = (state) => state.nav.accessToken;
-export const selectRates = (state) => state.nav.rates;
-export const selectAccounts = (state) => state.nav.accounts;
-export const selectExchange = (state) => state.nav.exchange;
-export const selectReceiver = (state) => state.nav.receiver;
-export const selectBtc = (state) => state.nav.btc;
-export const selectCryptoData = (state) => state.nav.cryptoData;
+export const selectUserProfile = (state: RootState) => state.nav.userPofile;
+export const selectAccessToken = (state: RootState) => state.nav.accessToken;
+export const selectRates = (state: RootState) => state.nav.rates;
+export const selectAccounts = (state: RootState) => state.nav.accounts;
+export const selectExchange = (state: RootState) => state.nav.exchange;
+export const selectReceiver = (state: RootState) => state.nav.receiver;
+export const selectBtc = (state: RootState) => state.nav.btc;
+export const selectCryptoData = (state: RootState) => state.nav.cryptoData;
 
 export default slice.reducer;

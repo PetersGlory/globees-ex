@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import axios from 'axios'
 import { router } from 'expo-router'
 import { selectAccessToken } from '@/hooks/redux/slice'
-import { BASE_URL } from '@/hooks/api/Index'
+import { BASE_URL } from '@/hooks/api'
 import TransactionModal from '../common/Modals/TransactionModal'
 
 interface Transactions {

@@ -4,7 +4,7 @@ import tw from "twrnc"
 import Icon from "@expo/vector-icons/Ionicons"
 import { Linking } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
-import { PRIMARY_COLOR } from '@/hooks/api/Index'
+import { PRIMARY_COLOR } from '@/hooks/api'
 
 interface SocialLink {
   name: string;

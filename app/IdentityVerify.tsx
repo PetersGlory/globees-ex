@@ -20,7 +20,7 @@ import { SelectList } from "react-native-dropdown-select-list";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { selectAccessToken } from "@/hooks/redux/slice";
-import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api/Index";
+import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api";
 import { router } from "expo-router";
 import LoadingModal from "@/components/common/Modals/LoadingModal";
 

@@ -1,4 +1,4 @@
-import { PRIMARY_COLOR } from '@/hooks/api/Index'
+import { PRIMARY_COLOR } from '@/hooks/api'
 import { router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import React,{ useRef, useEffect } from 'react'

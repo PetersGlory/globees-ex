@@ -17,7 +17,7 @@ import { router } from "expo-router";
 import { useSelector } from "react-redux";
 import { StatusBar } from "expo-status-bar";
 import CustomLegal from "@/components/common/Modals/CustomLegal";
-import { PRIMARY_COLOR } from "@/hooks/api/Index";
+import { PRIMARY_COLOR } from "@/hooks/api";
 import { selectUserProfile } from "@/hooks/redux/slice";
 
 interface UserProfile {

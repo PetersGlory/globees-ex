@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { Text, View, Modal, TouchableOpacity, Image, Platform, Dimensions } from 'react-native';
+import { Text, View, Modal, TouchableOpacity, Image, Platform, Dimensions, type ViewInstance } from 'react-native';
 import tw from "twrnc"
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { shareAsync } from "expo-sharing"
 import { captureRef } from "react-native-view-shot"
 import { useRef } from 'react';
 import { selectUserProfile } from '@/hooks/redux/slice';
-import { NumberFormatter, PRIMARY_COLOR } from '@/hooks/api/Index';
+import { NumberFormatter, PRIMARY_COLOR } from '@/hooks/api';
 
 interface TransactionModalProps {
   onpressed: () => void;
@@ -18,7 +18,7 @@ interface TransactionModalProps {
 
 const TransactionModal: React.FC<TransactionModalProps> = ({ onpressed, visibility, data }) => {
   const usersProfile = useSelector(selectUserProfile);
-  const viewTosnapShotRef = useRef<View>(null);
+  const viewTosnapShotRef = useRef<ViewInstance>(null);
   const [isCapturing, setIsCapturing] = useState(true);
 
   const PrintAsPDF = useCallback(async () => {

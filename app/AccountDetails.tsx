@@ -16,7 +16,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { selectAccessToken, selectExchange, selectReceiver, selectUserProfile } from "@/hooks/redux/slice";
-import { BASE_URL, NumberFormatter, PRIMARY_COLOR, primePercent } from "@/hooks/api/Index";
+import { BASE_URL, NumberFormatter, PRIMARY_COLOR, primePercent } from "@/hooks/api";
 import { router, useLocalSearchParams } from "expo-router";
 import CustomHeader from "@/components/common/CustomHeader";
 import PrimaryBtn from "@/components/common/PrimaryBtn";

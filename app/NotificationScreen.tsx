@@ -12,9 +12,9 @@ import Icon from "@expo/vector-icons/Ionicons";
 import { Platform } from "react-native";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { selectAccessToken } from "@/hooks/redux/slice";
-import { BASE_URL } from "@/hooks/api/Index";
+import { BASE_URL } from "@/hooks/api";
 import CustomHeader from "@/components/common/CustomHeader";
 
 interface notficationProps {

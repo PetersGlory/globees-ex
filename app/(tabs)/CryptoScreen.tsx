@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { Marquee } from "@animatereactnative/marquee";
 import { selectRates, selectUserProfile, setExchanger } from "@/hooks/redux/slice";
-import { NumberFormatter } from "@/hooks/api/Index";
+import { NumberFormatter } from "@/hooks/api";
 import { router } from "expo-router";
 import CustomHeader from "@/components/common/CustomHeader";
 import PrimaryBtn from "@/components/common/PrimaryBtn";

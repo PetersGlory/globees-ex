@@ -1,10 +1,5 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -19,6 +14,12 @@ import { store } from "@/hooks/redux/store";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// SDK 58: `initialRouteName` was removed from navigators. The anchor for deep
+// links into this stack is now declared here instead.
+export const unstable_settings = {
+  anchor: "index",
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -50,7 +51,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
         <ThemeProvider value={colorScheme === "light" ? DefaultTheme : DarkTheme}>
-          <Stack initialRouteName="index" screenOptions={{headerShown: false}}>
+          <Stack screenOptions={{headerShown: false}}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="index" />
             <Stack.Screen name="LoginScreen" />

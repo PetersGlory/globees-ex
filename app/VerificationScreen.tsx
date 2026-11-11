@@ -14,7 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { StatusBar } from "expo-status-bar";
-import { BASE_URL, GENERAL_URL, PRIMARY_COLOR, updatedevicetoken } from "@/hooks/api/Index";
+import { BASE_URL, GENERAL_URL, PRIMARY_COLOR, updatedevicetoken } from "@/hooks/api";
 import { setAccessToken, setRates, setUserProfile } from "@/hooks/redux/slice";
 import { router, useLocalSearchParams } from "expo-router";
 import SecondaryBtn from "@/components/common/SecondaryBtn";
@@ -123,7 +123,7 @@ const VerificationScreen = () => {
     <SafeAreaView
       style={tw`flex-grow w-full h-full bg-[${PRIMARY_COLOR}] p-5 pt-15`}
     >
-      <StatusBar style="light" translucent={true} />
+      <StatusBar style="light" />
       <ScrollView
         style={tw`h-full w-full ${Platform.OS == "ios" ? " p-5 pt-15" : ""}`}
       >

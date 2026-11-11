@@ -11,7 +11,7 @@ import tw from "twrnc";
 import Icon from "@expo/vector-icons/Ionicons";
 import { Platform } from "react-native";
 import axios from "axios";
-import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api/Index";
+import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api";
 import { router } from "expo-router";
 import PrimaryBtn from "@/components/common/PrimaryBtn";
 import LoadingModal from "@/components/common/Modals/LoadingModal";

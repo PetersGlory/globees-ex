@@ -7,7 +7,7 @@ import axios from 'axios';
 import { router } from 'expo-router';
 import tw from 'twrnc';
 import CustomHeader from '@/components/common/CustomHeader';
-import { BASE_URL, PRIMARY_COLOR } from '@/hooks/api/Index';
+import { BASE_URL, PRIMARY_COLOR } from '@/hooks/api';
 import { selectAccessToken } from '@/hooks/redux/slice';
 import LoadingModal from '@/components/common/Modals/LoadingModal';
 

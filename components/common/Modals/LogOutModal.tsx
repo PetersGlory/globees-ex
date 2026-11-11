@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import Icon from "@expo/vector-icons/Ionicons"
 import tw from "twrnc"
-import { PRIMARY_COLOR } from '@/hooks/api/Index'
+import { PRIMARY_COLOR } from '@/hooks/api'
 
 interface LogOutModalProps {
   visibility: boolean;

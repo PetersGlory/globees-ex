@@ -4,10 +4,9 @@ import tw from "twrnc";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import { useFocusEffect } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { router } from "expo-router";
-import { BASE_URL, GENERAL_URL, PRIMARY_COLOR } from "@/hooks/api/Index";
+import { router, useFocusEffect } from "expo-router";
+import { BASE_URL, GENERAL_URL, PRIMARY_COLOR } from "@/hooks/api";
 import SecondaryBtn from "@/components/common/SecondaryBtn";
 import {
   setAccessToken,

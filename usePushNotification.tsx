@@ -16,7 +16,8 @@ export const usePushNotification = ():PushNotifcationState =>{
     Notifications.setNotificationHandler({
         handleNotification: async () =>({
             shouldPlaySound: false,
-            shouldShowAlert: true,
+            shouldShowBanner: true,
+            shouldShowList: true,
             shouldSetBadge: false,
         }),
     });
@@ -29,8 +30,8 @@ export const usePushNotification = ():PushNotifcationState =>{
         Notifications.Notification | undefined
     >();
 
-    const notificationListener = useRef<Notifications.Subscription>();
-    const responseListener = useRef<Notifications.Subscription>();
+    const notificationListener = useRef<Notifications.Subscription | undefined>(undefined);
+    const responseListener = useRef<Notifications.Subscription | undefined>(undefined);
 
     async function registerForPushNotificationsAsync() {
         let token;
@@ -97,12 +98,8 @@ export const usePushNotification = ():PushNotifcationState =>{
         });
 
         return ()=>{
-            Notifications.removeNotificationSubscription(
-                notificationListener.current!
-            )
-            Notifications.removeNotificationSubscription(
-                responseListener.current!
-            )
+            notificationListener.current?.remove();
+            responseListener.current?.remove();
         }
     },[])
 

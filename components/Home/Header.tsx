@@ -11,7 +11,7 @@ import {
   setRates,
   setUserProfile,
 } from "@/hooks/redux/slice";
-import { BASE_URL, GENERAL_URL, updatedevicetoken } from "@/hooks/api/Index";
+import { BASE_URL, GENERAL_URL, updatedevicetoken } from "@/hooks/api";
 import LoadingModal from "../common/Modals/LoadingModal";
 import { router } from "expo-router";
 

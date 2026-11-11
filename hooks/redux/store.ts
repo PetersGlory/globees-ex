@@ -7,3 +7,5 @@ export const store = configureStore({
         nav: slice,
     },
 });
+
+export type RootState = ReturnType<typeof store.getState>;

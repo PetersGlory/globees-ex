@@ -1,4 +1,4 @@
-import { PRIMARY_COLOR } from '@/hooks/api/Index'
+import { PRIMARY_COLOR } from '@/hooks/api'
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import tw from 'twrnc'

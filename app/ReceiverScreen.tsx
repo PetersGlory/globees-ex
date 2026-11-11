@@ -16,7 +16,7 @@ import CustomHeader from "@/components/common/CustomHeader";
 import PrimaryBtn from "@/components/common/PrimaryBtn";
 import LogOutModal from "@/components/common/Modals/LogOutModal";
 import { router, useLocalSearchParams } from "expo-router";
-import { PRIMARY_COLOR } from "@/hooks/api/Index";
+import { PRIMARY_COLOR } from "@/hooks/api";
 
 const ReceiverScreen = () => {
   const params = useLocalSearchParams();

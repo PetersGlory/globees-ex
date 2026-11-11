@@ -15,7 +15,7 @@ import * as LocalAuthentication from "expo-local-authentication";
 import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
-import { BASE_URL, GENERAL_URL, PRIMARY_COLOR } from "@/hooks/api/Index";
+import { BASE_URL, GENERAL_URL, PRIMARY_COLOR } from "@/hooks/api";
 import { router } from "expo-router";
 import { setAccessToken, setRates, setUserProfile } from "@/hooks/redux/slice";
 import PrimaryBtn from "@/components/common/PrimaryBtn";

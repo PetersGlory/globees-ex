@@ -15,7 +15,7 @@ import Icon from "@expo/vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { selectRates, selectUserProfile } from "@/hooks/redux/slice";
-import { PRIMARY_COLOR } from "@/hooks/api/Index";
+import { PRIMARY_COLOR } from "@/hooks/api";
 import Header from "@/components/Home/Header";
 import { router } from "expo-router";
 import Transactions from "@/components/Home/Transactions";

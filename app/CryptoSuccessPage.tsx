@@ -16,7 +16,7 @@ import axios from "axios";
 import { usePushNotification } from "@/usePushNotification";
 import { selectAccessToken, selectBtc, selectCryptoData, selectExchange } from "@/hooks/redux/slice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api/Index";
+import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api";
 import { router, useLocalSearchParams } from "expo-router";
 import LoadingModal from "@/components/common/Modals/LoadingModal";
 import SecondaryBtn from "@/components/common/SecondaryBtn";
