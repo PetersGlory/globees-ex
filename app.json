@@ -15,10 +15,7 @@
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "23",
-      "statusBar": {
-        "barStyle": "light-content"
-      }
+      "buildNumber": "23"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,10 +32,7 @@
         "android.permission.USE_FINGERPRINT",
         "android.permission.NOTIFICATIONS",
         "android.permission.USE_BIOMETRIC"
-      ],
-      "statusBar": {
-        "barStyle": "light-content"
-      }
+      ]
     },
     "web": {
       "bundler": "metro",

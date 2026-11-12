@@ -2,19 +2,18 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   RefreshControl,
+  StyleSheet,
 } from "react-native";
-import tw from "twrnc";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import Icon from "@expo/vector-icons/Ionicons";
-import { Platform } from "react-native";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useFocusEffect } from "expo-router";
 import { selectAccessToken } from "@/hooks/redux/slice";
-import { BASE_URL } from "@/hooks/api";
+import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api";
 import CustomHeader from "@/components/common/CustomHeader";
 
 interface notficationProps {
@@ -67,7 +66,7 @@ const NotificationScreen = () => {
           Authorization: "Bearer " + key,
         },
       })
-      .then((response:any) => {
+      .then((response: any) => {
         if (response.status !== 200 || response.status !== 201) {
           setRefresh(false);
         } else {
@@ -86,70 +85,153 @@ const NotificationScreen = () => {
   };
 
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full bg-gray-100 p-5 pt-10`}>
+    <SafeAreaView style={styles.screen} edges={["top", "left", "right"]}>
       <StatusBar style="dark" />
-      <View style={tw` w-full h-full ${Platform.OS == "ios" ? "pl-5 pr-5" : ""}`}>
+      <View style={styles.container}>
         <CustomHeader title={"Notifications"} />
+
         {transactions.length > 0 ? (
           <ScrollView
-            style={tw`mt-2 w-full h-[90%]`}
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
             refreshControl={
-              <RefreshControl refreshing={refresh} onRefresh={handleRefresh} />
+              <RefreshControl
+                refreshing={refresh}
+                onRefresh={handleRefresh}
+                tintColor={PRIMARY_COLOR}
+              />
             }
           >
-            {transactions &&
-              transactions.map((transact, i) => (
-                <View
-                  style={tw`rounded-lg p-3 mt-3 w-full flex flex-row bg-white justify-between items-center`}
-                  key={i}
-                >
-                  <View style={tw`flex-1 flex flex-row items-center`}>
-                    <Icon
-                      name="notifications-outline"
-                      style={tw`rounded-full w- p-3 text-blue-800 bg-gray-100 items-center text-center`}
-                    />
-                    <View style={tw`pl-1 w-full`}>
-                      <Text style={tw`text-blue-900 text-[12px] font-medium`}>
-                        {transact?.title}
-                      </Text>
-                      <Text style={tw`text-gray-500 text-[11px]`}>
-                        {transact?.contents}
-                      </Text>
-                    </View>
-                  </View>
+            {transactions.map((transact, i) => (
+              <View style={styles.item} key={i}>
+                <View style={styles.itemIcon}>
+                  <Icon
+                    name="notifications-outline"
+                    size={18}
+                    color={PRIMARY_COLOR}
+                  />
+                </View>
 
-                  <View style={tw`flex-1 items-end`}>
-                    {/* <Text style={tw`text-gray-800 text-[12px]`}>Date</Text> */}
-                    <Text style={tw`text-blue-800 text-[11px]`}>
+                <View style={styles.itemBody}>
+                  <View style={styles.itemTop}>
+                    <Text style={styles.itemTitle} numberOfLines={1}>
+                      {transact?.title}
+                    </Text>
+                    <Text style={styles.itemDate} numberOfLines={1}>
                       {new Date(transact?.created_at).toDateString()}
                     </Text>
                   </View>
+                  <Text style={styles.itemContent}>{transact?.contents}</Text>
                 </View>
-              ))}
+              </View>
+            ))}
           </ScrollView>
         ) : (
           <ScrollView
-            style={tw`mt-2 w-full h-[90%]`}
+            style={styles.list}
+            contentContainerStyle={styles.emptyContent}
+            showsVerticalScrollIndicator={false}
             refreshControl={
-              <RefreshControl refreshing={refresh} onRefresh={handleRefresh} />
+              <RefreshControl
+                refreshing={refresh}
+                onRefresh={handleRefresh}
+                tintColor={PRIMARY_COLOR}
+              />
             }
           >
-            {/* <CustomHeader title={"History"} /> */}
-            <View style={tw`items-center justify-center mt-5`}>
+            <View style={styles.emptyIcon}>
               <Icon
-                name="alert-circle-outline"
-                size={50}
-                color={"#6B6B6C"}
+                name="notifications-off-outline"
+                size={32}
+                color="#9ca3af"
               />
-              <Text style={tw`text-center mt-2 text-gray-600`}>
-                Notification is empty
-              </Text>
             </View>
+            <Text style={styles.emptyTitle}>No notifications yet</Text>
+            <Text style={styles.emptyText}>
+              Updates about your transactions and account will appear here.
+            </Text>
           </ScrollView>
         )}
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: "#FFFFFF" },
+  container: { flex: 1, paddingHorizontal: 20 },
+
+  list: { flex: 1, marginTop: 8 },
+  listContent: { paddingBottom: 32 },
+
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 16,
+    padding: 14,
+    marginTop: 12,
+    backgroundColor: "#FFFFFF",
+  },
+  itemIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F1F5F9",
+  },
+  itemBody: { flex: 1, marginLeft: 12 },
+  itemTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  itemTitle: {
+    flex: 1,
+    color: PRIMARY_COLOR,
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  itemDate: {
+    color: "#9ca3af",
+    fontSize: 11,
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+  itemContent: {
+    color: "#6b7280",
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 4,
+  },
+
+  emptyContent: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 60,
+  },
+  emptyIcon: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F1F5F9",
+    marginBottom: 16,
+  },
+  emptyTitle: { color: PRIMARY_COLOR, fontSize: 15, fontWeight: "700" },
+  emptyText: {
+    color: "#9ca3af",
+    fontSize: 12.5,
+    lineHeight: 18,
+    textAlign: "center",
+    marginTop: 6,
+    paddingHorizontal: 40,
+  },
+});
 
 export default NotificationScreen;

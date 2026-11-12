@@ -1,48 +1,47 @@
-import React, { useCallback, useEffect } from "react";
-import { View, Text, SafeAreaView, Image } from "react-native";
-import tw from "twrnc";
+import React, { useCallback } from "react";
+import { View, Text, Image, Pressable, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { StatusBar } from "expo-status-bar";
 import { router, useFocusEffect } from "expo-router";
 import { BASE_URL, GENERAL_URL, PRIMARY_COLOR } from "@/hooks/api";
-import SecondaryBtn from "@/components/common/SecondaryBtn";
 import {
   setAccessToken,
   setBtc,
   setRates,
   setUserProfile,
 } from "@/hooks/redux/slice";
+import SecondaryBtn from "@/components/common/SecondaryBtn";
 
 const IntroScreen = () => {
   const dispatch = useDispatch();
-  const btnGetstarted = () => {
-    router.push("LoginScreen" as never);
-  };
+
   useFocusEffect(
     useCallback(() => {
       getToken();
-    }, [])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
   );
-  useEffect(() => {
-    getToken();
-  });
 
   const getToken = async () => {
-    // let accessTokens = await AsyncStorage.setItem('accessToken', '');
-    let accessToken: string | null = await AsyncStorage.getItem("accessToken");
-    console.log(accessToken);
-    if (accessToken !== null && accessToken !== "") {
-      dispatch(setAccessToken(accessToken));
-      getProfile(accessToken);
-      getRates();
-      getCryptoAddress();
-      router.replace("/(tabs)");
+    try {
+      const accessToken: string | null =
+        await AsyncStorage.getItem("accessToken");
+      if (accessToken !== null && accessToken !== "") {
+        dispatch(setAccessToken(accessToken));
+        getProfile(accessToken);
+        getRates();
+        getCryptoAddress();
+        router.replace("/(tabs)");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  // Getting Profile
+  // Getting profile
   const getProfile = (key: string) => {
     axios
       .request({
@@ -55,7 +54,7 @@ const IntroScreen = () => {
         },
       })
       .then((response) => {
-        let dataUser = response.data.data;
+        const dataUser = response.data.data;
         dispatch(setUserProfile(dataUser));
         updateToken(dataUser.email);
       })
@@ -64,31 +63,24 @@ const IntroScreen = () => {
       });
   };
 
-  // Getting Rates
+  // Getting rates
   const getRates = () => {
     axios
-      .request({
-        method: "GET",
-        url: `${GENERAL_URL}/rates`,
-      })
+      .request({ method: "GET", url: `${GENERAL_URL}/rates` })
       .then((response) => {
-        let dataRate = response.data.message;
-        dispatch(setRates(dataRate));
+        dispatch(setRates(response.data.message));
       })
       .catch((err) => {
         console.error(err);
       });
   };
-  // getting crypto addresses
+
+  // Getting crypto addresses
   const getCryptoAddress = () => {
     axios
-      .request({
-        method: "GET",
-        url: `${GENERAL_URL}/crypto_addresses`,
-      })
+      .request({ method: "GET", url: `${GENERAL_URL}/crypto_addresses` })
       .then((response) => {
-        let dataRate = response.data.message;
-        dispatch(setBtc(dataRate));
+        dispatch(setBtc(response.data.message));
       })
       .catch((err) => {
         console.error(err);
@@ -100,16 +92,11 @@ const IntroScreen = () => {
     if (!expoPushToken) {
       return;
     }
-    let datas = {
-      user_type: "user",
-      token: expoPushToken,
-      email: email,
-    };
     axios
       .request({
         method: "POST",
         url: `${GENERAL_URL}/device_token`,
-        data: datas,
+        data: { user_type: "user", token: expoPushToken, email },
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -122,62 +109,83 @@ const IntroScreen = () => {
         console.error(err);
       });
   };
+
   return (
-    <SafeAreaView style={tw`flex-grow w-full h-full bg-[${PRIMARY_COLOR}]`}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: PRIMARY_COLOR }]}>
       <StatusBar style="light" />
-      <View style={tw`flex-1`} />
-      <View style={tw`flex-1 w-full h-full items-center`}>
-        <Text
-          style={[
-            tw`text-white text-center text-5xl font-bold mb-5 mt-5 uppercase`,
-          ]}
-        >
-          Globees Ex
-        </Text>
+
+      <View style={styles.content}>
         <Image
           source={require("../assets/images/logo.png")}
-          style={{
-            width: 200,
-            height: 200,
-          }}
-          alt="intro"
+          style={styles.logo}
+          resizeMode="contain"
+          accessibilityLabel="Globees Ex logo"
         />
+        <Text style={styles.title}>Globees Ex</Text>
+        <Text style={styles.subtitle}>
+          Swap or transfer fiat and crypto, and make cross-border payments in
+          minutes.
+        </Text>
       </View>
-      <View style={tw`flex-1`} />
-      <View style={tw`flex-1`} />
-      <View style={tw`flex-1`} />
-      <View
-        style={{
-          ...tw`bg-white h-[45%] p-8 pt-10 rounded-t-8`,
-          flexShrink: 0,
-          boxShadow: "0px -5px 15px 0px #FFF",
-        }}
-      >
-        <Text
-          style={{
-            ...tw`text-3xl font-bold text-center`,
-            color: PRIMARY_COLOR,
-          }}
+
+      <View style={styles.actions}>
+        <SecondaryBtn
+          title="Create Account"
+          onpressed={() => router.push("RegistrationScreen" as never)}
+        />
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push("LoginScreen" as never)}
+          style={({ pressed }) => [
+            styles.secondaryBtn,
+            pressed && styles.pressed,
+          ]}
         >
-          Welcome back...
-        </Text>
-        <Text style={tw`text-[15px] text-gray-500 p-4 text-center`}>
-          {"Swap or transfer fiat, crypto, and make cross-border payments in minutes."}
-        </Text>
-        <View style={tw`flex flex-row items-center mt-5 justify-between`}>
-          <View style={tw`w-[49%]`}>
-            <SecondaryBtn title={"Login"} onpressed={btnGetstarted} />
-          </View>
-          <View style={tw`w-[49%]`}>
-            <SecondaryBtn
-              title={"Register"}
-              onpressed={() => router.push("RegistrationScreen" as never)}
-            />
-          </View>
-        </View>
+          <Text style={styles.secondaryBtnText}>Log in</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, paddingHorizontal: 24 },
+  content: { flex: 1, alignItems: "center", justifyContent: "center" },
+  logo: { width: 96, height: 96, marginBottom: 24 },
+  title: {
+    color: "#FFFFFF",
+    fontSize: 32,
+    fontWeight: "800",
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    color: "rgba(255,255,255,0.75)",
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: "center",
+    marginTop: 12,
+    maxWidth: 320,
+  },
+  actions: { gap: 12, paddingBottom: 16 },
+  primaryBtn: {
+    height: 54,
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryBtnText: { fontSize: 16, fontWeight: "700" },
+  secondaryBtn: {
+    height: 54,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.5)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  secondaryBtnText: { color: "#FFFFFF", fontSize: 16, fontWeight: "600" },
+  pressed: { opacity: 0.85 },
+});
 
 export default IntroScreen;

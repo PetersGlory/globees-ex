@@ -1,13 +1,6 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TextInput,
-  Platform,
-  ScrollView,
-} from "react-native";
-import tw from "twrnc";
+import { View, Text, TextInput, ScrollView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { SelectList } from "react-native-dropdown-select-list";
 import { useDispatch } from "react-redux";
@@ -18,6 +11,18 @@ import LogOutModal from "@/components/common/Modals/LogOutModal";
 import { router, useLocalSearchParams } from "expo-router";
 import { PRIMARY_COLOR } from "@/hooks/api";
 
+type InputProps = React.ComponentProps<typeof TextInput> & {
+  focused?: boolean;
+};
+
+const Input = ({ focused, style, ...rest }: InputProps) => (
+  <TextInput
+    placeholderTextColor="#9ca3af"
+    style={[styles.input, focused && styles.inputFocused, style]}
+    {...rest}
+  />
+);
+
 const ReceiverScreen = () => {
   const params = useLocalSearchParams();
   const [selected, setSelected] = useState("");
@@ -25,6 +30,7 @@ const ReceiverScreen = () => {
   const currency_from = params.currency_from;
   const currency_to = params.currency_to;
   const [enabled, setEnabled] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
   const dispatch = useDispatch();
   const [accounts, setAccounts] = useState({
     account_name: "",
@@ -45,7 +51,7 @@ const ReceiverScreen = () => {
     { key: "5", value: "Others" },
   ];
 
-  const handleSelectTo = (val:any) => {
+  const handleSelectTo = (val: any) => {
     setSelected(val);
     setAccounts({
       ...accounts,
@@ -67,29 +73,30 @@ const ReceiverScreen = () => {
           category: typeR,
           currency_from: currency_from,
           currency_to: currency_to,
-        }
+        },
       });
     } else {
       alert("All fields are required.");
     }
   };
   return (
-    <SafeAreaView style={tw`bg-gray-100 w-full h-full p-5`}>
+    <SafeAreaView style={styles.screen} edges={["top", "left", "right"]}>
       <StatusBar style="dark" />
       <ScrollView
-        style={tw`w-full h-full ${Platform.OS == "ios" ? "p-5 h-full w-full": ""}`}
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <CustomHeader title={"Receivers Information"} />
 
-        <Text style={tw`text-center text-gray-500 mt-5 text-[12px]`}>
-          Enter the receiver’s bank account details here to continue.
+        <Text style={styles.subtitle}>
+          Enter the receiver's bank account details here to continue.
         </Text>
 
-        <View style={tw`mt-5 w-full`}>
-          <TextInput
+        <View style={styles.form}>
+          <Input
             placeholder="Recipient Name"
             value={accounts.account_name}
-            placeholderTextColor={PRIMARY_COLOR}
             onChangeText={(val) => {
               setAccounts({
                 ...accounts,
@@ -97,12 +104,13 @@ const ReceiverScreen = () => {
               });
             }}
             keyboardType="default"
-            style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600`}
+            focused={focused === "account_name"}
+            onFocus={() => setFocused("account_name")}
+            onBlur={() => setFocused(null)}
           />
-          <TextInput
+          <Input
             placeholder="Bank Name"
             value={accounts.bank_name}
-            placeholderTextColor={PRIMARY_COLOR}
             onChangeText={(val) => {
               setAccounts({
                 ...accounts,
@@ -110,12 +118,13 @@ const ReceiverScreen = () => {
               });
             }}
             keyboardType="default"
-            style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600 mt-3`}
+            focused={focused === "bank_name"}
+            onFocus={() => setFocused("bank_name")}
+            onBlur={() => setFocused(null)}
           />
-          <TextInput
+          <Input
             placeholder="Account Number"
             value={accounts.account_number}
-            placeholderTextColor={PRIMARY_COLOR}
             onChangeText={(val) => {
               setAccounts({
                 ...accounts,
@@ -123,14 +132,15 @@ const ReceiverScreen = () => {
               });
             }}
             keyboardType="number-pad"
-            style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600 mt-3`}
+            focused={focused === "account_number"}
+            onFocus={() => setFocused("account_number")}
+            onBlur={() => setFocused(null)}
           />
           {(currency_to == "EUR" && typeR == "payment") ||
             (currency_to == "UK" && typeR == "payment") ||
             (currency_to == "UK" && typeR == "exchange" && (
-              <TextInput
+              <Input
                 placeholder="Sort Code"
-                placeholderTextColor={PRIMARY_COLOR}
                 value={accounts.sort_code}
                 onChangeText={(val) => {
                   setAccounts({
@@ -140,38 +150,30 @@ const ReceiverScreen = () => {
                 }}
                 keyboardType="number-pad"
                 maxLength={6}
-                style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600 mt-3`}
+                focused={focused === "sort_code"}
+                onFocus={() => setFocused("sort_code")}
+                onBlur={() => setFocused(null)}
               />
             ))}
-          {/* {currency_from == "NGN" && typeR !== "exchange" && (
-                    <TextInput placeholder='Sort Code' value={accounts.sort_code} onChangeText={(val)=>{
-                        setAccounts({
-                            ...accounts,
-                            sort_code: val
-                        })
-                    }} keyboardType="number-pad" maxLength={6} style={tw`p-[12px] rounded-lg border border-gray-300 mt-3`} />
-                )} */}
 
           {typeR !== "exchange" && typeR !== "crypto" && (
-            <View style={tw`w-full`}>
+            <View style={styles.group}>
               <SelectList
-                setSelected={(val:any) => {
+                setSelected={(val: any) => {
                   handleSelectTo(val);
                 }}
                 placeholder="Reason for payment"
-                boxStyles={{
-                  marginTop: 15,
-                  padding: 15,
-                }}
+                boxStyles={selectBox}
+                dropdownStyles={selectDropdown}
+                dropdownTextStyles={selectDropdownText}
                 data={data}
                 save="value"
               />
 
               {selected === "Tuition fees" && (
-                <TextInput
+                <Input
                   placeholder="Student ID"
                   value={accounts.student_id}
-                  placeholderTextColor={PRIMARY_COLOR}
                   onChangeText={(val) => {
                     setAccounts({
                       ...accounts,
@@ -179,7 +181,9 @@ const ReceiverScreen = () => {
                     });
                   }}
                   keyboardType="default"
-                  style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600 mt-3`}
+                  focused={focused === "student_id"}
+                  onFocus={() => setFocused("student_id")}
+                  onBlur={() => setFocused(null)}
                 />
               )}
             </View>
@@ -189,10 +193,9 @@ const ReceiverScreen = () => {
             currency_to !== "UK" &&
             currency_to !== "EUR" &&
             typeR !== "crypto" && (
-              <View style={tw`w-full`}>
-                <TextInput
+              <View style={styles.group}>
+                <Input
                   placeholder="IBAN"
-                  placeholderTextColor={PRIMARY_COLOR}
                   value={accounts.iban}
                   onChangeText={(val) => {
                     setAccounts({
@@ -201,11 +204,12 @@ const ReceiverScreen = () => {
                     });
                   }}
                   keyboardType="default"
-                  style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600 mt-3`}
+                  focused={focused === "iban"}
+                  onFocus={() => setFocused("iban")}
+                  onBlur={() => setFocused(null)}
                 />
-                <TextInput
+                <Input
                   placeholder="SWIFT/BIC"
-                  placeholderTextColor={PRIMARY_COLOR}
                   value={accounts.swift_bic}
                   onChangeText={(val) => {
                     setAccounts({
@@ -214,11 +218,12 @@ const ReceiverScreen = () => {
                     });
                   }}
                   keyboardType="default"
-                  style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600 mt-3`}
+                  focused={focused === "swift_bic"}
+                  onFocus={() => setFocused("swift_bic")}
+                  onBlur={() => setFocused(null)}
                 />
-                <TextInput
+                <Input
                   placeholder="Recipient Address"
-                  placeholderTextColor={PRIMARY_COLOR}
                   value={accounts.address}
                   onChangeText={(val) => {
                     setAccounts({
@@ -227,19 +232,20 @@ const ReceiverScreen = () => {
                     });
                   }}
                   keyboardType="default"
-                  style={tw`p-[12px] rounded-lg border border-gray-300 text-gray-600 mt-3`}
+                  focused={focused === "address"}
+                  onFocus={() => setFocused("address")}
+                  onBlur={() => setFocused(null)}
                 />
               </View>
             )}
         </View>
 
-        {/* Button */}
-        <View style={tw`mt-5 w-full flex flex-col items-center`}>
+        <View style={styles.cta}>
           <PrimaryBtn title={"Continue"} onpressed={() => setEnabled(true)} />
         </View>
       </ScrollView>
 
-      <View style={tw`w-full items-center justify-center flex flex-col`}>
+      <View style={styles.modalWrap}>
         {enabled ? (
           <LogOutModal
             visibility={enabled}
@@ -253,5 +259,59 @@ const ReceiverScreen = () => {
     </SafeAreaView>
   );
 };
+
+const selectBox = {
+  height: 54,
+  borderRadius: 14,
+  borderWidth: 1.5,
+  borderColor: "#e5e7eb",
+  paddingHorizontal: 16,
+};
+const selectDropdown = {
+  borderRadius: 14,
+  borderColor: "#e5e7eb",
+  marginTop: 4,
+};
+const selectDropdownText = { fontSize: 14, color: "#111827" };
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: "#FFFFFF" },
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 40,
+  },
+
+  subtitle: {
+    color: "#6b7280",
+    fontSize: 15,
+    lineHeight: 22,
+    marginTop: 20,
+  },
+
+  form: { marginTop: 20, gap: 12 },
+  group: { gap: 12 },
+
+  input: {
+    height: 54,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: "#e5e7eb",
+    paddingHorizontal: 16,
+    fontSize: 15,
+    color: "#111827",
+    backgroundColor: "#FFFFFF",
+  },
+  inputFocused: { borderColor: PRIMARY_COLOR },
+
+  cta: { marginTop: 28, alignItems: "center" },
+
+  modalWrap: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 export default ReceiverScreen;

@@ -1,486 +1,614 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  SafeAreaView,
-  TextInput,
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
   ScrollView,
-  TouchableOpacity,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import tw from "twrnc";
-import { SelectList } from "react-native-dropdown-select-list";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Marquee } from "@animatereactnative/marquee";
-import { selectRates, selectUserProfile, setExchanger } from "@/hooks/redux/slice";
 import { router } from "expo-router";
+import {
+  selectRates,
+  selectUserProfile,
+  setExchanger,
+} from "@/hooks/redux/slice";
 import CustomHeader from "@/components/common/CustomHeader";
 import PrimaryBtn from "@/components/common/PrimaryBtn";
 import LogOutModal from "@/components/common/Modals/LogOutModal";
-import LoadingModal from "@/components/common/Modals/LoadingModal";
 import CustomLegal from "@/components/common/Modals/CustomLegal";
+import { AmountFormatter } from "@/hooks/lib/formatter";
+
+/* -------------------------------------------------------------------------- */
+/*  Theme (same tokens as ExchangeScreen)                                     */
+/* -------------------------------------------------------------------------- */
+
+const COLORS = {
+  brand: "#0E7C66", // change this to your brand colour
+  brandSoft: "#E6F4F1",
+  brandLine: "#CBE8E1",
+  link: "#2563EB",
+  ink: "#0F172A",
+  body: "#475569",
+  muted: "#94A3B8",
+  line: "#E2E8F0",
+  surface: "#F8FAFC",
+  white: "#FFFFFF",
+  warnBg: "#FFF7E6",
+  warnLine: "#F5D99A",
+  warnText: "#7A4E00",
+};
+
+/* -------------------------------------------------------------------------- */
+/*  Currency config                                                           */
+/* -------------------------------------------------------------------------- */
+
+// Codes are kept exactly as before so ReceiverScreen's `currency_to` param and
+// the Redux payload (`selectedC`, `selectedD`) don't change.
+type PayoutCode = "USA" | "CAD" | "UK" | "EUR";
+
+type Payout = {
+  code: PayoutCode;
+  short: string;
+  name: string;
+  symbol: string;
+  flag: string;
+  /** name of the entry in `rates` that gives NGN per 1 unit of this currency */
+  rateName: string;
+};
+
+const PAYOUT_CURRENCIES: Payout[] = [
+  {
+    code: "USA",
+    short: "USD",
+    name: "US Dollar",
+    symbol: "$",
+    flag: "🇺🇸",
+    rateName: "USD",
+  },
+  {
+    code: "CAD",
+    short: "CAD",
+    name: "Canadian Dollar",
+    symbol: "$",
+    flag: "🇨🇦",
+    rateName: "CAD",
+  },
+  {
+    code: "UK",
+    short: "GBP",
+    name: "British Pound",
+    symbol: "£",
+    flag: "🇬🇧",
+    rateName: "Pounds",
+  },
+  {
+    code: "EUR",
+    short: "EUR",
+    name: "Euro",
+    symbol: "€",
+    flag: "🇪🇺",
+    rateName: "Euro",
+  },
+];
+
+const getPayout = (code: PayoutCode) =>
+  PAYOUT_CURRENCIES.find((c) => c.code === code) as Payout;
+
+/* -------------------------------------------------------------------------- */
+/*  Helpers                                                                   */
+/* -------------------------------------------------------------------------- */
+
+const lookupRate = (rates: any[] | undefined, name: string): number => {
+  const found = rates?.find((r: any) => r.name === name);
+  return Number(found?.amount) || 0;
+};
+
+const formatMoney = (value: number) => {
+  const [whole, decimals] = value.toFixed(2).split(".");
+  return `${whole.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${decimals}`;
+};
+
+const sanitizeAmount = (raw: string) => {
+  const cleaned = raw.replace(/[^0-9.]/g, "");
+  const [whole, ...rest] = cleaned.split(".");
+  return rest.length ? `${whole}.${rest.join("").slice(0, 2)}` : whole;
+};
+
+/* -------------------------------------------------------------------------- */
+/*  Currency picker (bottom sheet)                                            */
+/* -------------------------------------------------------------------------- */
+
+type SheetProps = {
+  visible: boolean;
+  selected: PayoutCode;
+  onSelect: (code: PayoutCode) => void;
+  onClose: () => void;
+};
+
+const CurrencySheet = ({
+  visible,
+  selected,
+  onSelect,
+  onClose,
+}: SheetProps) => (
+  <Modal
+    visible={visible}
+    transparent
+    animationType="slide"
+    onRequestClose={onClose}
+  >
+    <Pressable style={styles.backdrop} onPress={onClose} />
+    <SafeAreaView edges={["bottom"]} style={styles.sheet}>
+      <View style={styles.sheetHandle} />
+      <Text style={styles.sheetTitle}>Payout currency</Text>
+      <FlatList
+        data={PAYOUT_CURRENCIES}
+        keyExtractor={(item) => item.code}
+        renderItem={({ item }) => {
+          const active = item.code === selected;
+          return (
+            <Pressable
+              onPress={() => onSelect(item.code)}
+              style={({ pressed }) => [
+                styles.sheetRow,
+                active && styles.sheetRowActive,
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <Text style={styles.sheetFlag}>{item.flag}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.sheetCode}>{item.short}</Text>
+                <Text style={styles.sheetName}>{item.name}</Text>
+              </View>
+              {active ? <Text style={styles.sheetCheck}>✓</Text> : null}
+            </Pressable>
+          );
+        }}
+      />
+    </SafeAreaView>
+  </Modal>
+);
+
+/* -------------------------------------------------------------------------- */
+/*  Screen                                                                    */
+/* -------------------------------------------------------------------------- */
 
 const PaymentScreen = () => {
-  const [selected, setSelected] = React.useState("");
-  const [selectedC, setSelectedC] = React.useState("");
-  const [selectedD, setSelectedD] = React.useState("");
-  const [modalL, setModalL] = React.useState(false);
-  const [enabled, setEnabled] = useState(false);
-  const userProfile = useSelector(selectUserProfile);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const rates = useSelector(selectRates);
-  const [exchange, setExchange] = useState({
-    from: "",
-    to: "",
-  });
-  const [rate, setRate] = useState("");
+  const userProfile = useSelector(selectUserProfile);
 
-  // console.log(rates)
+  const [payoutCode, setPayoutCode] = useState<PayoutCode>("USA");
+  const [amount, setAmount] = useState("");
+  const [pickerVisible, setPickerVisible] = useState(false);
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [legalVisible, setLegalVisible] = useState(false);
 
-  const handleSelectCountry = (val:any) => {
-    setSelected(val);
-    setLoading(true);
-    setSelectedD("NGN");
-    // let faced_amount = exchange.to;
-    let amounted = exchange?.to?.substring(1);
-    if (selectedC == "UK") {
-      let rated = rates.find((rate:any) => rate.name === "Pounds");
-      setRate(`£1 - ₦${rated.amount}`);
-      let newAmount = Number(amounted) * rated.amount;
-      setExchange({
-        ...exchange,
-        from: "₦" + newAmount.toFixed(2),
-      });
-    } else if (selectedC == "CAD") {
-      let rated = rates.find((rate:any) => rate.name === "CAD");
-      setRate(`$1 - ₦${rated.amount}`);
-      let newAmount = Number(amounted) * rated.amount;
-      setExchange({
-        ...exchange,
-        from: "₦" + newAmount.toFixed(2),
-      });
-    } else if (selectedC == "EUR") {
-      let rated = rates.find((rate:any) => rate.name === "Euro");
-      setRate(`€1 - ₦${rated.amount}`);
-      let newAmount = Number(amounted) * rated.amount;
-      setExchange({
-        ...exchange,
-        from: "₦" + newAmount.toFixed(2),
-      });
-    } else {
-      let rated = rates.find((rate:any) => rate.name === "USD");
-      setRate(`$1 - ₦${rated.amount}`);
-      let newAmount = Number(amounted) * rated.amount;
-      setExchange({
-        ...exchange,
-        from: "₦" + newAmount.toFixed(2),
-      });
+  const payout = getPayout(payoutCode);
+  const isVerified = userProfile?.verified_user === "yes";
+  const numericAmount = Number(amount) || 0;
+
+  // NGN per 1 unit of the payout currency
+  const ngnRate = useMemo(
+    () => lookupRate(rates, payout.rateName),
+    [rates, payout.rateName],
+  );
+
+  // What the user pays in naira, updated live as they type
+  const ngnToPay = useMemo(
+    () => (numericAmount > 0 && ngnRate > 0 ? numericAmount * ngnRate : null),
+    [numericAmount, ngnRate],
+  );
+
+  const rateLabel =
+    ngnRate > 0
+      ? `1 ${payout.short} = ₦${formatMoney(ngnRate)}`
+      : "Rate unavailable";
+
+  const canContinue = ngnToPay !== null;
+
+  /* ---- actions ---------------------------------------------------------- */
+
+  const handleContinue = () => {
+    if (!isVerified) {
+      Alert.alert(
+        "Verification required",
+        "Please verify your identity to continue with this payment.",
+      );
+      return;
     }
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    if (ngnToPay === null) {
+      Alert.alert(
+        "Enter an amount",
+        "Enter the amount you want the receiver to get.",
+      );
+      return;
+    }
+    setConfirmVisible(true);
   };
 
-  const handleSelectTo = (val:any) => {
-    setLoading(true);
-    setSelected(val);
-    console.log("val", val);
-    let faced_amount = exchange.from;
-    let amounted = faced_amount.substring(1);
-    if (val == "🇳🇬 NGN") {
-      if (val == "🇳🇬 NGN" && exchange.from[0] == "₦") {
-        setRate("₦1 - ₦1");
-        setExchange({
-          ...exchange,
-          to: "₦" + amounted,
-        });
-      } else if (exchange.from[0] == "€") {
-        let rated = rates.find((rate:any) => rate.name === "Naira - Euro");
-        setRate(`€1 - ₦${rated.amount}`);
-        let newAmount = Number(amounted) * rated.amount;
-        // alert();
-        setExchange({
-          ...exchange,
-          to: "₦" + newAmount.toFixed(2),
-        });
-      } else {
-        let rated = rates.find((rate:any) => rate.name === "Naira");
-        setRate(`${selectedD == "UK" ? "£" : "₦"}1 - ₦${rated.amount}`);
-        let newAmount = Number(amounted) * rated.amount;
-        // alert(newAmount);
-        setExchange({
-          ...exchange,
-          to: "₦" + newAmount.toFixed(2),
-        });
-      }
-      setSelectedC("NGN");
-    } else if (val == "🇬🇧 UK") {
-      if (val == "🇬🇧 UK" && exchange.from[0] == "£") {
-        setRate("£1 - £1");
-        setExchange({
-          ...exchange,
-          to: "£" + amounted,
-        });
-      } else if (exchange.from[0] == "€") {
-        setRate("€1 - £1");
-        setExchange({
-          ...exchange,
-          to: "£" + amounted,
-        });
-      } else {
-        let rated = rates.find((rate:any) => rate.name === "Pounds");
-        setRate(`£1 - ₦${rated.amount}`);
-        // let newAmount = Number(amounted) / rated.amount;
-        // alert();
-        setExchange({
-          ...exchange,
-          to: "£0.00",
-        });
-        setSelectedC("UK");
-      }
-    } else if (val == "🇪🇺 EUR") {
-      if (val == "🇪🇺 EUR" && exchange.from[0] == "€") {
-        setRate("€1 - €1");
-        setExchange({
-          ...exchange,
-          to: "€" + amounted,
-        });
-      } else if (exchange.from[0] == "£") {
-        setRate("£1 - €1");
-        setExchange({
-          ...exchange,
-          to: "€" + amounted,
-        });
-      } else if (exchange.from[0] == "₦") {
-        let rated = rates.find((rate:any) => rate.name === "Euro");
-        setRate(`€1 - ₦${rated.amount}`);
-        let newAmount = Number(amounted) / rated.amount;
-        // alert();
-        setExchange({
-          ...exchange,
-          to: "€" + newAmount.toFixed(2),
-        });
-      } else {
-        let rated = rates.find((rate:any) => rate.name === "Naira - Euro");
-        setRate(`€1 - ₦${rated.amount}`);
-        // alert();
-        setExchange({
-          ...exchange,
-          to: "€0.00",
-        });
-      }
-      setSelectedC("EUR");
-    } else if (val == "🇺🇸 USA") {
-      // USD conversions
-      if (val == "🇺🇸 USA" && exchange.from[0] == "$") {
-        setRate("$1 - $1");
-        setExchange({
-          ...exchange,
-          to: "$" + amounted,
-        });
-      } else if (exchange.from[0] == "€") {
-        // Euro to USD
-        // 1 USD = 1600 NGN, 1 EUR = 2215 NGN
-        // 1 EUR = (2215/1600) USD ≈ 1.384 USD
-        setRate("€1 - $1.38");
-        let newAmount = Number(amounted) * (2215 / 1600);
-        setExchange({
-          ...exchange,
-          to: "$" + newAmount.toFixed(2),
-        });
-      } else if (exchange.from[0] == "£") {
-        // Pounds to USD
-        // 1 GBP = 2215 NGN, 1 USD = 1600 NGN
-        // 1 GBP = (2215/1600) USD ≈ 1.38 USD
-        setRate("£1 - $1.38");
-        let newAmount = Number(amounted) * (2215 / 1600);
-        setExchange({
-          ...exchange,
-          to: "$" + newAmount.toFixed(2),
-        });
-      } else if (exchange.from[0] == "₦") {
-        // Naira to USD
-        let rated = rates.find((rate: any) => rate.name === "USD");
-        setRate(`$1 - ₦${rated.amount}`);
-        let newAmount = Number(amounted) / rated.amount;
-        setExchange({
-          ...exchange,
-          to: "$" + newAmount.toFixed(2),
-        });
-      } else {
-        // Default/fallback
-        let rated = rates.find((rate: any) => rate.name === "USD");
-        setRate(`$1 - ₦${rated.amount}`);
-        setExchange({
-          ...exchange,
-          to: "$0.00",
-        });
-      }
-      setSelectedC("USA");
-    } else if (val == "🇨🇦 CAD") {
-      // CAD conversions
-      if (val == "🇨🇦 CAD" && exchange.from[0] == "$") {
-        setRate("$1 - $1");
-        setExchange({
-          ...exchange,
-          to: "$" + amounted,
-        });
-      } else if (exchange.from[0] == "€") {
-        // Euro to CAD
-        // 1 EUR = 2215 NGN, 1 CAD = 1110 NGN
-        // 1 EUR = (2215/1110) CAD ≈ 1.996 CAD
-        setRate("€1 - $2.00");
-        let newAmount = Number(amounted) * (2215 / 1110);
-        setExchange({
-          ...exchange,
-          to: "$" + newAmount.toFixed(2),
-        });
-      } else if (exchange.from[0] == "£") {
-        // Pounds to CAD
-        // 1 GBP = 2215 NGN, 1 CAD = 1110 NGN
-        // 1 GBP = (2215/1110) CAD ≈ 1.996 CAD
-        setRate("£1 - $2.00");
-        let newAmount = Number(amounted) * (2215 / 1110);
-        setExchange({
-          ...exchange,
-          to: "$" + newAmount.toFixed(2),
-        });
-      } else if (exchange.from[0] == "₦") {
-        // Naira to CAD
-        let rated = rates.find((rate: any) => rate.name === "CAD");
-        setRate(`$1 - ₦${rated.amount}`);
-        let newAmount = Number(amounted) / rated.amount;
-        setExchange({
-          ...exchange,
-          to: "$" + newAmount.toFixed(2),
-        });
-      } else {
-        // Default/fallback
-        let rated = rates.find((rate: any) => rate.name === "CAD");
-        setRate(`$1 - ₦${rated.amount}`);
-        setExchange({
-          ...exchange,
-          to: "$0.00",
-        });
-      }
-      setSelectedC("CAD");
-    }
+  const handleConfirm = () => {
+    setConfirmVisible(false);
+    if (ngnToPay === null) return;
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    // Same payload shape as before: symbol-prefixed strings plus the codes.
+    dispatch(
+      setExchanger({
+        from: `₦${ngnToPay.toFixed(2)}`,
+        to: `${payout.symbol}${amount}`,
+        selectedC: payoutCode,
+        selectedD: "NGN",
+      }),
+    );
+
+    router.push({
+      pathname: "/ReceiverScreen",
+      params: {
+        request_type: "payment",
+        currency_from: "NGN",
+        currency_to: payoutCode,
+      },
+    });
   };
 
-  const data = [
-    { key: "2", value: "🇳🇬 NGN" },
-    // {key:'3', value:'🇬🇧 UK'},
-  ];
-  const datas = [
-    { key: "3", value: "🇺🇸 USA" },
-    { key: "4", value: "🇨🇦 CAD" },
-    { key: "5", value: "🇬🇧 UK" },
-    { key: "6", value: "🇪🇺 EUR" },
-  ];
-  const handleExchange = () => {
-    setEnabled(false);
+  /* ---- render ----------------------------------------------------------- */
 
-    if (userProfile?.verified_user == "yes") {
-      if (
-        exchange.from !== "" ||
-        (exchange.from.length > 0 && exchange.to !== "") ||
-        exchange.to.length > 0
-      ) {
-        const exchangeNewData = {
-          from: exchange.from,
-          to: exchange.to,
-          selectedC,
-          selectedD
-        }
-        dispatch(setExchanger(exchangeNewData));
-        router.push({
-          pathname: "/ReceiverScreen",
-          params: {
-            request_type: "payment",
-            currency_from: selectedD,
-            currency_to: selectedC,
-          }
-        });
-      } else {
-        alert("All fields are required.");
-      }
-    } else {
-      alert("Kindly verify your ID to continue exchange.");
-    }
-  };
   return (
-    <SafeAreaView
-      style={tw`flex-grow justify-center bg-white items-center w-full h-full`}
-    >
+    <SafeAreaView style={styles.screen}>
       <StatusBar style="dark" />
-      <ScrollView
-        style={tw`h-full w-full ${
-          Platform.OS === "ios" ? "p-5 h-full w-full" : "p-5 h-full w-full"
-        }`}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <CustomHeader title={"Send Money"} />
-
-        {/* Currency From section */}
-        <View
-          style={tw`border border-gray-300 rounded-2xl p-5 w-full flex flex-row mt-5 items-center justify-between`}
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <View style={tw`flex-1 flex-col`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Payout Amount:</Text>
+          <CustomHeader title="Send Money" />
 
-            <TextInput
-              value={exchange.to}
-              placeholder="0.00"
-              placeholderTextColor="#9ca3af"
-              onChangeText={(val) => {
-                setExchange({
-                  ...exchange,
-                  to: val,
-                });
-              }}
-              style={tw`mt-4 text-[13px] `}
-              keyboardType="number-pad"
-            />
-          </View>
-          <View style={tw`flex-1 pl-5`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Currency:</Text>
-            <SelectList
-              setSelected={(val:any) => {
-                handleSelectTo(val);
-              }}
-              placeholder="select"
-              boxStyles={{
-                width: 100,
-                marginTop: 8,
-                height: 45,
-                padding: 2,
-              }}
-              data={datas}
-              save="value"
-            />
-          </View>
-        </View>
-        <Text style={tw`text-gray-400 font-bold text-[11px] mt-3`}>
-        This amount will be sent to the receivers account
-        </Text>
-
-        <View
-          style={tw`mt-4 flex flex-row w-full justify-between items-center`}
-        >
-          <Text
-            style={tw`flex-1 border-r p-3 border-gray-400 text-[10px] font-semibold text-gray-600`}
-          >
-            Rate : {rate}
+          <Text style={styles.heading}>Pay out to a bank account</Text>
+          <Text style={styles.subtitle}>
+            Enter what the receiver should get. We'll show what you pay in
+            naira.
           </Text>
-          <Text style={tw`flex-1 text-center text-[12px]`}>- To -</Text>
-          <Text
-            style={tw`flex-1 border-l p-3 border-gray-400 text-[10px] text-gray-600`}
-          >
-            Within minutes
-          </Text>
-        </View>
 
-        {/* Currency To section */}
-        <View
-          style={tw`border border-gray-300 rounded-2xl p-5 w-full flex flex-row mt-10 items-center justify-between`}
-        >
-          <View style={tw`flex-1`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Currency</Text>
-            <SelectList
-              setSelected={(val:any) => {
-                handleSelectCountry(val);
-              }}
-              placeholder="select"
-              boxStyles={{
-                width: 100,
-                marginTop: 8,
-                height: 45,
-                padding: 2,
-              }}
-              data={data}
-              save="value"
-            />
-          </View>
+          {/* Receiver gets */}
+          <View style={styles.card}>
+            <Text style={styles.cardLabel}>Receiver gets</Text>
+            <View style={styles.fieldRow}>
+              <Pressable
+                style={styles.currencyPill}
+                onPress={() => setPickerVisible(true)}
+                accessibilityRole="button"
+                accessibilityLabel={`Payout currency, ${payout.short}. Tap to change`}
+              >
+                <Text style={styles.pillFlag}>{payout.flag}</Text>
+                <Text style={styles.pillCode}>{payout.short}</Text>
+                <Text style={styles.pillChevron}>⌄</Text>
+              </Pressable>
 
-          <View style={tw`flex-1 pl-5 flex-col`}>
-            <Text style={tw`text-gray-800 text-[12px]`}>Deposit Amount:</Text>
-
-            <TextInput
-              value={exchange.from}
-              placeholder="0.00"
-              onChangeText={(val) => {
-                setExchange({
-                  ...exchange,
-                  from: val,
-                });
-              }}
-              style={tw`mt-4 text-[13px] text-gray-500`}
-              editable={false}
-              keyboardType="number-pad"
-            />
-          </View>
-        </View>
-        
-        <Text style={tw`text-gray-400 font-bold text-[10px] mt-3`}>
-          Send this amount from your naira bank account to Globees Ex
-        </Text>
-
-
-        <View style={tw`mt-15`}>
-        <View style={tw`flex flex-row items-center mb-2`}>
-          <Text style={tw`text-gray-600 text-[12px]`}>
-            Service charge applies. Check out our{" "}
-          </Text>
-          <TouchableOpacity onPress={() => setModalL(!modalL)}>
-            <Text style={tw`text-[12px] text-blue-600`}>
-              Payment Gateway T&Cs
+              <View style={styles.amountWrap}>
+                <Text style={styles.amountSymbol}>{payout.symbol}</Text>
+                <TextInput
+                  value={amount}
+                  onChangeText={(v) => setAmount(sanitizeAmount(v))}
+                  placeholder="0.00"
+                  placeholderTextColor={COLORS.muted}
+                  keyboardType="decimal-pad"
+                  style={styles.amountInput}
+                  maxLength={12}
+                />
+              </View>
+            </View>
+            <Text style={styles.hint}>
+              This amount will be sent to the receiver's account.
             </Text>
-          </TouchableOpacity>
-        </View>
-          <PrimaryBtn title={"Continue"} onpressed={() => {
-            if(exchange.from !== ""){
-              setEnabled(true);
-            }else{
-              alert("Kindly select NGN and complete the required fields to continue");
-            }
-          }} />
-        </View>
-        <View style={tw`mt-5`}>
-          <Marquee spacing={20} speed={0.3}>
-            <Text style={tw`text-[12px] text-gray-800`}>
-              Kindly update your identity and complete KYC to make payment or send money.{" "}
-              <Text style={tw`font-bold`}>
-                {"Goto Home, select More and Complete Identity Verification."}
+          </View>
+
+          {/* Rate */}
+          <View style={styles.summary}>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryKey}>Rate</Text>
+              <Text style={styles.summaryValue}>{rateLabel}</Text>
+            </View>
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryKey}>Delivery</Text>
+              <Text style={styles.summaryValue}>Within minutes</Text>
+            </View>
+          </View>
+
+          {/* You pay */}
+          <View style={[styles.card, styles.cardPay]}>
+            <Text style={styles.cardLabel}>You pay</Text>
+            <View style={styles.fieldRow}>
+              <View style={[styles.currencyPill, styles.pillStatic]}>
+                <Text style={styles.pillFlag}>🇳🇬</Text>
+                <Text style={styles.pillCode}>NGN</Text>
+              </View>
+
+              <View style={styles.amountWrap}>
+                <Text
+                  style={[styles.amountSymbol, ngnToPay === null && styles.dim]}
+                >
+                  ₦
+                </Text>
+                <Text
+                  style={[styles.payAmount, ngnToPay === null && styles.dim]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
+                  {ngnToPay !== null ? formatMoney(ngnToPay) : "0.00"}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.hint}>
+              Send this amount from your Naira bank account to Globees Ex.
+            </Text>
+          </View>
+
+          {/* Legal */}
+          <View style={styles.legalRow}>
+            <Text style={styles.legalText}>
+              Service charge applies. See our{" "}
+            </Text>
+            <Pressable onPress={() => setLegalVisible(true)} hitSlop={8}>
+              <Text style={styles.legalLink}>Payment Gateway T&Cs</Text>
+            </Pressable>
+          </View>
+
+          {/* Verification notice, only when it matters */}
+          {!isVerified ? (
+            <View style={styles.notice}>
+              <Text style={styles.noticeTitle}>
+                Verify your identity to send money
               </Text>
-            </Text>
-          </Marquee>
-        </View>
-      </ScrollView>
+              <Text style={styles.noticeText}>
+                Go to Home, select More, then choose Complete Identity
+                Verification.
+              </Text>
+            </View>
+          ) : null}
 
-      <View style={tw`w-full items-center justify-center flex flex-col`}>
-        {enabled ? (
-          <LogOutModal
-            visibility={enabled}
-            setVisibility={setEnabled}
-            isLogout={false}
-            text={`Are you sure you want to proceed to send ${exchange.to}?`}
-            onPressed={handleExchange}
-          />
-        ) : null}
-        <LoadingModal
-          visibility={loading}
-          text={"Please wait..."}
+          <View style={styles.cta}>
+            <PrimaryBtn
+              title="Continue"
+              onpressed={handleContinue}
+              {...({ disabled: !canContinue } as any)}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      <CurrencySheet
+        visible={pickerVisible}
+        selected={payoutCode}
+        onSelect={(code) => {
+          setPayoutCode(code);
+          setPickerVisible(false);
+        }}
+        onClose={() => setPickerVisible(false)}
+      />
+
+      {confirmVisible ? (
+        <LogOutModal
+          visibility={confirmVisible}
+          setVisibility={setConfirmVisible}
+          isLogout={false}
+          text={`Send ${payout.symbol}${AmountFormatter(amount)}? You'll pay ₦${
+            ngnToPay !== null ? formatMoney(ngnToPay) : ""
+          }.`}
+          onPressed={handleConfirm}
         />
-        <CustomLegal visibility={modalL} setVisibility={setModalL} />
-      </View>
+      ) : null}
+
+      <CustomLegal visibility={legalVisible} setVisibility={setLegalVisible} />
     </SafeAreaView>
   );
 };
+
+/* -------------------------------------------------------------------------- */
+/*  Styles                                                                    */
+/* -------------------------------------------------------------------------- */
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: COLORS.white },
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 40,
+  },
+
+  heading: {
+    marginTop: 20,
+    fontSize: 26,
+    fontWeight: "800",
+    color: COLORS.ink,
+    letterSpacing: -0.4,
+  },
+  subtitle: {
+    marginTop: 6,
+    fontSize: 15,
+    lineHeight: 22,
+    color: COLORS.body,
+  },
+
+  /* cards */
+  card: {
+    marginTop: 24,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 20,
+    padding: 16,
+  },
+  cardPay: {
+    marginTop: 0,
+    backgroundColor: COLORS.brandSoft,
+    borderColor: COLORS.brandLine,
+  },
+  cardLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: COLORS.body,
+    marginBottom: 14,
+  },
+  fieldRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  hint: {
+    marginTop: 14,
+    fontSize: 12,
+    lineHeight: 18,
+    color: COLORS.body,
+  },
+
+  /* currency pill */
+  currencyPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    gap: 6,
+  },
+  pillStatic: { paddingRight: 14 },
+  pillFlag: { fontSize: 20 },
+  pillCode: { fontSize: 15, fontWeight: "700", color: COLORS.ink },
+  pillChevron: { fontSize: 16, color: COLORS.body, marginTop: -4 },
+
+  /* amounts */
+  amountWrap: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginLeft: 12,
+  },
+  amountSymbol: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: COLORS.ink,
+    marginRight: 4,
+  },
+  amountInput: {
+    flexShrink: 1,
+    minWidth: 80,
+    textAlign: "right",
+    fontSize: 28,
+    fontWeight: "800",
+    color: COLORS.ink,
+    paddingVertical: 0,
+  },
+  payAmount: {
+    flexShrink: 1,
+    textAlign: "right",
+    fontSize: 28,
+    fontWeight: "800",
+    color: COLORS.brand,
+  },
+  dim: { color: COLORS.muted },
+
+  /* rate summary */
+  summary: {
+    marginVertical: 14,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 14,
+  },
+  summaryDivider: { height: 1, backgroundColor: COLORS.line },
+  summaryKey: { fontSize: 14, color: COLORS.body },
+  summaryValue: { fontSize: 14, fontWeight: "700", color: COLORS.ink },
+
+  /* legal */
+  legalRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    marginTop: 18,
+  },
+  legalText: { fontSize: 12, color: COLORS.body },
+  legalLink: { fontSize: 12, fontWeight: "700", color: COLORS.link },
+
+  /* notice */
+  notice: {
+    marginTop: 16,
+    backgroundColor: COLORS.warnBg,
+    borderColor: COLORS.warnLine,
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 14,
+  },
+  noticeTitle: { fontSize: 14, fontWeight: "700", color: COLORS.warnText },
+  noticeText: {
+    marginTop: 4,
+    fontSize: 13,
+    lineHeight: 19,
+    color: COLORS.warnText,
+  },
+
+  cta: { marginTop: 24 },
+
+  /* bottom sheet */
+  backdrop: { flex: 1, backgroundColor: "rgba(15, 23, 42, 0.45)" },
+  sheet: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 12,
+  },
+  sheetHandle: {
+    alignSelf: "center",
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.line,
+    marginBottom: 14,
+  },
+  sheetTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: COLORS.ink,
+    marginBottom: 8,
+  },
+  sheetRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+  },
+  sheetRowActive: { backgroundColor: COLORS.brandSoft },
+  sheetFlag: { fontSize: 28 },
+  sheetCode: { fontSize: 16, fontWeight: "700", color: COLORS.ink },
+  sheetName: { fontSize: 13, color: COLORS.body, marginTop: 2 },
+  sheetCheck: { fontSize: 20, fontWeight: "800", color: COLORS.brand },
+});
 
 export default PaymentScreen;

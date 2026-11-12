@@ -1,7 +1,7 @@
-import React from 'react'
-import { View, Text, Modal, ActivityIndicator } from 'react-native'
-import tw from "twrnc"
-import { PRIMARY_COLOR } from '@/hooks/api'
+import React from "react";
+import { View, Text, Modal, ActivityIndicator } from "react-native";
+import tw from "twrnc";
+import { PRIMARY_COLOR } from "@/hooks/api";
 
 interface LoadingModalProps {
   visibility: boolean;
@@ -15,28 +15,53 @@ const LoadingModal: React.FC<LoadingModalProps> = ({
   visibility,
   setVisibility,
   message,
-  text = "Please wait...",
+  text = "Please wait…",
   isloading = true,
 }) => {
   return (
     <Modal
       animationType="fade"
-      transparent={true}
+      transparent
+      statusBarTranslucent
       visible={visibility}
       onRequestClose={() => setVisibility?.(false)}
     >
-      <View style={tw`flex-1 justify-center items-center bg-black/50`}>
-        <View style={tw`bg-white rounded-2xl p-6 shadow-xl min-w-[200px] items-center`}>
+      <View
+        style={[
+          tw`flex-1 items-center justify-center px-10`,
+          { backgroundColor: "rgba(15, 23, 42, 0.45)" },
+        ]}
+      >
+        <View
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+          style={[
+            tw`bg-white rounded-3xl px-8 py-7 items-center`,
+            {
+              minWidth: 180,
+              shadowColor: "#0F172A",
+              shadowOffset: { width: 0, height: 12 },
+              shadowOpacity: 0.15,
+              shadowRadius: 24,
+              elevation: 12,
+            },
+          ]}
+        >
           {isloading && (
-            <ActivityIndicator size="large" color={PRIMARY_COLOR} style={tw`mb-4`} />
+            <ActivityIndicator size="large" color={PRIMARY_COLOR} />
           )}
-          <Text style={tw`text-gray-700 text-base text-center font-medium`}>
+          <Text
+            style={[
+              tw`text-gray-800 text-sm font-medium text-center`,
+              isloading && tw`mt-4`,
+            ]}
+          >
             {message ?? text}
           </Text>
         </View>
       </View>
     </Modal>
-  )
-}
+  );
+};
 
-export default LoadingModal
+export default LoadingModal;

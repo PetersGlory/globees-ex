@@ -1,24 +1,33 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
-  TouchableOpacity,
   TextInput,
+  Pressable,
   ScrollView,
+  KeyboardAvoidingView,
+  StyleSheet,
   Platform,
+  type TextInputInstance,
+  type TextInputKeyPressEvent,
 } from "react-native";
-import tw from "twrnc";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { StatusBar } from "expo-status-bar";
-import { BASE_URL, GENERAL_URL, PRIMARY_COLOR, updatedevicetoken } from "@/hooks/api";
+import {
+  BASE_URL,
+  GENERAL_URL,
+  PRIMARY_COLOR,
+  updatedevicetoken,
+} from "@/hooks/api";
 import { setAccessToken, setRates, setUserProfile } from "@/hooks/redux/slice";
 import { router, useLocalSearchParams } from "expo-router";
-import SecondaryBtn from "@/components/common/SecondaryBtn";
 import LoadingModal from "@/components/common/Modals/LoadingModal";
+
+const CODE_LENGTH = 5;
 
 const VerificationScreen = () => {
   const params = useLocalSearchParams();
@@ -26,6 +35,8 @@ const VerificationScreen = () => {
   const [modal, setModal] = useState(false);
   const [message, setMessage] = useState("Verifying....");
   const [code, setCode] = useState("");
+  const [focused, setFocused] = useState<number | null>(null);
+  const otpRefs = useRef<(TextInputInstance | null)[]>([]);
   const dispatch = useDispatch();
 
   const handleLogin = () => {
@@ -49,7 +60,7 @@ const VerificationScreen = () => {
             await AsyncStorage.setItem("accessTokenF", datas?.accessToken);
             getProfile(datas?.accessToken);
             getRates();
-            if (typeof params?.email === 'string') {
+            if (typeof params?.email === "string") {
               updatedevicetoken(params.email, datas?.accessToken);
             }
             setModal(false);
@@ -58,16 +69,14 @@ const VerificationScreen = () => {
             }, 1500);
           } else {
             setTimeout(() => {
-              // navigation.push("VerificationScreen");
               setModal(false);
               setLoading(false);
             }, 3000);
           }
         })
-        .catch((err:any) => {
+        .catch((err: any) => {
           setMessage(err.message);
           setTimeout(() => {
-            // navigation.push("VerificationScreen");
             setModal(false);
             setLoading(false);
           }, 3000);
@@ -76,7 +85,6 @@ const VerificationScreen = () => {
     } else {
       setMessage("All fields are required.");
       setTimeout(() => {
-        // navigation.push("VerificationScreen");
         setModal(false);
         setLoading(false);
       }, 3000);
@@ -84,7 +92,7 @@ const VerificationScreen = () => {
   };
 
   // Getting Profile
-  const getProfile = (key:string) => {
+  const getProfile = (key: string) => {
     axios
       .request({
         method: "GET",
@@ -119,82 +127,178 @@ const VerificationScreen = () => {
         console.error(err);
       });
   };
+
+  const handleOtpChange = (value: string, index: number) => {
+    const digits = value.replace(/\D/g, "");
+    const next = code.split("");
+
+    if (digits === "") {
+      next[index] = "";
+      setCode(next.join(""));
+      return;
+    }
+
+    digits.split("").forEach((digit, offset) => {
+      const pos = index + offset;
+      if (pos < CODE_LENGTH) {
+        next[pos] = digit;
+      }
+    });
+    setCode(next.join("").slice(0, CODE_LENGTH));
+
+    const focusIndex = Math.min(index + digits.length, CODE_LENGTH - 1);
+    otpRefs.current[focusIndex]?.focus();
+  };
+
+  const handleOtpKeyPress = (
+    event: TextInputKeyPressEvent,
+    index: number,
+  ) => {
+    if (event.nativeEvent.key === "Backspace" && !code[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
   return (
-    <SafeAreaView
-      style={tw`flex-grow w-full h-full bg-[${PRIMARY_COLOR}] p-5 pt-15`}
-    >
-      <StatusBar style="light" />
-      <ScrollView
-        style={tw`h-full w-full ${Platform.OS == "ios" ? " p-5 pt-15" : ""}`}
+    <SafeAreaView style={styles.screen}>
+      <StatusBar style="dark" />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <TouchableOpacity
-          style={tw`w-12 p-2 border border-gray-400 rounded-lg`}
-          onPress={() => router.back()}
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <Icon name="chevron-back" color={"#ffffff"} size={26} />
-        </TouchableOpacity>
-
-        {/* Greetings */}
-        <View style={tw`mt-[30px] items-center`}>
-          <Text
-            style={{
-              ...tw`text-[24px] font-medium`,
-              color: "${PRIMARY_COLOR}",
-            }}
+          <Pressable
+            onPress={() => router.back()}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            style={styles.back}
           >
-            <Icon name="mail" color={"#ffffff"} size={50} />
-          </Text>
-          <Text style={tw`text-gray-100 text-[15px] mt-[8px]`}>
-            We have sent a code to ( {params?.email} ). Enter it here to
-            verify your identity.
-          </Text>
-        </View>
+            <Icon name="chevron-back" size={26} color={PRIMARY_COLOR} />
+          </Pressable>
 
-        {/* Forms */}
-        <View style={tw`mt-[32px] w-full items-center`}>
-          <TextInput
-            placeholder="Input verification code"
-            value={code}
-            onChangeText={(val) => {
-              setCode(val);
-            }}
-            keyboardType="number-pad"
-            placeholderTextColor="#9ca3af"
-            style={tw`p-[16px] w-full rounded-2xl bg-white text-center border border-gray-200`}
-          />
-          <View
-            style={tw`items-center justify-between flex flex-row mt-4 w-full`}
-          >
-            <Text style={tw`text-gray-100 font-medium text-[15px]`}>
-              Haven't received email?{" "}
-            </Text>
-            <TouchableOpacity
-              style={tw`justify-center items-center font-bold`}
-              onPress={() => {
-                alert("Code Resent.");
-              }}
-            >
-              <Text style={tw`text-white font-bold text-[15px]`}>
-                Send Email Again
+          <Text style={[styles.title, { color: PRIMARY_COLOR }]}>
+            Verify your email
+          </Text>
+          <Text style={styles.subtitle}>
+            We have sent a code to ( {params?.email} ). Enter it here to verify
+            your identity.
+          </Text>
+
+          <View style={styles.form}>
+            <View style={styles.otpRow}>
+              {Array.from({ length: CODE_LENGTH }).map((_, index) => (
+                <TextInput
+                  key={index}
+                  ref={(el) => {
+                    otpRefs.current[index] = el;
+                  }}
+                  value={code[index] ?? ""}
+                  onChangeText={(value) => handleOtpChange(value, index)}
+                  onKeyPress={(event) => handleOtpKeyPress(event, index)}
+                  onFocus={() => setFocused(index)}
+                  onBlur={() => setFocused(null)}
+                  keyboardType="number-pad"
+                  maxLength={CODE_LENGTH}
+                  accessibilityLabel={`Digit ${index + 1}`}
+                  style={[
+                    styles.otpBox,
+                    focused === index && { borderColor: PRIMARY_COLOR },
+                  ]}
+                />
+              ))}
+            </View>
+
+            <View style={styles.resendRow}>
+              <Text style={styles.resendText}>
+                Haven't received email?{" "}
               </Text>
-            </TouchableOpacity>
+              <Pressable onPress={() => alert("Code Resent.")} hitSlop={8}>
+                <Text style={[styles.link, { color: PRIMARY_COLOR }]}>
+                  Send Email Again
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
 
-        {/* Buttons */}
-        <View style={tw`mt-10 w-full flex flex-col items-center`}>
-          <SecondaryBtn title={"Confirm >"} onpressed={handleLogin} />
-        </View>
-      </ScrollView>
+          <Pressable
+            onPress={handleLogin}
+            disabled={modal}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.primaryBtn,
+              { backgroundColor: PRIMARY_COLOR },
+              pressed && styles.pressed,
+            ]}
+          >
+            <Text style={styles.primaryBtnText}>Confirm</Text>
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-      <View style={tw`w-full items-center justify-center flex flex-col`}>
-        <LoadingModal
-          visibility={modal}
-          text={message}
-        />
-      </View>
+      <LoadingModal visibility={modal} text={message} />
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  screen: { flex: 1, backgroundColor: "#FFFFFF" },
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 32,
+  },
+
+  back: { alignSelf: "flex-start", marginLeft: -4 },
+
+  title: {
+    fontSize: 30,
+    fontWeight: "800",
+    letterSpacing: -0.5,
+    marginTop: 24,
+  },
+  subtitle: { color: "#6b7280", fontSize: 16, lineHeight: 24, marginTop: 8 },
+
+  form: { marginTop: 36 },
+  otpRow: { flexDirection: "row", gap: 10 },
+  otpBox: {
+    flex: 1,
+    height: 60,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: "#e5e7eb",
+    textAlign: "center",
+    textAlignVertical: "center",
+    paddingVertical: 0,
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#111827",
+  },
+
+  resendRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  resendText: { color: "#6b7280", fontSize: 15 },
+  link: { fontSize: 15, fontWeight: "600" },
+
+  primaryBtn: {
+    height: 54,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 28,
+  },
+  primaryBtnText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
+  pressed: { opacity: 0.85 },
+});
 
 export default VerificationScreen;
