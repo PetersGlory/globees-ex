@@ -1,322 +1,396 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  Image,
-  SafeAreaView,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { SelectList } from "react-native-dropdown-select-list";
 import tw from "twrnc";
-import { Platform } from "react-native";
-import { useSelector } from "react-redux";
+import { StatusBar } from "expo-status-bar";
+import Icon from "@expo/vector-icons/Ionicons";
 import axios from "axios";
-import { useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { selectAccessToken, selectUserProfile } from "@/hooks/redux/slice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAccessToken,
+  selectUserProfile,
+  setUserProfile,
+} from "@/hooks/redux/slice";
 import { usePushNotification } from "@/usePushNotification";
-import { BASE_URL } from "@/hooks/api";
+import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api";
 import CustomHeader from "@/components/common/CustomHeader";
 import LoadingModal from "@/components/common/Modals/LoadingModal";
-import Icon from "@expo/vector-icons/Ionicons";
 import PrimaryBtn from "@/components/common/PrimaryBtn";
 import CustomDropdown from "@/components/common/CustomDropdown";
 
-const ProfileScreen = () => {
-  const [selected, setSelected] = React.useState("");
-  const [enabled, setEnabled] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const profileUser = useSelector(selectUserProfile);
-  const key = useSelector(selectAccessToken);
-  
-  const gender = [
-    { key: "2", value: "Male" },
-    { key: "3", value: "Female" },
-  ];
-  
-  const [regs, setRegs] = React.useState({
-    fullname: "",
-    phone: "+234",
-    address: "",
-    gender: "",
-    country: "",
-  });
+interface Profile {
+  fullname?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  gender?: string;
+  country?: string;
+  verified_user?: string;
+}
 
+interface FormState {
+  fullname: string;
+  phone: string;
+  address: string;
+  gender: string;
+  country: string;
+}
+
+const GENDERS = ["Male", "Female"];
+
+const buildForm = (
+  profile: Profile | null,
+  storedCountry: string | null,
+): FormState => ({
+  fullname: profile?.fullname || "",
+  phone: profile?.phone || "+234",
+  address: profile?.address || "",
+  gender: profile?.gender || "",
+  country: storedCountry || profile?.country || "",
+});
+
+const getInitials = (name?: string) =>
+  (name ?? "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+const Field = ({
+  label,
+  helper,
+  children,
+}: {
+  label: string;
+  helper?: string;
+  children: React.ReactNode;
+}) => (
+  <View style={tw`mb-5`}>
+    <Text style={tw`text-gray-500 text-xs font-medium mb-2`}>{label}</Text>
+    {children}
+    {helper ? (
+      <Text style={tw`text-gray-400 text-xs mt-1.5`}>{helper}</Text>
+    ) : null}
+  </View>
+);
+
+const ReadOnlyBox = ({
+  value,
+  locked,
+}: {
+  value?: string;
+  locked?: boolean;
+}) => (
+  <View
+    style={tw`flex-row items-center bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5`}
+  >
+    <Text
+      style={[tw`flex-1 text-base`, { color: value ? "#1F2937" : "#9CA3AF" }]}
+      numberOfLines={1}
+    >
+      {value || "Not set"}
+    </Text>
+    {locked && <Icon name="lock-closed-outline" size={16} color="#9CA3AF" />}
+  </View>
+);
+
+const ProfileScreen = () => {
+  const dispatch = useDispatch();
+  const profileUser = useSelector(selectUserProfile) as Profile | null;
+  const token = useSelector(selectAccessToken);
   const { expoPushToken } = usePushNotification();
 
-  useFocusEffect(
-    useCallback(() => {
-      const userCountry = getcountry();
-      setRegs({
-        fullname: profileUser?.fullname || "",
-        phone: profileUser?.phone || "+234",
-        address: profileUser?.address || "",
-        gender: profileUser?.gender || "",
-        country: userCountry as never || profileUser?.country || "",
-      });
-      setPush();
-    }, [profileUser])
-  );
+  const [saved, setSaved] = useState<FormState>(buildForm(null, null));
+  const [form, setForm] = useState<FormState>(buildForm(null, null));
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const isVerified =
+    profileUser?.verified_user === "yes" ||
+    profileUser?.verified_user === "true";
 
   useEffect(() => {
-    const userCountry = getcountry();
-    setRegs({
-      fullname: profileUser?.fullname || "",
-      phone: profileUser?.phone || "+234",
-      address: profileUser?.address || "",
-      gender: profileUser?.gender || "",
-      country: userCountry as never || profileUser?.country || "",
-    });
-    setPush();
+    let cancelled = false;
+
+    (async () => {
+      const storedCountry = await AsyncStorage.getItem("userCountry");
+      if (cancelled) return;
+      const next = buildForm(profileUser, storedCountry);
+      setSaved(next);
+      setForm(next);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [profileUser]);
 
-  const setPush = async () => {
+  useEffect(() => {
     if (expoPushToken?.data) {
-      await AsyncStorage.setItem("pushToken", expoPushToken.data);
+      AsyncStorage.setItem("pushToken", expoPushToken.data);
     }
-    console.log(regs.country)
+  }, [expoPushToken?.data]);
+
+  const update = (patch: Partial<FormState>) =>
+    setForm((prev) => ({ ...prev, ...patch }));
+
+  const handleCancel = () => {
+    setForm(saved);
+    setIsEditing(false);
   };
 
-  const getcountry = async () =>{
-    const countryUser = await AsyncStorage.getItem("userCountry");
-    return countryUser;
-  }
-
-  const storeCountry = async (country:string) =>{
-    await AsyncStorage.setItem("userCountry", country);
-  }
-
-  const handleUpdate = async () => {
-    if (!regs.fullname.trim()) {
-      Alert.alert("Error", "Full name is required");
+  const handleSave = async () => {
+    if (!form.fullname.trim()) {
+      Alert.alert("Name required", "Please enter your full name.");
       return;
     }
 
-    setMessage("Updating profile...");
-    setEnabled(true);
-    setLoading(true);
-
+    setSaving(true);
     try {
-      const result = await axios.request({
-        method: "POST",
-        url: `${BASE_URL}/update/profile`,
-        data: regs,
+      const result = await axios.post(`${BASE_URL}/update/profile`, form, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + key,
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      const datas = result.data;
-      setMessage(datas.message);
-      
-      if (!datas.error) {
-        setLoading(false);
-        setIsEditing(false);
-        storeCountry(regs.country);
-        Alert.alert("Success", "Profile updated successfully!");
-        setTimeout(() => {
-          setEnabled(false);
-        }, 2000);
-      } else {
-        Alert.alert("Error", datas.message || "Failed to update profile");
-        setTimeout(() => {
-          setEnabled(false);
-          setLoading(false);
-        }, 2000);
+      if (result.data.error) {
+        Alert.alert(
+          "Couldn't update profile",
+          result.data.message || "Please try again.",
+        );
+        return;
       }
-    } catch (err: any) {
-      setMessage(err.message || "Network error");
-      Alert.alert("Error", "Failed to update profile. Please try again.");
-      setTimeout(() => {
-        setEnabled(false);
-        setLoading(false);
-      }, 2000);
+
+      await AsyncStorage.setItem("userCountry", form.country);
+      dispatch(setUserProfile({ ...profileUser, ...form }));
+      setSaved(form);
+      setIsEditing(false);
+      Alert.alert("Profile updated", "Your changes have been saved.");
+    } catch (err) {
+      console.error(err);
+      Alert.alert(
+        "Couldn't update profile",
+        "Check your connection and try again.",
+      );
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setRegs({
-      fullname: profileUser?.fullname || "",
-      phone: profileUser?.phone || "+234",
-      address: profileUser?.address || "",
-      gender: profileUser?.gender || "",
-      country: getcountry() as never || profileUser?.country || "",
-    });
-  };
+  const inputStyle = [
+    tw`rounded-xl px-4 py-3.5 text-base text-gray-900`,
+    { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#D1D5DB" },
+  ];
 
   return (
     <SafeAreaView style={tw`flex-1 bg-gray-50`}>
-      <ScrollView 
+      <StatusBar style="dark" />
+
+      <KeyboardAvoidingView
         style={tw`flex-1`}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={tw`pb-8`}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {/* Header Section */}
-        <View style={tw`bg-white px-5 pt-3 pb-6`}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+        >
           <CustomHeader title="Profile" />
-          
-          {/* Profile Avatar Section */}
-          <View style={tw`items-center mt-4`}>
-            <View style={tw`relative`}>
-              <Image
-                source={require("../assets/images/logo-bg.png")}
-                style={tw`w-26 h-26 rounded-full border-4 border-blue-100`}
-                alt="Profile Avatar"
-              />
-              {!isEditing && (
-                <TouchableOpacity 
-                  style={tw`absolute -bottom-2 -right-2 bg-blue-500 w-10 h-10 rounded-full items-center justify-center border-3 border-white shadow-lg`}
-                  onPress={handleEdit}
-                >
-                  <Icon name="pencil" size={18} color="#ffffff" />
-                </TouchableOpacity>
+
+          <View style={tw`items-center mt-6`}>
+            <View
+              style={[
+                tw`w-24 h-24 rounded-full items-center justify-center`,
+                { backgroundColor: PRIMARY_COLOR },
+              ]}
+            >
+              {getInitials(profileUser?.fullname) ? (
+                <Text style={tw`text-white font-bold text-3xl`}>
+                  {getInitials(profileUser?.fullname)}
+                </Text>
+              ) : (
+                <Icon name="person" size={40} color="#FFFFFF" />
               )}
             </View>
-            
-            <Text style={tw`text-2xl font-bold text-gray-900 mt-4 mb-1`}>
-              {profileUser?.fullname || "User Profile"}
+
+            <Text style={tw`text-gray-900 font-bold text-xl mt-4`}>
+              {profileUser?.fullname || "Your profile"}
             </Text>
-            <Text style={tw`text-gray-500 text-base mb-2`}>
-              {profileUser?.email || "user@example.com"}
+            <Text style={tw`text-gray-500 text-sm mt-1`}>
+              {profileUser?.email || "—"}
             </Text>
-            
-            {/* Verification Badge */}
-            <View style={tw`${profileUser?.verified_user === "yes" ? 'bg-green-100' : 'bg-yellow-100'} px-4 py-2 rounded-full`}>
-              <View style={tw`flex-row items-center`}>
-                <Icon 
-                  name={profileUser?.verified_user === "yes" ? "checkmark-circle" : "time"} 
-                  size={16} 
-                  color={profileUser?.verified_user === "yes" ? "#059669" : "#d97706"} 
-                />
-                <Text style={tw`${profileUser?.verified_user === "yes" ? 'text-green-700' : 'text-yellow-700'} font-semibold text-sm ml-2`}>
-                  {profileUser?.verified_user === "yes" ? "Verified Account" : "Pending Verification"}
-                </Text>
-              </View>
+
+            <View
+              style={[
+                tw`flex-row items-center rounded-full px-3 py-1.5 mt-3`,
+                { backgroundColor: isVerified ? "#ECFDF5" : "#FFFBEB" },
+              ]}
+            >
+              <Icon
+                name={isVerified ? "checkmark-circle" : "time"}
+                size={14}
+                color={isVerified ? "#047857" : "#B45309"}
+              />
+              <Text
+                style={[
+                  tw`text-xs font-semibold ml-1.5`,
+                  { color: isVerified ? "#047857" : "#B45309" },
+                ]}
+              >
+                {isVerified ? "Verified account" : "Pending verification"}
+              </Text>
             </View>
           </View>
-        </View>
 
-        {/* Form Section */}
-        <View style={tw`px-5`}>
-          <View style={tw`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden`}>
-            {/* Form Header */}
-            <View style={tw`bg-gray-100 p-4`}>
-              <Text style={tw`text-gray-800 text-lg font-bold`}>Personal Information</Text>
-              <Text style={tw`text-gray-500 text-sm mt-1`}>Update your profile details</Text>
-            </View>
-            
-            {/* Form Fields */}
-            <View style={tw`p-5 space-y-4`}>
-              {/* Full Name */}
-              <View>
-                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
-                  <Icon name="person" size={16} color="#6b7280" style={tw`mr-2`} />
-                  Full Name
-                </Text>
+          <View
+            style={tw`bg-white rounded-2xl border border-gray-100 p-5 mt-6`}
+          >
+            <Text style={tw`text-gray-900 font-semibold text-base mb-5`}>
+              Personal information
+            </Text>
+
+            <Field label="Full name">
+              {isEditing ? (
                 <TextInput
-                  style={tw`border border-gray-200 rounded-xl p-4 text-gray-800 text-base bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
-                  keyboardType="default"
-                  onChangeText={(val) => setRegs({...regs, fullname: val})}
-                  value={regs.fullname}
+                  style={inputStyle}
+                  value={form.fullname}
+                  onChangeText={(val) => update({ fullname: val })}
                   placeholder="Enter your full name"
-                  editable={isEditing}
+                  placeholderTextColor="#9CA3AF"
+                  autoCapitalize="words"
+                  returnKeyType="done"
                 />
-              </View>
+              ) : (
+                <ReadOnlyBox value={form.fullname} />
+              )}
+            </Field>
 
-              {/* Phone Number */}
-              <View>
-                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
-                  <Icon name="call" size={16} color="#6b7280" style={tw`mr-2`} />
-                  Mobile Number
-                </Text>
+            <Field
+              label="Mobile number"
+              helper="Your phone number can't be changed."
+            >
+              <ReadOnlyBox value={form.phone} locked />
+            </Field>
+
+            <Field label="Address">
+              {isEditing ? (
                 <TextInput
-                  style={tw`border border-gray-200 rounded-xl p-4 text-gray-600 text-base bg-gray-100`}
-                  keyboardType="phone-pad"
-                  value={regs.phone}
-                  placeholder="Phone number"
-                  editable={false}
+                  style={inputStyle}
+                  value={form.address}
+                  onChangeText={(val) => update({ address: val })}
+                  placeholder="Enter your address"
+                  placeholderTextColor="#9CA3AF"
+                  returnKeyType="done"
                 />
-                <Text style={tw`text-gray-400 text-xs mt-1 italic`}>Phone number cannot be changed</Text>
-              </View>
+              ) : (
+                <ReadOnlyBox value={form.address} />
+              )}
+            </Field>
 
-              {/* Gender */}
-              <View>
-                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
-                  <Icon name="male-female" size={16} color="#6b7280" style={tw`mr-2`} />
-                  Gender
-                </Text>
-                <SelectList
-                  setSelected={(val: any) => {
-                    setSelected(val);
-                    setRegs({...regs, gender: val});
-                  }}
-                  data={gender}
-                  save="value"
-                  placeholder={regs.gender ? regs.gender : "Select gender"}
-                  // disabled={!isEditing}
-                  boxStyles={tw`border border-gray-200 rounded-xl p-4 bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
-                  inputStyles={tw`text-gray-800 text-base`}
-                  dropdownStyles={tw`border border-gray-200 rounded-xl bg-white shadow-lg`}
-                  dropdownTextStyles={tw`text-gray-800 text-base`}
-                />
-              </View>
+            <Field label="Gender">
+              {isEditing ? (
+                <View style={tw`flex-row`}>
+                  {GENDERS.map((option, i) => {
+                    const active = form.gender === option;
+                    return (
+                      <TouchableOpacity
+                        key={option}
+                        activeOpacity={0.8}
+                        onPress={() => update({ gender: option })}
+                        style={[
+                          tw`flex-1 py-3.5 rounded-xl items-center`,
+                          i > 0 && tw`ml-3`,
+                          {
+                            backgroundColor: active ? "#FFFFFF" : "#F9FAFB",
+                            borderWidth: 1.5,
+                            borderColor: active ? PRIMARY_COLOR : "#E5E7EB",
+                          },
+                        ]}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: active }}
+                      >
+                        <Text
+                          style={[
+                            tw`text-sm font-semibold`,
+                            { color: active ? PRIMARY_COLOR : "#4B5563" },
+                          ]}
+                        >
+                          {option}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              ) : (
+                <ReadOnlyBox value={form.gender} />
+              )}
+            </Field>
 
-              {/* Country */}
-              <View>
-                <Text style={tw`text-gray-700 font-semibold text-base mb-2 flex-row items-center`}>
-                  <Icon name="alert-circle" size={16} color="#6b7280" style={tw`mr-2`} />
-                  Country
-                </Text>
-                <CustomDropdown placeholder={regs.country !== "" && regs.country !== null ? regs.country : "Select country"} onChange={(val)=> {
-                  setRegs({...regs,country:val.name})}
-                } />
-                {/* <TextInput
-                  style={tw`border border-gray-200 rounded-xl p-4 text-gray-800 text-base bg-gray-50 ${isEditing ? 'border-blue-300 bg-white' : ''}`}
-                  onChangeText={(val) => setRegs({...regs, country: val})}
-                  value={regs.country}
-                  keyboardType="default"
-                  placeholder="Enter country"
-                  editable={isEditing}
-                /> */}
-              </View>
+            <View style={tw`mb-0`}>
+              <Field label="Country">
+                {isEditing ? (
+                  <CustomDropdown
+                    placeholder={form.country || "Select country"}
+                    onChange={(val: { name: string }) =>
+                      update({ country: val.name })
+                    }
+                  />
+                ) : (
+                  <ReadOnlyBox value={form.country} />
+                )}
+              </Field>
             </View>
           </View>
 
-          {/* Action Buttons */}
-          {isEditing ? (
-            <View style={tw`mt-6 space-y-3`}>
+          <View style={tw`mt-6`}>
+            {isEditing ? (
+              <View style={tw`flex-row items-center`}>
+                <TouchableOpacity
+                  onPress={handleCancel}
+                  disabled={saving}
+                  activeOpacity={0.8}
+                  style={[
+                    tw`flex-1 py-3.5 rounded-xl items-center justify-center mr-3`,
+                    {
+                      borderWidth: 1,
+                      borderColor: "#D1D5DB",
+                      backgroundColor: "#FFFFFF",
+                    },
+                  ]}
+                  accessibilityRole="button"
+                >
+                  <Text style={tw`text-gray-700 font-semibold text-sm`}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+                <View style={tw`flex-1`}>
+                  <PrimaryBtn title={"Save changes"} onpressed={handleSave} />
+                </View>
+              </View>
+            ) : (
               <PrimaryBtn
-                title={loading ? "Saving..." : "Save Changes"}
-                onpressed={handleUpdate}
+                title={"Edit profile"}
+                onpressed={() => setIsEditing(true)}
               />
-            </View>
-          ) : (
-            <View style={tw`mt-6`}>
-              <PrimaryBtn
-                title={"Edit Profile"}
-                onpressed={handleEdit}
-              />
-            </View>
-          )}
-        </View>
-      </ScrollView>
+            )}
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-      <LoadingModal
-        visibility={enabled}
-        text={message}
-      />
+      <LoadingModal visibility={saving} text="Saving changes…" />
     </SafeAreaView>
   );
 };

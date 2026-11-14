@@ -1,298 +1,442 @@
-import React, { useState } from 'react'
-import { View, Text, SafeAreaView, ScrollView, Platform, TouchableOpacity } from 'react-native'
-import tw from "twrnc"
-import { StatusBar } from 'expo-status-bar'
-import Icon from "@expo/vector-icons/Ionicons"
-import { Linking } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import axios from 'axios'
-import { useSelector } from 'react-redux'
-import { router } from 'expo-router'
-import { selectAccessToken, selectUserProfile } from '@/hooks/redux/slice'
-import { BASE_URL, PRIMARY_COLOR } from '@/hooks/api'
-import CustomHeader from '@/components/common/CustomHeader'
-import LogOutModal from '@/components/common/Modals/LogOutModal'
-import CustomLegal from '@/components/common/Modals/CustomLegal'
-import CustomAbout from '@/components/common/Modals/CustomAbout'
-import CustomSocial from '@/components/common/Modals/CustomSocial'
-import LoadingModal from '@/components/common/Modals/LoadingModal'
-import app from '../../app.json'
-import CustomVerify from '@/components/common/Modals/CustomVerify'
+import React, { useState } from "react";
+import {
+  Alert,
+  Linking,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import tw from "twrnc";
+import { StatusBar } from "expo-status-bar";
+import Icon from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { router } from "expo-router";
+import { selectAccessToken, selectUserProfile } from "@/hooks/redux/slice";
+import { BASE_URL, PRIMARY_COLOR } from "@/hooks/api";
+import CustomHeader from "@/components/common/CustomHeader";
+import LogOutModal from "@/components/common/Modals/LogOutModal";
+import CustomLegal from "@/components/common/Modals/CustomLegal";
+import CustomAbout from "@/components/common/Modals/CustomAbout";
+import CustomSocial from "@/components/common/Modals/CustomSocial";
+import CustomVerify from "@/components/common/Modals/CustomVerify";
+import LoadingModal from "@/components/common/Modals/LoadingModal";
+import app from "../../app.json";
 
-const MoreScreen = () => {
-    const userProfile = useSelector(selectUserProfile);
-    const [enabled, setEnabled] = useState(false);
-    const [enabledD, setEnabledD] = useState(false);
-    const [about, setAbout] = React.useState(false);
-    const [social, setSocial] = React.useState(false);
-    const [modalL, setModalL] = React.useState(false);
-    const [modalV, setModalV] = React.useState(false);
-    const [refresh, setRefresh] = useState(false);
-    const key = useSelector(selectAccessToken)
-    const [support] = React.useState("Hi Globees Ex, I'm contacting from the app and I will need more enquiry. Thank you");
-    
-    const [links, setLinks] = useState([
-        {title: "Profile", route: "ProfileScreen", icon: "person-circle-outline", color: "blue"},
-        {title: "Transaction History", route: "TransactionScreen", icon: "time-outline", color: "green"},
-        {title: "Identity Verification", route: "IdentityVerify", icon: "id-card-outline", color: "purple"},
-        {title: "Rewards", route: "RewardsScreen", icon: "gift-outline", color: "yellow"},
-        {title: "Social Media", route: "social", icon: "thumbs-up-outline", color: "pink"},
-        {title: "Blog", route: "blog", icon: "newspaper-outline", color: "indigo"},
-        {title: "About", route: "AboutScreen", icon: "alert-circle-outline", color: "gray"},
-        {title: "Legal", route: "LegalScreen", icon: "document-text-outline", color: "red"},
-        {title: "Help & Support", route: "support", icon: "headset-outline", color: "teal"},
-    ])
+type IconName = React.ComponentProps<typeof Icon>["name"];
 
-    const getIconColor = (color: string) => {
-        const colors: { [key: string]: string } = {
-            blue: "#3b82f6",
-            green: "#10b981",
-            purple: "#8b5cf6",
-            yellow: "#f59e0b",
-            pink: "#ec4899",
-            indigo: "#6366f1",
-            gray: "#6b7280",
-            red: "#ef4444",
-            teal: "#14b8a6"
-        };
-        return colors[color] || "#6b7280";
-    };
-
-    const handleDelete = async () => {
-        axios.request({
-            method: 'GET',
-            url: `${BASE_URL}/delete-account`,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                Authorization: 'Bearer '+ key
-            }
-        }).then(async (response:any)=>{
-            if(response.status !==200 || response.status !== 201){
-                setRefresh(false)
-                await AsyncStorage.clear();
-                setEnabledD(false);
-                setTimeout(()=>{                    
-                    router.replace("/LoginScreen")
-                }, 1500);
-            }else{
-                if(response.data.error == false){
-                    setRefresh(false)
-                    // unregisterID(key);
-                }else{
-                    setRefresh(false)
-                }
-            }
-        }).catch((err)=>{
-            console.error(err)
-            setRefresh(false)
-        })
-    }
-
-    return (
-        <SafeAreaView style={tw`flex-1 bg-gray-50`}>
-            <StatusBar style="dark" />
-            <ScrollView 
-                style={tw`flex-1`}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={tw`pb-6`}
-            >
-                <View style={tw`px-2 pt-3`}>
-                    <CustomHeader title="Settings" />
-                    
-                    {/* User Profile Section */}
-                    <View style={tw`bg-white rounded-2xl p-5 mt-2 mb-6 border border-gray-100`}>
-                        <View style={tw`flex-row items-center mb-4`}>
-                            <View style={tw`bg-white w-20 h-20 rounded-full items-center justify-center mr-5 shadow-md border-2 border-blue-200`}>
-                                <Icon name="person-circle-outline" size={48} color={PRIMARY_COLOR} />
-                            </View>
-                            <View style={tw`flex-1`}>
-                                <Text style={tw`text-2xl font-extrabold text-gray-900 mb-1`}>
-                                    {userProfile?.fullname || "User"}
-                                </Text>
-                                <Text style={tw`text-gray-500 text-base mb-2`}>
-                                    {userProfile?.email || "user@example.com"}
-                                </Text>
-                                <View style={tw`flex-row items-center mt-1`}>
-                                    <View style={tw`${userProfile?.verified_user === "yes" ? "bg-green-100" : "bg-red-100"} px-3 py-1 rounded-full flex-row items-center`}>
-                                        <Icon 
-                                            name={userProfile?.verified_user === "yes" ? "checkmark-circle" : "close-circle"} 
-                                            size={16} 
-                                            color={userProfile?.verified_user === "yes" ? "#22c55e" : "#ef4444"} 
-                                            style={tw`mr-1`} 
-                                        />
-                                        <Text style={tw`${userProfile?.verified_user === "yes" ? "text-green-700" : "text-red-600"} text-xs font-semibold`}>
-                                            {userProfile?.verified_user === "yes" ? "Verified" : "Unverified"}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={tw`flex-row justify-end`}>
-                            <TouchableOpacity
-                                style={tw`flex-row items-center bg-[${PRIMARY_COLOR}] px-4 py-2 rounded-full shadow-md`}
-                                activeOpacity={0.85}
-                                onPress={() => router.navigate("ProfileScreen" as never)}
-                            >
-                                <Icon name="create-outline" size={18} color="#fff" style={tw`mr-2`} />
-                                <Text style={tw`text-white font-bold text-sm`}>Edit Profile</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    {/* Main Menu Section */}
-                    <View style={tw`bg-white rounded-2xl border border-gray-100 mb-6`}>
-                        <View style={tw`p-4 border-b border-gray-100`}>
-                            <Text style={tw`text-lg font-bold text-gray-900`}>Account & Services</Text>
-                        </View>
-                        {links && links.map((items, i) => (
-                            <TouchableOpacity 
-                                style={tw`flex-row items-center justify-between p-4 border-b border-gray-100 last:border-b-0`} 
-                                key={i} 
-                                onPress={() => {
-                                    if(items.route == "LegalScreen"){
-                                        setModalL(true)
-                                    }else if(items.route == "AboutScreen"){
-                                        setAbout(true)
-                                    }else if(items.route == "IdentityVerify"){
-                                        if(userProfile?.verified_user == "yes" || userProfile?.verified_user == "true"){
-                                            setModalV(true);
-                                        }else{
-                                            router.navigate(items.route as never);
-                                        }
-                                    }
-                                    else if(items.route == "blog"){
-                                        Linking.openURL("https://globeesex.blogspot.com/");
-                                    }else if(items.route == "social"){
-                                        setSocial(true);
-                                    }else if(items.route == "support"){
-                                        Linking.openURL('whatsapp://send?text=' + support + '&phone=447778068566').then((data) => {
-                                            console.log('WhatsApp Opened');
-                                        })
-                                        .catch(() => {
-                                            alert('Make sure Whatsapp installed on your device');
-                                        });
-                                    }else{
-                                        router.navigate(items.route as never)
-                                    }
-                                }}
-                                activeOpacity={0.7}
-                            >
-                                <View style={tw`flex-row items-center flex-1`}>
-                                    <View style={tw`bg-gray-50 w-10 h-10 rounded-xl items-center justify-center mr-3`}>
-                                        <Icon 
-                                            name={items.icon as never} 
-                                            size={20} 
-                                            color={getIconColor(items.color)} 
-                                        />
-                                    </View>
-                                    <Text style={tw`text-gray-800 font-medium text-base`}>
-                                        {items.title}
-                                    </Text>
-                                </View>
-                                <Icon name='chevron-forward' size={20} color="#9ca3af" />
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-
-                    {/* Account Management Section */}
-                    <View style={tw`bg-white rounded-2xl border border-gray-100 mb-6`}>
-                        <View style={tw`p-4 border-b border-gray-100`}>
-                            <Text style={tw`text-lg font-bold text-gray-900`}>Account Management</Text>
-                        </View>
-                        
-                        <TouchableOpacity 
-                            style={tw`flex-row items-center justify-between p-4 border-b border-gray-100`} 
-                            onPress={() => router.push("/AccountLimits" as never)}
-                            activeOpacity={0.7}
-                        >
-                            <View style={tw`flex-row items-center`}>
-                                <View style={tw`bg-blue-50 w-10 h-10 rounded-xl items-center justify-center mr-3`}>
-                                    <Icon name="shield-checkmark-outline" size={20} color="#3b82f6" />
-                                </View>
-                                <Text style={tw`text-gray-800 font-medium text-base`}>Account Limits</Text>
-                            </View>
-                            <Icon name='chevron-forward' size={20} color="#9ca3af" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity 
-                            style={tw`flex-row items-center justify-between p-4 border-b border-gray-100`} 
-                            onPress={() => setEnabled(true)}
-                            activeOpacity={0.7}
-                        >
-                            <View style={tw`flex-row items-center`}>
-                                <View style={tw`bg-orange-50 w-10 h-10 rounded-xl items-center justify-center mr-3`}>
-                                    <Icon name="log-out-outline" size={20} color="#f97316" />
-                                </View>
-                                <Text style={tw`text-gray-800 font-medium text-base`}>Logout</Text>
-                            </View>
-                            <Icon name='chevron-forward' size={20} color="#9ca3af" />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity 
-                            style={tw`flex-row items-center justify-between p-4`} 
-                            onPress={() => setEnabledD(true)}
-                            activeOpacity={0.7}
-                        >
-                            <View style={tw`flex-row items-center`}>
-                                <View style={tw`bg-red-50 w-10 h-10 rounded-xl items-center justify-center mr-3`}>
-                                    <Icon name="trash-outline" size={20} color="#ef4444" />
-                                </View>
-                                <Text style={tw`text-red-600 font-medium text-base`}>Delete Account</Text>
-                            </View>
-                            <Icon name='chevron-forward' size={20} color="#9ca3af" />
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* App Version Info */}
-                    <View style={tw`bg-white rounded-2xl p-4 border border-gray-100`}>
-                        <Text style={tw`text-center text-gray-500 text-sm`}>
-                            GlobeesEx v{app.expo.version}
-                        </Text>
-                    </View>
-                </View>
-            </ScrollView>
-
-            {/* Modals */}
-            {enabled ? (
-                <LogOutModal 
-                    visibility={enabled} 
-                    setVisibility={setEnabled} 
-                    text={"Are you sure you want to proceed to logout?"} 
-                    onPressed={async ()=> {
-                        await AsyncStorage.removeItem("accessToken");
-                        setEnabled(false);
-                        setTimeout(()=>{
-                            router.replace("/LoginScreen");
-                        },1500);
-                    }} 
-                />
-            ) : null}
-            
-            {enabledD ? (
-                <LogOutModal 
-                    visibility={enabledD} 
-                    setVisibility={setEnabledD} 
-                    text={"Are you sure you want to proceed in deleting your account?"} 
-                    onPressed={handleDelete} 
-                />
-            ) : null}
-            
-            <CustomLegal visibility={modalL} setVisibility={setModalL} />
-            <CustomAbout visibility={about} setVisibility={setAbout} />
-            <CustomSocial visibility={social} setVisibility={setSocial} />
-
-            <CustomVerify 
-                visibility={modalV} 
-                setVisibility={setModalV} 
-            />
-            
-            <LoadingModal 
-                visibility={refresh} 
-                text="Loading..." 
-            />
-        </SafeAreaView>
-    )
+interface Profile {
+  fullname?: string;
+  email?: string;
+  verified_user?: string;
 }
 
-export default MoreScreen
+interface MenuItem {
+  key: string;
+  title: string;
+  icon: IconName;
+  tint: string;
+  bg: string;
+  onPress: () => void;
+  danger?: boolean;
+  trailing?: string;
+}
+
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
+const TAB_BAR_SPACE = 110;
+const WHATSAPP_NUMBER = "447778068566";
+const WHATSAPP_MESSAGE =
+  "Hi Globees Ex, I'm contacting from the app and I will need more enquiry. Thank you";
+const BLOG_URL = "https://globeesex.blogspot.com/";
+
+const getInitials = (name?: string) =>
+  (name ?? "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+const MenuRow = ({ item, divider }: { item: MenuItem; divider: boolean }) => (
+  <TouchableOpacity
+    onPress={item.onPress}
+    activeOpacity={0.7}
+    style={[
+      tw`flex-row items-center px-4 py-3.5`,
+      divider && tw`border-t border-gray-100`,
+    ]}
+    accessibilityRole="button"
+    accessibilityLabel={item.title}
+  >
+    <View
+      style={[
+        tw`w-10 h-10 rounded-xl items-center justify-center mr-3`,
+        { backgroundColor: item.bg },
+      ]}
+    >
+      <Icon name={item.icon} size={20} color={item.tint} />
+    </View>
+    <Text
+      style={[
+        tw`flex-1 text-base font-medium`,
+        { color: item.danger ? "#DC2626" : "#1F2937" },
+      ]}
+    >
+      {item.title}
+    </Text>
+    {item.trailing ? (
+      <Text style={tw`text-emerald-600 text-xs font-semibold mr-2`}>
+        {item.trailing}
+      </Text>
+    ) : null}
+    <Icon name="chevron-forward" size={18} color="#9CA3AF" />
+  </TouchableOpacity>
+);
+
+const MoreScreen = () => {
+  const userProfile = useSelector(selectUserProfile) as Profile | null;
+  const token = useSelector(selectAccessToken);
+
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [aboutVisible, setAboutVisible] = useState(false);
+  const [socialVisible, setSocialVisible] = useState(false);
+  const [legalVisible, setLegalVisible] = useState(false);
+  const [verifyVisible, setVerifyVisible] = useState(false);
+
+  const isVerified =
+    userProfile?.verified_user === "yes" ||
+    userProfile?.verified_user === "true";
+  const initials = getInitials(userProfile?.fullname);
+
+  const openSupport = () => {
+    Linking.openURL(
+      `whatsapp://send?text=${encodeURIComponent(WHATSAPP_MESSAGE)}&phone=${WHATSAPP_NUMBER}`,
+    ).catch(() => {
+      Alert.alert(
+        "WhatsApp not found",
+        "Install WhatsApp to chat with our support team.",
+      );
+    });
+  };
+
+  const openIdentity = () => {
+    if (isVerified) {
+      setVerifyVisible(true);
+    } else {
+      router.navigate("IdentityVerify" as never);
+    }
+  };
+
+  const handleLogout = async () => {
+    setConfirmLogout(false);
+    await AsyncStorage.removeItem("accessToken");
+    router.replace("/LoginScreen");
+  };
+
+  const handleDelete = async () => {
+    setConfirmDelete(false);
+    setDeleting(true);
+    try {
+      const response = await axios.get(`${BASE_URL}/delete-account`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const succeeded =
+        (response.status === 200 || response.status === 201) &&
+        !response.data?.error;
+      if (!succeeded) throw new Error("Account deletion failed");
+      await AsyncStorage.clear();
+      router.replace("/LoginScreen");
+    } catch (err) {
+      console.error(err);
+      Alert.alert(
+        "Couldn't delete account",
+        "Something went wrong. Please try again.",
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const sections: MenuSection[] = [
+    {
+      title: "Account",
+      items: [
+        {
+          key: "profile",
+          title: "Profile",
+          icon: "person-outline",
+          tint: "#2563EB",
+          bg: "#EFF6FF",
+          onPress: () => router.navigate("ProfileScreen" as never),
+        },
+        {
+          key: "history",
+          title: "Transaction history",
+          icon: "time-outline",
+          tint: "#059669",
+          bg: "#ECFDF5",
+          onPress: () => router.navigate("TransactionScreen" as never),
+        },
+        {
+          key: "identity",
+          title: "Identity verification",
+          icon: "id-card-outline",
+          tint: "#7C3AED",
+          bg: "#F5F3FF",
+          trailing: isVerified ? "Verified" : undefined,
+          onPress: openIdentity,
+        },
+        {
+          key: "limits",
+          title: "Account limits",
+          icon: "shield-checkmark-outline",
+          tint: "#0EA5E9",
+          bg: "#F0F9FF",
+          onPress: () => router.push("/AccountLimits" as never),
+        },
+        {
+          key: "rewards",
+          title: "Rewards",
+          icon: "gift-outline",
+          tint: "#D97706",
+          bg: "#FFFBEB",
+          onPress: () => router.navigate("RewardsScreen" as never),
+        },
+      ],
+    },
+    {
+      title: "Support & information",
+      items: [
+        {
+          key: "support",
+          title: "Help & support",
+          icon: "headset-outline",
+          tint: "#0D9488",
+          bg: "#F0FDFA",
+          onPress: openSupport,
+        },
+        {
+          key: "social",
+          title: "Social media",
+          icon: "thumbs-up-outline",
+          tint: "#DB2777",
+          bg: "#FDF2F8",
+          onPress: () => setSocialVisible(true),
+        },
+        {
+          key: "blog",
+          title: "Blog",
+          icon: "newspaper-outline",
+          tint: "#4F46E5",
+          bg: "#EEF2FF",
+          onPress: () => Linking.openURL(BLOG_URL),
+        },
+        {
+          key: "about",
+          title: "About",
+          icon: "information-circle-outline",
+          tint: "#475569",
+          bg: "#F1F5F9",
+          onPress: () => setAboutVisible(true),
+        },
+        {
+          key: "legal",
+          title: "Legal",
+          icon: "document-text-outline",
+          tint: "#475569",
+          bg: "#F1F5F9",
+          onPress: () => setLegalVisible(true),
+        },
+      ],
+    },
+    {
+      title: "Session",
+      items: [
+        {
+          key: "logout",
+          title: "Log out",
+          icon: "log-out-outline",
+          tint: "#EA580C",
+          bg: "#FFF7ED",
+          onPress: () => setConfirmLogout(true),
+        },
+        {
+          key: "delete",
+          title: "Delete account",
+          icon: "trash-outline",
+          tint: "#DC2626",
+          bg: "#FEF2F2",
+          danger: true,
+          onPress: () => setConfirmDelete(true),
+        },
+      ],
+    },
+  ];
+
+  return (
+    <SafeAreaView style={tw`flex-1 bg-gray-50`}>
+      <StatusBar style="dark" />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingBottom: TAB_BAR_SPACE,
+        }}
+      >
+        <CustomHeader title="Settings" />
+
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => router.navigate("ProfileScreen" as never)}
+          style={tw`flex-row items-center bg-white rounded-2xl border border-gray-100 p-4 mt-4`}
+          accessibilityRole="button"
+          accessibilityLabel="Edit profile"
+        >
+          <View
+            style={[
+              tw`w-14 h-14 rounded-full items-center justify-center mr-4`,
+              { backgroundColor: PRIMARY_COLOR },
+            ]}
+          >
+            {initials ? (
+              <Text style={tw`text-white font-bold text-lg`}>{initials}</Text>
+            ) : (
+              <Icon name="person" size={24} color="#FFFFFF" />
+            )}
+          </View>
+
+          <View style={tw`flex-1`}>
+            <Text style={tw`text-gray-900 font-bold text-lg`} numberOfLines={1}>
+              {userProfile?.fullname || "User"}
+            </Text>
+            <Text style={tw`text-gray-500 text-sm mt-0.5`} numberOfLines={1}>
+              {userProfile?.email || "—"}
+            </Text>
+            <View
+              style={[
+                tw`flex-row items-center self-start rounded-full px-2.5 py-1 mt-2`,
+                { backgroundColor: isVerified ? "#ECFDF5" : "#FEF2F2" },
+              ]}
+            >
+              <Icon
+                name={isVerified ? "checkmark-circle" : "alert-circle"}
+                size={14}
+                color={isVerified ? "#047857" : "#B91C1C"}
+              />
+              <Text
+                style={[
+                  tw`text-xs font-semibold ml-1`,
+                  { color: isVerified ? "#047857" : "#B91C1C" },
+                ]}
+              >
+                {isVerified ? "Verified" : "Unverified"}
+              </Text>
+            </View>
+          </View>
+
+          <Icon name="chevron-forward" size={18} color="#9CA3AF" />
+        </TouchableOpacity>
+
+        {!isVerified && (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => router.navigate("IdentityVerify" as never)}
+            style={[
+              tw`flex-row items-center rounded-2xl p-4 mt-3`,
+              {
+                backgroundColor: "#FFFBEB",
+                borderWidth: 1,
+                borderColor: "#FDE68A",
+              },
+            ]}
+            accessibilityRole="button"
+          >
+            <Icon name="shield-checkmark-outline" size={22} color="#B45309" />
+            <View style={tw`flex-1 ml-3`}>
+              <Text style={tw`text-gray-900 font-semibold text-sm`}>
+                Verify your identity
+              </Text>
+              <Text style={tw`text-gray-600 text-xs mt-0.5`}>
+                Required before you can exchange crypto.
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color="#B45309" />
+          </TouchableOpacity>
+        )}
+
+        {sections.map((section) => (
+          <View key={section.title} style={tw`mt-6`}>
+            <Text
+              style={[
+                tw`text-gray-500 text-xs font-semibold mb-2 ml-1`,
+                { letterSpacing: 0.6, textTransform: "uppercase" },
+              ]}
+            >
+              {section.title}
+            </Text>
+            <View
+              style={tw`bg-white rounded-2xl border border-gray-100 overflow-hidden`}
+            >
+              {section.items.map((item, i) => (
+                <MenuRow key={item.key} item={item} divider={i > 0} />
+              ))}
+            </View>
+          </View>
+        ))}
+
+        <Text style={tw`text-center text-gray-400 text-xs mt-8`}>
+          GlobeesEx v{app.expo.version}
+        </Text>
+      </ScrollView>
+
+      {confirmLogout && (
+        <LogOutModal
+          visibility={confirmLogout}
+          setVisibility={setConfirmLogout}
+          text={"Are you sure you want to log out?"}
+          onPressed={handleLogout}
+        />
+      )}
+
+      {confirmDelete && (
+        <LogOutModal
+          visibility={confirmDelete}
+          setVisibility={setConfirmDelete}
+          text={
+            "Are you sure you want to delete your account? This can't be undone."
+          }
+          onPressed={handleDelete}
+        />
+      )}
+
+      <CustomLegal visibility={legalVisible} setVisibility={setLegalVisible} />
+      <CustomAbout visibility={aboutVisible} setVisibility={setAboutVisible} />
+      <CustomSocial
+        visibility={socialVisible}
+        setVisibility={setSocialVisible}
+      />
+      <CustomVerify
+        visibility={verifyVisible}
+        setVisibility={setVerifyVisible}
+      />
+
+      <LoadingModal visibility={deleting} text="Deleting account…" />
+    </SafeAreaView>
+  );
+};
+
+export default MoreScreen;

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Globees Ex",
     "slug": "GlobeesEx",
-    "version": "2.0.8",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",

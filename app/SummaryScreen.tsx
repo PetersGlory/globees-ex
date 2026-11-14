@@ -1,284 +1,297 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { StatusBar } from "expo-status-bar";
+import tw from "twrnc";
+import Icon from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, useLocalSearchParams } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  selectAccessToken,
   selectExchange,
   selectRates,
   selectReceiver,
-  selectUserProfile,
   setCryptoData,
 } from "@/hooks/redux/slice";
 import { usePushNotification } from "@/usePushNotification";
-import { NumberFormatter, primePercent } from "@/hooks/api";
-import { router, useLocalSearchParams } from "expo-router";
-import Icon from "@expo/vector-icons/Ionicons";
+import { NumberFormatter, PRIMARY_COLOR, primePercent } from "@/hooks/api";
+import { AmountFormatter } from "@/hooks/lib/formatter";
 import CustomHeader from "@/components/common/CustomHeader";
 import PrimaryBtn from "@/components/common/PrimaryBtn";
-import LoadingModal from "@/components/common/Modals/LoadingModal";
-import { AmountFormatter } from "@/hooks/lib/formatter";
 
-const Row = ({ label, value }: { label: string; value?: React.ReactNode }) => (
-  <View style={styles.row}>
-    <Text style={styles.rowLabel}>{label}</Text>
-    <Text style={styles.rowValue}>{value}</Text>
-  </View>
-);
+interface Rate {
+  name?: string;
+  amount?: string | number;
+}
+
+interface ExchangeState {
+  from?: string;
+  to?: string;
+}
+
+interface ReceiverInfo {
+  account_name?: string;
+  bank_name?: string;
+  account_number?: string;
+  sort_code?: string;
+  payment_reason?: string;
+  student_id?: string;
+  iban?: string;
+  swift_bic?: string;
+  address?: string;
+}
+
+interface DetailRow {
+  label: string;
+  value?: string | number | null;
+}
+
+const RATE_NAMES: Record<string, string> = {
+  BTC: "BTC - Crypto",
+  ETH: "ETH - Crypto",
+  USDT: "USDT - Crypto",
+};
+
+const capitalize = (value?: string) =>
+  value ? value.charAt(0).toUpperCase() + value.slice(1) : "";
+
+const Section = ({ title, rows }: { title: string; rows: DetailRow[] }) => {
+  const visible = rows.filter(
+    (row) => row.value !== undefined && row.value !== null && row.value !== "",
+  );
+  if (visible.length === 0) return null;
+
+  return (
+    <View style={tw`mt-6`}>
+      <Text style={tw`text-gray-500 text-xs font-semibold mb-2 ml-1`}>
+        {title}
+      </Text>
+      <View
+        style={tw`bg-white rounded-2xl border border-gray-100 overflow-hidden`}
+      >
+        {visible.map((row, i) => (
+          <View
+            key={row.label}
+            style={[
+              tw`flex-row items-start justify-between px-4 py-3.5`,
+              i > 0 && tw`border-t border-gray-100`,
+            ]}
+          >
+            <Text style={tw`text-gray-500 text-sm`}>{row.label}</Text>
+            <Text
+              style={tw`flex-1 text-gray-900 text-sm font-medium text-right ml-4`}
+              selectable
+            >
+              {row.value}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
 
 const SummaryScreen = () => {
-  const params = useLocalSearchParams();
-  const [modal, setModal] = useState(false);
+  const params = useLocalSearchParams<{
+    category?: string;
+    currency_from?: string;
+    currency_to?: string;
+  }>();
   const dispatch = useDispatch();
-  const exchangeed = useSelector(selectExchange);
-  const typeR = params.category;
-  const currency_from = params.currency_from;
-  const currency_to = params.currency_to;
-  const accountD = useSelector(selectReceiver);
-  const key = useSelector(selectAccessToken);
-  const usersP = useSelector(selectUserProfile);
-  const rates = useSelector(selectRates);
-
+  const exchange = useSelector(selectExchange) as ExchangeState | null;
+  const account = useSelector(selectReceiver) as ReceiverInfo | null;
+  const rates = useSelector(selectRates) as Rate[] | null | undefined;
   const { expoPushToken } = usePushNotification();
-  let amounted = exchangeed?.from.substring(1);
-  // console.log(currency_from)
-  // console.log(currency_to)
-  let rated =
-    currency_from == "BTC"
-      ? rates.find((rate: { name: string }) => rate.name === "BTC - Crypto")
-      : currency_from == "ETH"
-        ? rates.find((rate: { name: string }) => rate.name === "ETH - Crypto")
-        : rates.find((rate: { name: string }) => rate.name === "USDT - Crypto");
+
+  const type = params.category;
+  const currencyFrom = params.currency_from;
+  const currencyTo = params.currency_to;
+
+  const isExchange = type === "exchange";
+  const isCrypto = type === "crypto";
+
+  const rate = rates?.find(
+    (r) => r.name === (RATE_NAMES[currencyFrom ?? ""] ?? RATE_NAMES.USDT),
+  );
 
   useEffect(() => {
-    setPush();
-  }, []);
-
-  const amountfrom =
-    typeR == "exchange"
-      ? exchangeed?.from
-      : typeR == "crypto"
-        ? Number(exchangeed?.from) * rated?.amount
-        : exchangeed?.from[0] +
-          NumberFormatter(
-            Number(exchangeed?.from.substring(1)) +
-              primePercent(exchangeed?.from.substring(1)),
-          );
-
-  const setPush = async () => {
     if (expoPushToken?.data) {
-      await AsyncStorage.setItem("pushToken", expoPushToken?.data);
+      AsyncStorage.setItem("pushToken", expoPushToken.data);
     }
-  };
+  }, [expoPushToken?.data]);
 
-  let transactionsData = {
-    amountsend: `${exchangeed?.to} ${currency_from}`,
-    amountreceive: amountfrom,
-    service_charge: "0",
-    category: typeR,
-    receiver_name: accountD?.account_name,
-    bank_name: accountD?.bank_name,
-    account_number: accountD?.account_number,
-    sort_code: accountD?.sort_code,
-    payment_reason: accountD?.payment_reason,
-    studentId: accountD?.student_id,
-    iban: accountD?.iban,
-    swift_bic: accountD?.swift_bic,
-  };
+  const from = exchange?.from ?? "";
+
+  const amountFrom: string | number = isExchange
+    ? from
+    : isCrypto
+      ? Number(from) * Number(rate?.amount)
+      : (from[0] ?? "") +
+        NumberFormatter(
+          Number(from.substring(1)) + primePercent(Number(from.substring(1))),
+        );
+
+  const receiveCurrency =
+    currencyTo === "UK" && !isExchange
+      ? "GBP"
+      : currencyTo === "NGN" && isExchange
+        ? ""
+        : currencyTo !== "" && !isExchange
+          ? currencyTo
+          : "";
+
+  const sendText = isCrypto
+    ? `${exchange?.to} ${currencyFrom}`
+    : AmountFormatter(amountFrom as string);
+
+  const receiveText = isCrypto
+    ? `NGN ${AmountFormatter(amountFrom as string)}`
+    : `${receiveCurrency ?? ""} ${AmountFormatter(exchange?.to as string)}`.trim();
+
+  const showIntlDetails =
+    !isExchange &&
+    !isCrypto &&
+    currencyTo !== "UK" &&
+    currencyTo !== "EUR" &&
+    currencyFrom === "NGN";
+
+  const transferRows: DetailRow[] = [
+    { label: "Category", value: capitalize(type) },
+    {
+      label: "Rate",
+      value:
+        isCrypto && rate?.amount
+          ? `$1 = ₦${NumberFormatter(Number(rate.amount))}`
+          : undefined,
+    },
+  ];
+
+  const recipientRows: DetailRow[] = [
+    { label: "Recipient name", value: account?.account_name },
+    { label: "Bank name", value: account?.bank_name },
+    { label: "Account number", value: account?.account_number },
+    {
+      label: "Payment reason",
+      value: !isExchange && !isCrypto ? account?.payment_reason : undefined,
+    },
+    {
+      label: "Sort code",
+      value:
+        (isExchange && currencyTo === "UK") || showIntlDetails
+          ? account?.sort_code || "N/A"
+          : undefined,
+    },
+    { label: "IBAN", value: showIntlDetails ? account?.iban : undefined },
+    {
+      label: "Swift/BIC",
+      value: showIntlDetails ? account?.swift_bic : undefined,
+    },
+    { label: "Address", value: showIntlDetails ? account?.address : undefined },
+    { label: "Student ID", value: account?.student_id },
+  ];
 
   const handleContinue = () => {
-    if (typeR == "crypto") {
-      dispatch(setCryptoData(transactionsData));
-      router.navigate({
-        pathname: "/CryptoSuccessPage",
-        params: {
-          category: typeR,
-          currency_from: currency_from,
-          currency_to: currency_to,
-        },
-      });
+    const pathParams = {
+      category: type,
+      currency_from: currencyFrom,
+      currency_to: currencyTo,
+    };
+
+    if (isCrypto) {
+      dispatch(
+        setCryptoData({
+          amountsend: `${exchange?.to} ${currencyFrom}`,
+          amountreceive: amountFrom,
+          service_charge: "0",
+          category: type,
+          receiver_name: account?.account_name,
+          bank_name: account?.bank_name,
+          account_number: account?.account_number,
+          sort_code: account?.sort_code,
+          payment_reason: account?.payment_reason,
+          studentId: account?.student_id,
+          iban: account?.iban,
+          swift_bic: account?.swift_bic,
+        }),
+      );
+      router.navigate({ pathname: "/CryptoSuccessPage", params: pathParams });
     } else {
-      router.navigate({
-        pathname: "/AccountDetails",
-        params: {
-          category: typeR,
-          currency_from: currency_from,
-          currency_to: currency_to,
-        },
-      });
+      router.navigate({ pathname: "/AccountDetails", params: pathParams });
     }
   };
 
   return (
-    <SafeAreaView style={styles.screen} edges={["top", "left", "right"]}>
+    <SafeAreaView style={tw`flex-1 bg-gray-50`}>
       <StatusBar style="dark" />
+
       <ScrollView
-        contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
       >
         <CustomHeader title={"Summary Details"} />
 
-        <Text style={styles.subtitle}>
-          Kindly review the {typeR} information provided and continue to make a
-          deposit.
+        <Text style={tw`text-gray-500 text-sm leading-5 mt-4`}>
+          Review your {type} details below, then continue to make a deposit.
         </Text>
 
-        <View style={styles.card}>
-          <Row label="Category" value={<Text style={styles.cap}>{typeR}</Text>} />
+        <View
+          style={[tw`rounded-3xl p-6 mt-5`, { backgroundColor: PRIMARY_COLOR }]}
+        >
+          <Text style={tw`text-white/70 text-xs`}>You send</Text>
+          <Text
+            style={tw`text-white font-bold text-2xl mt-1`}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {sendText}
+          </Text>
 
-          <Row
-            label="Send"
-            value={
-              typeR == "crypto" ? (
-                <>
-                  {exchangeed?.to} {currency_from}
-                </>
-              ) : (
-                <>{AmountFormatter(amountfrom)}</>
-              )
-            }
-          />
+          <View style={tw`flex-row items-center my-4`}>
+            <View style={tw`flex-1 h-px bg-white/20`} />
+            <View
+              style={tw`w-8 h-8 rounded-full bg-white/20 items-center justify-center mx-3`}
+            >
+              <Icon name="arrow-down" size={16} color="#FFFFFF" />
+            </View>
+            <View style={tw`flex-1 h-px bg-white/20`} />
+          </View>
 
-          <Row
-            label="Receive"
-            value={
-              typeR == "crypto" ? (
-                <>NGN{AmountFormatter(amountfrom as string)}</>
-              ) : (
-                <>
-                  {" "}
-                  {currency_to == "UK" && typeR !== "exchange"
-                    ? "GBP"
-                    : currency_to == "NGN" && typeR == "exchange"
-                      ? ""
-                      : currency_to !== "" && typeR !== "exchange"
-                        ? currency_to
-                        : ""}{" "}
-                  {AmountFormatter(exchangeed?.to)}{" "}
-                </>
-              )
-            }
-          />
-
-          <Row label="Recipient Name" value={accountD?.account_name} />
-          <Row label="Bank Name" value={accountD?.bank_name} />
-          <Row label="Account Number" value={accountD?.account_number} />
-
-          {typeR !== "exchange" && typeR !== "crypto" && (
-            <Row label="Payment Reason" value={accountD?.payment_reason} />
-          )}
-
-          {typeR == "exchange" && currency_to == "UK" && (
-            <Row
-              label="Sort Code"
-              value={accountD?.sort_code !== "" ? accountD?.sort_code : "N/A"}
-            />
-          )}
-
-          {typeR !== "exchange" &&
-            currency_to !== "UK" &&
-            currency_to !== "EUR" &&
-            currency_from == "NGN" &&
-            typeR !== "crypto" && (
-              <View style={styles.group}>
-                <Row
-                  label="Sort Code"
-                  value={
-                    accountD?.sort_code !== "" ? accountD?.sort_code : "N/A"
-                  }
-                />
-                <Row label="Iban" value={accountD?.iban} />
-                <Row label="Swift Bic" value={accountD?.swift_bic} />
-                <Row label="Address" value={accountD?.address} />
-              </View>
-            )}
-
-          {accountD?.student_id !== "" && (
-            <Row label="Student ID" value={accountD?.student_id} />
-          )}
+          <Text style={tw`text-white/70 text-xs`}>Recipient gets</Text>
+          <Text
+            style={tw`text-white font-bold text-2xl mt-1`}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {receiveText}
+          </Text>
         </View>
 
-        <View style={styles.cta}>
-          <PrimaryBtn onpressed={handleContinue} title={"Continue"} />
-          <View style={styles.warning}>
-            <Icon name="alert-circle-outline" size={16} color="#B91C1C" />
-            <Text style={styles.warningText}>
-              Ensure all the information provided are accurate to avoid payment
-              cancellation.
-            </Text>
-          </View>
+        <Section title="Transfer" rows={transferRows} />
+        <Section title="Recipient" rows={recipientRows} />
+
+        <View
+          style={[
+            tw`flex-row items-start rounded-2xl p-4 mt-6`,
+            {
+              backgroundColor: "#FFFBEB",
+              borderWidth: 1,
+              borderColor: "#FDE68A",
+            },
+          ]}
+        >
+          <Icon name="alert-circle-outline" size={18} color="#B45309" />
+          <Text style={tw`flex-1 text-gray-700 text-xs leading-4 ml-3`}>
+            Make sure all the information provided is accurate to avoid payment
+            cancellation.
+          </Text>
         </View>
       </ScrollView>
 
-      <LoadingModal text={"Loading..."} visibility={modal} />
+      <View style={tw`px-5 pt-4 pb-3 bg-white border-t border-gray-100`}>
+        <PrimaryBtn onpressed={handleContinue} title={"Continue"} />
+      </View>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#FFFFFF" },
-  scroll: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 40,
-  },
-
-  subtitle: {
-    color: "#6b7280",
-    fontSize: 15,
-    lineHeight: 22,
-    marginTop: 20,
-  },
-
-  card: {
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 18,
-    padding: 18,
-    gap: 14,
-    backgroundColor: "#FFFFFF",
-  },
-  group: { gap: 14 },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-  },
-  rowLabel: { color: "#6b7280", fontSize: 13 },
-  rowValue: {
-    flex: 1,
-    textAlign: "right",
-    marginLeft: 16,
-    color: "#111827",
-    fontSize: 13.5,
-    fontWeight: "600",
-  },
-  cap: { textTransform: "capitalize" },
-
-  cta: { marginTop: 28 },
-
-  warning: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 16,
-    backgroundColor: "#FEF2F2",
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    gap: 8,
-  },
-  warningText: {
-    flex: 1,
-    color: "#B91C1C",
-    fontSize: 12,
-    lineHeight: 17,
-  },
-});
 
 export default SummaryScreen;
